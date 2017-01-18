@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>            ~
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<phpunit
+	bootstrap="../../../vendor/autoload.php"
+	colors="true"
+    backupStaticAttributes="false"
+    backupGlobals="false"
+>
+	<php>
+<!--		<ini name="display_errors" value="true"/>-->
+		<ini name="log_errors" value="true"/>
+<!--		<ini name="error_reporting" value="65535"/>-->
+    </php>
+	<testsuites>
+		<testsuite name="app">
+			<directory>application</directory>
+			<directory>bin</directory>
+		</testsuite>
+	</testsuites>
+
+    <!--<logging>-->
+        <!--<log type="coverage-html"-->
+             <!--target="/tmp/code-coverage"-->
+             <!--lowUpperBound="35"-->
+             <!--highLowerBound="70"/>-->
+    <!--</logging>-->
+
+    <!--<filter>-->
+        <!--<whitelist processUncoveredFilesFromWhitelist="true">-->
+            <!--<directory suffix=".php">../Gica</directory>-->
+            <!--&lt;!&ndash;<directory suffix=".php">../application</directory>&ndash;&gt;-->
+            <!--<exclude>-->
+               <!--<directory suffix=".php">../../application/Zend</directory>-->
+               <!--<directory suffix=".php">../../application/lib</directory>-->
+                <!--<directory suffix=".php">../../Gica/Test</directory>-->
+                <!--<directory suffix=".php">../../Gica/Interfaces</directory>-->
+            <!--</exclude>-->
+        <!--</whitelist>-->
+    <!--</filter>-->
+</phpunit>
