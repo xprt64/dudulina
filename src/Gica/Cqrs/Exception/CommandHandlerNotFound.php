@@ -6,7 +6,7 @@
 namespace Gica\Cqrs\Exception;
 
 
-class CommandHandlerNotFound extends \Gica\Exception
+class CommandHandlerNotFound extends \Exception
 {
 
 }

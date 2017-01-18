@@ -6,15 +6,15 @@
 namespace Gica\Cqrs\Event\EventDispatcher;
 
 
-class DoubleEventDispatcher implements \Gica\Interfaces\Cqrs\Event\EventDispatcher
+class DoubleEventDispatcher implements \Gica\Cqrs\Event\EventDispatcher
 {
     /**
-     * @var \Gica\Interfaces\Cqrs\Event\EventDispatcher[]
+     * @var \Gica\Cqrs\Event\EventDispatcher[]
      */
     private $eventDispatchers;
 
     public function __construct(
-        \Gica\Interfaces\Cqrs\Event\EventDispatcher ...$eventDispatchers
+        \Gica\Cqrs\Event\EventDispatcher ...$eventDispatchers
     )
     {
         $this->eventDispatchers = $eventDispatchers;

@@ -6,14 +6,16 @@
 namespace Gica\Cqrs\Event;
 
 
+use Gica\Cqrs\Event;
+
 class EventSerializer
 {
-    public function serializeEvent(\Gica\Cqrs\Event $event)
+    public function serializeEvent(Event $event)
     {
         return serialize($event);
     }
 
-    public function deserializeEvent($eventClass, $eventPayload): \Gica\Cqrs\Event
+    public function deserializeEvent($eventClass, $eventPayload): Event
     {
         return unserialize($eventPayload);
     }

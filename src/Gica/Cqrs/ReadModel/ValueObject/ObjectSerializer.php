@@ -10,7 +10,7 @@ use Gica\MongoDB\Lib\DateConverter;
 use Gica\Types\Enum;
 use Gica\Types\Guid;
 use Gica\Types\Set;
-use Gica\ValueObject\SerializableInterface;
+use Gica\Types\SerializableInterface;
 use MongoDB\BSON\ObjectID;
 
 class ObjectSerializer

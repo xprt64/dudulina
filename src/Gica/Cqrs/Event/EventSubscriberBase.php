@@ -6,15 +6,17 @@
 namespace Gica\Cqrs\Event;
 
 
+use Gica\Dependency\AbstractFactory;
+
 abstract class EventSubscriberBase implements \Gica\Cqrs\Event\EventSubscriber
 {
     abstract protected function getMap():array;
 
-    /** @var \Gica\Interfaces\Dependency\AbstractFactory */
+    /** @var AbstractFactory */
     private $abstractFactory;
 
     public function __construct(
-        \Gica\Interfaces\Dependency\AbstractFactory $abstractFactory
+        AbstractFactory $abstractFactory
     )
     {
         $this->abstractFactory = $abstractFactory;

@@ -7,7 +7,7 @@ namespace Gica\Cqrs\ReadModel\ValueObject;
 
 
 use Gica\Iterator\IteratorTransformer\IteratorMapper;
-use Gica\ValueObject\SerializableInterface;
+use Gica\Types\SerializableInterface;
 
 class ListSerializer
 {

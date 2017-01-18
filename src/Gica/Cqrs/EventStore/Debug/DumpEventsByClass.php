@@ -6,23 +6,24 @@
 namespace Gica\Cqrs\EventStore\Debug;
 
 
-use Gica\Cqrs\Event\EventWithMetaData;
+use Gica\Cqrs\Event\EventsApplierOnListener;
+use Gica\Cqrs\EventStore;
 
 class DumpEventsByClass
 {
 
     /**
-     * @var \Gica\Cqrs\EventStore
+     * @var EventStore
      */
     private $eventStore;
     /**
-     * @var \Gica\Cqrs\Event\EventsApplierOnListener
+     * @var EventsApplierOnListener
      */
     private $eventsApplierOnListener;
 
     public function __construct(
-        \Gica\Cqrs\EventStore $eventStore,
-        \Gica\Cqrs\Event\EventsApplierOnListener $eventsApplierOnListener
+        EventStore $eventStore,
+        EventsApplierOnListener $eventsApplierOnListener
     )
     {
         $this->eventStore = $eventStore;
@@ -37,8 +38,7 @@ class DumpEventsByClass
         $allEvents = $this->eventStore->loadEventsByClassNames($eventClasses);
         echo "dumping events...\n";
 
-        foreach($allEvents as $eventWithMetaData)
-        {
+        foreach ($allEvents as $eventWithMetaData) {
             echo "\n";
             echo "Event: " . get_class($eventWithMetaData->getEvent()) . "\n";
             echo "Aggregate: " . $eventWithMetaData->getMetaData()->getAggregateClass() . '#' . $eventWithMetaData->getMetaData()->getAggregateId() . "\n";

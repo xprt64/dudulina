@@ -6,30 +6,33 @@
 namespace Gica\Cqrs\Command;
 
 
+use Gica\Cqrs\Command;
 use Gica\Cqrs\Command\ValueObject\CommandHandlerDescriptor;
+use Gica\Cqrs\CommandValidatorSubscriber;
+use Gica\Dependency\AbstractFactory;
 
 class CommandValidator
 {
 
     /**
-     * @var \Gica\Cqrs\CommandValidatorSubscriber
+     * @var CommandValidatorSubscriber
      */
     private $commandValidatorSubscriber;
     /**
-     * @var \Gica\Interfaces\Dependency\AbstractFactory
+     * @var AbstractFactory
      */
     private $abstractFactory;
 
     public function __construct(
-        \Gica\Cqrs\CommandValidatorSubscriber $commandValidatorSubscriber,
-        \Gica\Interfaces\Dependency\AbstractFactory $abstractFactory
+        CommandValidatorSubscriber $commandValidatorSubscriber,
+        AbstractFactory $abstractFactory
     )
     {
         $this->commandValidatorSubscriber = $commandValidatorSubscriber;
         $this->abstractFactory = $abstractFactory;
     }
 
-    public function validateCommand(\Gica\Cqrs\Command $command)
+    public function validateCommand(Command $command)
     {
         $handlerDescriptors = $this->commandValidatorSubscriber->getHandlersForCommand($command);
 

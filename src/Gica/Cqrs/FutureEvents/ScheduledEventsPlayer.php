@@ -6,31 +6,36 @@
 namespace Gica\Cqrs\FutureEvents;
 
 
+use Gica\Cqrs\Command\ConcurrentProofFunctionCaller;
+use Gica\Cqrs\Event\EventDispatcher;
+use Gica\Cqrs\EventStore;
+use Gica\Cqrs\FutureEventsStore;
+
 class ScheduledEventsPlayer
 {
 
     /**
-     * @var \Gica\Cqrs\FutureEventsStore
+     * @var FutureEventsStore
      */
     private $futureEventsStore;
     /**
-     * @var \Gica\Interfaces\Cqrs\Event\EventDispatcher
+     * @var EventDispatcher
      */
     private $eventDispatcher;
     /**
-     * @var \Gica\Cqrs\EventStore
+     * @var EventStore
      */
     private $eventStore;
     /**
-     * @var \Gica\Cqrs\Command\ConcurrentProofFunctionCaller
+     * @var ConcurrentProofFunctionCaller
      */
     private $concurrentProofFunctionCaller;
 
     public function __construct(
-        \Gica\Cqrs\FutureEventsStore $futureEventsStore,
-        \Gica\Interfaces\Cqrs\Event\EventDispatcher $eventDispatcher,
-        \Gica\Cqrs\EventStore $eventStore,
-        \Gica\Cqrs\Command\ConcurrentProofFunctionCaller $concurrentProofFunctionCaller
+        FutureEventsStore $futureEventsStore,
+        EventDispatcher $eventDispatcher,
+        EventStore $eventStore,
+        ConcurrentProofFunctionCaller $concurrentProofFunctionCaller
     )
     {
         $this->futureEventsStore = $futureEventsStore;

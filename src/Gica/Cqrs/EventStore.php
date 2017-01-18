@@ -6,22 +6,26 @@
 namespace Gica\Cqrs;
 
 
+use Gica\Cqrs\Event\EventWithMetaData;
+use Gica\Types\Guid;
+
 interface EventStore
 {
-    public function loadEventsForAggregate(string $aggregateClass, \Gica\Types\Guid $aggregateId): EventStore\AggregateEventStream;
+    public function loadEventsForAggregate(string $aggregateClass, Guid $aggregateId): EventStore\AggregateEventStream;
 
     /**
-     * @param \Gica\Types\Guid $aggregateId
+     * @param Guid $aggregateId
      * @param string $aggregateClass
-     * @param \Gica\Cqrs\Event\EventWithMetaData[] $eventsWithMetaData
+     * @param EventWithMetaData[] $eventsWithMetaData
      * @param int $expectedVersion
+     * @param int $expectedSequence
      * @return
      */
-    public function appendEventsForAggregate(\Gica\Types\Guid $aggregateId, string $aggregateClass, $eventsWithMetaData, int $expectedVersion, int $expectedSequence);
+    public function appendEventsForAggregate(Guid $aggregateId, string $aggregateClass, $eventsWithMetaData, int $expectedVersion, int $expectedSequence);
 
     public function loadEventsByClassNames(array $eventClasses): EventStore\EventStream;
 
-    public function getAggregateVersion(string $aggregateClass, \Gica\Types\Guid $aggregateId);
+    public function getAggregateVersion(string $aggregateClass, Guid $aggregateId);
 
     public function fetchLatestSequence() : int;
 }

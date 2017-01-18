@@ -281,6 +281,7 @@ class MockCommandSubscriber implements \Gica\Cqrs\Command\CommandSubscriber
             return new \Gica\Cqrs\Command\ValueObject\CommandHandlerDescriptor(Aggregate1ForConcurencyTest::class, 'handleCommandForConcurencyException');
         }
 
+        throw new \Exception("Handler not found");
     }
 }
 

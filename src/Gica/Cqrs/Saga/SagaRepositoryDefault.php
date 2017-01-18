@@ -6,7 +6,10 @@
 namespace Gica\Cqrs\Saga;
 
 
-use Gica\Interfaces\Dependency\AbstractFactory;
+use Gica\Cqrs\Event\EventsApplierOnListener;
+use Gica\Cqrs\EventStore;
+use Gica\Cqrs\EventStore\EventStream;
+use Gica\Dependency\AbstractFactory;
 
 /**
  * Saga este un proces care proceseaza evenimente de la mai multe agregate modificandu-si starea
@@ -17,17 +20,17 @@ use Gica\Interfaces\Dependency\AbstractFactory;
 class SagaRepositoryDefault implements \Gica\Cqrs\Saga\SagaRepository
 {
     /**
-     * @var \Gica\Cqrs\EventStore
+     * @var EventStore
      */
     private $eventStore;
 
     /**
-     * @var \Gica\Cqrs\Event\EventsApplierOnListener
+     * @var EventsApplierOnListener
      */
     private $eventsApplierOnListener;
 
     /**
-     * @var \Gica\Cqrs\EventStore\EventStream[]
+     * @var EventStream[]
      */
     private $aggregateToEventStreamMap;
     /**
@@ -37,8 +40,8 @@ class SagaRepositoryDefault implements \Gica\Cqrs\Saga\SagaRepository
 
     public function __construct(
         AbstractFactory $abstractFactory,
-        \Gica\Cqrs\EventStore $eventStore,
-        \Gica\Cqrs\Event\EventsApplierOnListener $eventsApplierOnListener
+        EventStore $eventStore,
+        EventsApplierOnListener $eventsApplierOnListener
     )
     {
         $this->eventStore = $eventStore;
