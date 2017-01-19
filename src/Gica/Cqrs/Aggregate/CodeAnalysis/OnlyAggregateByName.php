@@ -3,7 +3,7 @@
  * Copyright (c) 2017 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Cqrs\Aggregate\CodeAnalysis;
+namespace Gica\Cqrs\Aggregate\CodeAnalysis;
 
 
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator;

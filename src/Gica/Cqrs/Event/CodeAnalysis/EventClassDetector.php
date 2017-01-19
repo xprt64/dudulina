@@ -3,7 +3,7 @@
  * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Cqrs\Event\CodeAnalysis;
+namespace Gica\Cqrs\Event\CodeAnalysis;
 
 
 class EventClassDetector implements \Gica\CodeAnalysis\MethodListenerDiscovery\MessageClassDetector

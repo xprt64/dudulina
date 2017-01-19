@@ -3,7 +3,7 @@
  * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Cqrs\ReadModel\ListenerClassValidator;
+namespace Gica\Cqrs\ReadModel\ListenerClassValidator;
 
 
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator;
