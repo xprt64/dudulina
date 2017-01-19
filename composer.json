@@ -26,7 +26,8 @@
     "xprt64/code-analysis": "^1.0",
     "xprt64/iterator": "^1.0",
     "xprt64/dependency": "^1.0",
-    "xprt64/mongodb-lib": "^1.0"
+    "xprt64/mongodb-lib": "^1.0",
+    "psr/log": "^1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.4"
