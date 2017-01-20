@@ -6,7 +6,7 @@
 namespace Gica\Cqrs\CodeGeneration;
 
 use Gica\CodeAnalysis\AggregateEventHandlersValidator;
-use Gica\Cqrs\Aggregate\CodeAnalysis\OnlyAggregateByName;
+use Gica\Cqrs\Aggregate\CodeAnalysis\ListenerClassValidator\OnlyAggregateByName;
 use Psr\Log\LoggerInterface;
 
 class AggregateEventApplyHandlerValidator

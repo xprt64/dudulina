@@ -5,15 +5,42 @@
 
 namespace Gica\Cqrs\Event;
 
-interface EventWithMetaData
+use Gica\Cqrs\Event;
+
+class EventWithMetaData
 {
-    /**
-     * @return \Gica\Cqrs\Event
-     */
-    public function getEvent() : \Gica\Cqrs\Event;
 
     /**
-     * @return \Gica\Cqrs\Event\MetaData
+     * @var Event
      */
-    public function getMetaData() : \Gica\Cqrs\Event\MetaData;
+    private $event;
+    /**
+     * @var MetaData
+     */
+    private $metaData;
+
+    public function __construct(
+        Event $event,
+        MetaData $metaData
+    )
+    {
+        $this->event = $event;
+        $this->metaData = $metaData;
+    }
+
+    /**
+     * @return Event
+     */
+    public function getEvent(): Event
+    {
+        return $this->event;
+    }
+
+    /**
+     * @return MetaData
+     */
+    public function getMetaData(): MetaData
+    {
+        return $this->metaData;
+    }
 }

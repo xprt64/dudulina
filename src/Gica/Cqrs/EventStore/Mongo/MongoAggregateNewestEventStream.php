@@ -20,7 +20,7 @@ namespace Gica\Cqrs\EventStore\Mongo;
 //    private $aggregateId;
 //    private $version;
 //    /**
-//     * @var \Gica\Cqrs\Event\EventSerializer
+//     * @var \Gica\Cqrs\EventStore\Mongo\EventSerializer
 //     */
 //    private $eventSerializer;
 //    /**
@@ -31,7 +31,7 @@ namespace Gica\Cqrs\EventStore\Mongo;
 //    public function __construct(
 //        \MongoDB\Collection $collection,
 //        $aggregateId,
-//        \Gica\Cqrs\Event\EventSerializer $eventSerializer,
+//        \Gica\Cqrs\EventStore\Mongo\EventSerializer $eventSerializer,
 //        int $fromVersion
 //    )
 //    {

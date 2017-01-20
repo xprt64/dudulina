@@ -10,7 +10,7 @@ interface CommandSubscriber
     /**
      * @param \Gica\Cqrs\Command $command
      * @return \Gica\Cqrs\Command\ValueObject\CommandHandlerDescriptor
-     * @throws \Gica\Cqrs\Exception\CommandHandlerNotFound
+     * @throws \Gica\Cqrs\Command\Exception\CommandHandlerNotFound
      */
     public function getHandlerForCommand(\Gica\Cqrs\Command $command);
 }

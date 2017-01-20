@@ -7,8 +7,8 @@ namespace Gica\Cqrs\Command;
 
 
 use Gica\Cqrs\Command;
+use Gica\Cqrs\Command\CommandValidation\CommandValidatorSubscriber;
 use Gica\Cqrs\Command\ValueObject\CommandHandlerDescriptor;
-use Gica\Cqrs\CommandValidatorSubscriber;
 use Gica\Dependency\AbstractFactory;
 
 class CommandValidator

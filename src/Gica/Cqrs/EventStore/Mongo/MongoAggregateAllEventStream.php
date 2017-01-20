@@ -18,7 +18,7 @@ class MongoAggregateAllEventStream implements \Gica\Cqrs\EventStore\AggregateEve
     private $aggregateId;
     private $version;
     /**
-     * @var \Gica\Cqrs\Event\EventSerializer
+     * @var \Gica\Cqrs\EventStore\Mongo\EventSerializer
      */
     private $eventSerializer;
     /**
@@ -33,7 +33,7 @@ class MongoAggregateAllEventStream implements \Gica\Cqrs\EventStore\AggregateEve
         \MongoDB\Collection $collection,
         string $aggregateClass,
         \Gica\Types\Guid $aggregateId,
-        \Gica\Cqrs\Event\EventSerializer $eventSerializer
+        \Gica\Cqrs\EventStore\Mongo\EventSerializer $eventSerializer
     )
     {
         $this->collection = $collection;

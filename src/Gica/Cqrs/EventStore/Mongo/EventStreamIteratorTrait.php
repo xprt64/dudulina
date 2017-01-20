@@ -4,10 +4,15 @@
  ******************************************************************************/
 
 namespace Gica\Cqrs\EventStore\Mongo;
+
+use Gica\Cqrs\Event\EventWithMetaData;
+use Gica\Cqrs\Event\MetaData;
+use Gica\Iterator\IteratorTransformer\IteratorExpander;
 use Gica\Types\Guid;
+use MongoDB\BSON\UTCDateTime;
 
 /**
- * @property \Gica\Cqrs\Event\EventSerializer $eventSerializer
+ * @property \Gica\Cqrs\EventStore\Mongo\EventSerializer $eventSerializer
  */
 trait EventStreamIteratorTrait
 {
@@ -19,24 +24,24 @@ trait EventStreamIteratorTrait
             foreach ($document['events'] as $eventSubDocument) {
                 $event = $this->eventSerializer->deserializeEvent($eventSubDocument['eventClass'], $eventSubDocument['payload']);
 
-                yield new \Gica\Cqrs\Event\EventWithMetaDataDefault($event, $metaData);
+                yield new EventWithMetaData($event, $metaData);
             }
 
         };
 
-        $generator = new \Gica\Iterator\IteratorTransformer\IteratorExpander($expanderCallback);
+        $generator = new IteratorExpander($expanderCallback);
 
         return $generator($cursor);
     }
 
     private function extractMetaDataFromDocument($document)
     {
-        /** @var \MongoDB\BSON\UTCDateTime $createdAt */
+        /** @var UTCDateTime $createdAt */
         $createdAt = $document['createdAt'];
         $dateCreated = \DateTimeImmutable::createFromMutable($createdAt->toDateTime());
 
-        return new \Gica\Cqrs\Event\MetaDataDefault(
-            new \Gica\Types\Guid((string)$document['aggregateId']),
+        return new MetaData(
+            new Guid((string)$document['aggregateId']),
             $document['aggregateClass'],
             $dateCreated,
             $document['authenticatedUserId'] ? new Guid($document['authenticatedUserId']) : null);

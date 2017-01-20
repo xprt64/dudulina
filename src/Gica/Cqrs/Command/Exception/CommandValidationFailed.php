@@ -6,7 +6,7 @@
 namespace Gica\Cqrs\Command\Exception;
 
 
-class CommandIsInvalid extends \Exception
+class CommandValidationFailed extends \Exception
 {
 
     /**

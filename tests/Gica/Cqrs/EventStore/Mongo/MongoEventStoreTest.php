@@ -19,7 +19,7 @@ class MongoEventStoreTest extends \PHPUnit_Framework_TestCase
 
         $collection = $db->selectCollection('eventStore');
 
-        $eventStore = new \Gica\Cqrs\EventStore\Mongo\MongoEventStore($collection, new \Gica\Cqrs\Event\EventSerializer());
+        $eventStore = new \Gica\Cqrs\EventStore\Mongo\MongoEventStore($collection, new \Gica\Cqrs\EventStore\Mongo\EventSerializer());
 
         $eventStore->dropStore();
         $eventStore->createStore();
@@ -56,7 +56,7 @@ class MongoEventStoreTest extends \PHPUnit_Framework_TestCase
 
         $collection = $db->selectCollection('eventStore');
 
-        $eventStore = new \Gica\Cqrs\EventStore\Mongo\MongoEventStore($collection, new \Gica\Cqrs\Event\EventSerializer());
+        $eventStore = new \Gica\Cqrs\EventStore\Mongo\MongoEventStore($collection, new \Gica\Cqrs\EventStore\Mongo\EventSerializer());
 
         $eventStore->dropStore();
         $eventStore->createStore();

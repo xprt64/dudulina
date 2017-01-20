@@ -3,8 +3,11 @@
  * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Gica\Cqrs\Command;
+namespace Gica\Cqrs\Command\CommandDispatcher;
 
+
+use Gica\Cqrs\Command\Exception\TooManyCommandExecutionRetries;
+use Gica\Cqrs\EventStore\Exception\ConcurrentModificationException;
 
 class ConcurrentProofFunctionCaller
 {
@@ -19,11 +22,11 @@ class ConcurrentProofFunctionCaller
                  */
                 return call_user_func($pureFunction, $arguments);
 
-            } catch (\Gica\Cqrs\EventStore\Exception\ConcurrentModificationException $e) {
+            } catch (ConcurrentModificationException $e) {
 
                 $retries++;
                 if ($retries >= $maxRetries) {
-                    throw new \Gica\Cqrs\Command\Exception\TooManyCommandExecutionRetries(sprintf("TooManyCommandExecutionRetries: %d (%s)", $retries, $e->getMessage()));
+                    throw new TooManyCommandExecutionRetries(sprintf("TooManyCommandExecutionRetries: %d (%s)", $retries, $e->getMessage()));
                 }
 
                 continue;//retry

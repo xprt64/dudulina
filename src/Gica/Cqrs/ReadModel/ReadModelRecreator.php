@@ -14,13 +14,13 @@ class ReadModelRecreator
      */
     private $eventStore;
     /**
-     * @var \Gica\Cqrs\Event\EventsApplierOnListener
+     * @var \Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener
      */
     private $eventsApplierOnListener;
 
     public function __construct(
         \Gica\Cqrs\EventStore $eventStore,
-        \Gica\Cqrs\Event\EventsApplierOnListener $eventsApplierOnListener
+        \Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener $eventsApplierOnListener
     )
     {
         $this->eventStore = $eventStore;

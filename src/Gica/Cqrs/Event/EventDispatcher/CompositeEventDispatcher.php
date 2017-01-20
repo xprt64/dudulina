@@ -6,7 +6,7 @@
 namespace Gica\Cqrs\Event\EventDispatcher;
 
 
-class DoubleEventDispatcher implements \Gica\Cqrs\Event\EventDispatcher
+class CompositeEventDispatcher implements \Gica\Cqrs\Event\EventDispatcher
 {
     /**
      * @var \Gica\Cqrs\Event\EventDispatcher[]

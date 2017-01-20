@@ -6,6 +6,7 @@
 namespace Gica\Cqrs\EventStore\Mongo;
 
 
+use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Iterator\IteratorTransformer\IteratorExpander;
 
 class MongoAllEventByClassesStream implements \Gica\Cqrs\EventStore\EventStream
@@ -17,7 +18,7 @@ class MongoAllEventByClassesStream implements \Gica\Cqrs\EventStore\EventStream
      */
     private $collection;
     /**
-     * @var \Gica\Cqrs\Event\EventSerializer
+     * @var \Gica\Cqrs\EventStore\Mongo\EventSerializer
      */
     private $eventSerializer;
     /**
@@ -28,7 +29,7 @@ class MongoAllEventByClassesStream implements \Gica\Cqrs\EventStore\EventStream
     public function __construct(
         \MongoDB\Collection $collection,
         array $eventClassNames,
-        \Gica\Cqrs\Event\EventSerializer $eventSerializer
+        \Gica\Cqrs\EventStore\Mongo\EventSerializer $eventSerializer
     )
     {
         $this->collection = $collection;
@@ -75,7 +76,7 @@ class MongoAllEventByClassesStream implements \Gica\Cqrs\EventStore\EventStream
 
                 $event = $this->eventSerializer->deserializeEvent($eventSubDocument[MongoEventStore::EVENT_CLASS], $eventSubDocument['payload']);
 
-                yield new \Gica\Cqrs\Event\EventWithMetaDataDefault($event, $metaData);
+                yield new EventWithMetaData($event, $metaData);
             }
         };
 

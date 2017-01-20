@@ -3,16 +3,18 @@
  * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Gica\Cqrs\Event;
+namespace Gica\Cqrs\Event\EventDispatcher;
 
+
+use Gica\Cqrs\Event\EventSubscriber;
 
 class EventDispatcherBySubscriber implements \Gica\Cqrs\Event\EventDispatcher
 {
-    /** @var \Gica\Cqrs\Event\EventSubscriber */
+    /** @var EventSubscriber */
     private $eventSubscriber;
 
     public function __construct(
-        \Gica\Cqrs\Event\EventSubscriber $eventSubscriber
+        EventSubscriber $eventSubscriber
     )
     {
         $this->eventSubscriber = $eventSubscriber;

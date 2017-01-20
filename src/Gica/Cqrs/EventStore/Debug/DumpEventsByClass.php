@@ -6,7 +6,7 @@
 namespace Gica\Cqrs\EventStore\Debug;
 
 
-use Gica\Cqrs\Event\EventsApplierOnListener;
+use Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener;
 use Gica\Cqrs\EventStore;
 
 class DumpEventsByClass
@@ -17,7 +17,7 @@ class DumpEventsByClass
      */
     private $eventStore;
     /**
-     * @var EventsApplierOnListener
+     * @var \Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener
      */
     private $eventsApplierOnListener;
 

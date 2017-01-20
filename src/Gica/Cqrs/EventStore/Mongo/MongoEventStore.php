@@ -16,13 +16,13 @@ class MongoEventStore implements \Gica\Cqrs\EventStore
     /** @var  \MongoDB\Collection */
     protected $collection;
     /**
-     * @var \Gica\Cqrs\Event\EventSerializer
+     * @var \Gica\Cqrs\EventStore\Mongo\EventSerializer
      */
     private $eventSerializer;
 
     public function __construct(
         \MongoDB\Collection $collection,
-        \Gica\Cqrs\Event\EventSerializer $eventSerializer
+        \Gica\Cqrs\EventStore\Mongo\EventSerializer $eventSerializer
     )
     {
         $this->collection = $collection;

@@ -6,7 +6,9 @@
 namespace tests\unit\Gica\Cqrs;
 
 
-use Gica\Cqrs\Command\AuthenticatedIdentityReaderService;
+use Gica\Cqrs\Command\CommandDispatcher\AuthenticatedIdentityReaderService;
+use Gica\Cqrs\Event;
+use Gica\Cqrs\Event\EventWithMetaData;
 
 class CommandDispatcherTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,19 +22,19 @@ class CommandDispatcherTest extends \PHPUnit_Framework_TestCase
 
         $commandSubscriber = new MockCommandSubscriber();
 
-        $eventDispatcher = new \Gica\Cqrs\Event\EventDispatcherBySubscriber(new MockEventSubscriber());
+        $eventDispatcher = new Event\EventDispatcher\EventDispatcherBySubscriber(new MockEventSubscriber());
 
         $eventStore = new InMemoryEventStore($aggregateClass, $aggregateId);
 
-        $eventsApplierOnAggregate = new \Gica\Cqrs\Event\EventsApplierOnAggregate();
+        $eventsApplierOnAggregate = new Event\EventsApplier\EventsApplierOnAggregate();
 
         $commandApplier = new \Gica\Cqrs\Command\CommandApplier();
 
-        $aggregateRepository = new \Gica\Cqrs\Aggregate\AggregateRepositoryDefault($eventStore, $eventsApplierOnAggregate);
+        $aggregateRepository = new \Gica\Cqrs\Aggregate\AggregateRepository($eventStore, $eventsApplierOnAggregate);
 
-        $concurrentProofFunctionCaller = new \Gica\Cqrs\Command\ConcurrentProofFunctionCaller;
+        $concurrentProofFunctionCaller = new \Gica\Cqrs\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
 
-        /** @var AuthenticatedIdentityReaderService $authenticatedIdentity */
+        /** @var \Gica\Cqrs\Command\CommandDispatcher\AuthenticatedIdentityReaderService $authenticatedIdentity */
         $authenticatedIdentity = $this->getMockBuilder(AuthenticatedIdentityReaderService::class)
             ->getMock();
 
@@ -45,7 +47,7 @@ class CommandDispatcherTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $commandDispatcher = new \Gica\Cqrs\Command\CommandDispatcherDefault(
+        $commandDispatcher = new \Gica\Cqrs\Command\CommandDispatcher(
             $commandSubscriber,
             $eventDispatcher,
             $commandApplier,
@@ -77,19 +79,19 @@ class CommandDispatcherTest extends \PHPUnit_Framework_TestCase
 
         $commandSubscriber = new MockCommandSubscriber();
 
-        $eventDispatcher = new \Gica\Cqrs\Event\EventDispatcherBySubscriber(new MockEventSubscriber());
+        $eventDispatcher = new Event\EventDispatcher\EventDispatcherBySubscriber(new MockEventSubscriber());
 
         $eventStore = new InMemoryEventStore($aggregateClass, $aggregateId);
 
         Aggregate1ForConcurencyTest::$eventStore = $eventStore;
 
-        $eventsApplierOnAggregate = new \Gica\Cqrs\Event\EventsApplierOnAggregate();
+        $eventsApplierOnAggregate = new Event\EventsApplier\EventsApplierOnAggregate();
 
         $commandApplier = new \Gica\Cqrs\Command\CommandApplier();
 
-        $aggregateRepository = new \Gica\Cqrs\Aggregate\AggregateRepositoryDefault($eventStore, $eventsApplierOnAggregate);
+        $aggregateRepository = new \Gica\Cqrs\Aggregate\AggregateRepository($eventStore, $eventsApplierOnAggregate);
 
-        $concurrentProofFunctionCaller = new \Gica\Cqrs\Command\ConcurrentProofFunctionCaller;
+        $concurrentProofFunctionCaller = new \Gica\Cqrs\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
 
         /** @var AuthenticatedIdentityReaderService $authenticatedIdentity */
         $authenticatedIdentity = $this->getMockBuilder(AuthenticatedIdentityReaderService::class)
@@ -104,7 +106,7 @@ class CommandDispatcherTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $commandDispatcher = new \Gica\Cqrs\Command\CommandDispatcherDefault(
+        $commandDispatcher = new \Gica\Cqrs\Command\CommandDispatcher(
             $commandSubscriber,
             $eventDispatcher,
             $commandApplier,
@@ -217,7 +219,7 @@ class Aggregate1ForConcurencyTest
 }
 
 
-class Event1 implements \Gica\Cqrs\Event
+class Event1 implements Event
 {
     /**
      * @var
@@ -240,7 +242,7 @@ class Event1 implements \Gica\Cqrs\Event
     }
 }
 
-class Event0 implements \Gica\Cqrs\Event
+class Event0 implements Event
 {
     /**
      * @var
@@ -270,7 +272,7 @@ class MockCommandSubscriber implements \Gica\Cqrs\Command\CommandSubscriber
     /**
      * @param \Gica\Cqrs\Command $command
      * @return \Gica\Cqrs\Command\ValueObject\CommandHandlerDescriptor
-     * @throws \Gica\Cqrs\Exception\CommandHandlerNotFound
+     * @throws \Gica\Cqrs\Command\Exception\CommandHandlerNotFound
      */
     public function getHandlerForCommand(\Gica\Cqrs\Command $command)
     {
@@ -349,13 +351,13 @@ class InMemoryEventStore implements \Gica\Cqrs\EventStore
     /**
      * @param $aggregateClass
      * @param $aggregateId
-     * @param \Gica\Cqrs\Event[] $priorEvents
-     * @return \Gica\Cqrs\Event\EventWithMetaDataDefault[]
+     * @param Event[] $priorEvents
+     * @return EventWithMetaData[]
      */
     private function decorateEventsWithMetadata($aggregateClass, $aggregateId, array $priorEvents)
     {
-        return array_map(function (\Gica\Cqrs\Event $event) use ($aggregateClass, $aggregateId) {
-            return new \Gica\Cqrs\Event\EventWithMetaDataDefault($event, new \Gica\Cqrs\Event\MetaDataDefault(
+        return array_map(function (Event $event) use ($aggregateClass, $aggregateId) {
+            return new EventWithMetaData($event, new \Gica\Cqrs\Event\MetaData(
                 $aggregateId, $aggregateClass, new \DateTimeImmutable(), null
             ));
         }, $priorEvents);
@@ -412,7 +414,7 @@ class MockEventStream implements \Gica\Cqrs\EventStore\AggregateEventStream
 class MockEventSubscriber implements \Gica\Cqrs\Event\EventSubscriber
 {
 
-    public function getListenersForEvent(\Gica\Cqrs\Event $event)
+    public function getListenersForEvent(Event $event)
     {
         if (!($event instanceof Event1)) {
             throw new \BadMethodCallException("event is not instance of Event1");

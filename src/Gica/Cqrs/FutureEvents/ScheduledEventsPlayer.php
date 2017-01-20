@@ -6,7 +6,7 @@
 namespace Gica\Cqrs\FutureEvents;
 
 
-use Gica\Cqrs\Command\ConcurrentProofFunctionCaller;
+use Gica\Cqrs\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
 use Gica\Cqrs\Event\EventDispatcher;
 use Gica\Cqrs\EventStore;
 use Gica\Cqrs\FutureEventsStore;

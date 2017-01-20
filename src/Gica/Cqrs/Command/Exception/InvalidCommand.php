@@ -3,10 +3,10 @@
  * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Gica\Cqrs\Exception;
+namespace Gica\Cqrs\Command\Exception;
 
 
-class CommandHandlerNotFound extends \Exception
+class InvalidCommand extends \Exception
 {
 
 }

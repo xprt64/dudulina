@@ -3,17 +3,19 @@
  * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Gica\Cqrs\Command;
+namespace Gica\Cqrs\Command\CommandValidation;
 
 
+use Gica\Cqrs\Command;
+use Gica\Cqrs\Command\CommandValidation;
 use Gica\Cqrs\Command\ValueObject\CommandHandlerDescriptor;
 
-abstract class CommandValidatorSubscriberBase implements \Gica\Cqrs\CommandValidatorSubscriber
+abstract class CommandValidatorSubscriberByMap implements CommandValidation\CommandValidatorSubscriber
 {
     /**
      * @inheritdoc
      */
-    public function getHandlersForCommand(\Gica\Cqrs\Command $command)
+    public function getHandlersForCommand(Command $command)
     {
         $commandHandlersDefinitions = $this->getCommandHandlersDefinitions();
 

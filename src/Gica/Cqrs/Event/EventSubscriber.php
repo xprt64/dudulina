@@ -13,5 +13,5 @@ interface EventSubscriber
      * @param Event $event
      * @return callable[]
      */
-    public function getListenersForEvent(\Gica\Cqrs\Event $event);
+    public function getListenersForEvent(Event $event);
 }

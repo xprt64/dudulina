@@ -3,12 +3,14 @@
  * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Gica\Cqrs\Event;
+namespace Gica\Cqrs\Event\EventSubscriber;
 
 
+use Gica\Cqrs\Event;
+use Gica\Cqrs\Event\EventSubscriber;
 use Gica\Dependency\AbstractFactory;
 
-abstract class EventSubscriberBase implements \Gica\Cqrs\Event\EventSubscriber
+abstract class EventSubscriberByMap implements EventSubscriber
 {
     abstract protected function getMap():array;
 
@@ -47,10 +49,10 @@ abstract class EventSubscriberBase implements \Gica\Cqrs\Event\EventSubscriber
     }
 
     /**
-     * @param \Gica\Cqrs\Event $event
+     * @param Event $event
      * @return callable[]
      */
-    public function getListenersForEvent(\Gica\Cqrs\Event $event)
+    public function getListenersForEvent(Event $event)
     {
         $eventClass = get_class($event);
 

@@ -6,13 +6,53 @@
 namespace Gica\Cqrs\Event;
 
 
-interface MetaData
+use Gica\Types\Guid;
+
+class MetaData
 {
-    public function getDateCreated(): \DateTimeImmutable;
 
-    public function getAggregateId():\Gica\Types\Guid;
+    /**
+     * @var \DateTimeImmutable
+     */
+    private $dateCreated;
 
-    public function getAuthenticatedUserId();
+    /** @var Guid */
+    private $aggregateId;
+    private $authenticatedUserId;
 
-    public function getAggregateClass();
+    /* @var string */
+    private $aggregateClass;
+
+    public function __construct(
+        Guid $aggregateId,
+        string $aggregateClass,
+        \DateTimeImmutable $dateCreated,
+        Guid $authenticatedUserId = null
+    )
+    {
+        $this->dateCreated = $dateCreated->setTimezone(new \DateTimeZone('Europe/Bucharest'));
+        $this->aggregateId = $aggregateId;
+        $this->authenticatedUserId = $authenticatedUserId;
+        $this->aggregateClass = $aggregateClass;
+    }
+
+    public function getDateCreated(): \DateTimeImmutable
+    {
+        return $this->dateCreated;
+    }
+
+    public function getAggregateId():Guid
+    {
+        return $this->aggregateId;
+    }
+
+    public function getAggregateClass()
+    {
+        return $this->aggregateClass;
+    }
+
+    public function getAuthenticatedUserId()
+    {
+        return $this->authenticatedUserId;
+    }
 }

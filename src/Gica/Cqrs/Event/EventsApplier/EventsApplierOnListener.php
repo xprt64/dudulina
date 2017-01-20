@@ -3,7 +3,7 @@
  * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Gica\Cqrs\Event;
+namespace Gica\Cqrs\Event\EventsApplier;
 
 
 class EventsApplierOnListener
