@@ -11,7 +11,6 @@ use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\EventStore;
 use Gica\Cqrs\EventStore\AggregateEventStream;
 use Gica\Cqrs\EventStore\EventStream;
-use Gica\Types\Guid;
 
 class AggregateRepository
 {

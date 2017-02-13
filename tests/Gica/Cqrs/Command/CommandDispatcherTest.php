@@ -17,14 +17,13 @@ use Gica\Cqrs\Event\EventDispatcher\EventDispatcherBySubscriber;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\FutureEventsStore;
-use Gica\Types\Guid;
 
 class CommandDispatcherTest extends \PHPUnit_Framework_TestCase
 {
 
     public function test_dispatchCommand()
     {
-        $aggregateId = new Guid;
+        $aggregateId = 123;
         $aggregateClass = 'agg';
 
         $command = new Command1($aggregateId);
@@ -81,7 +80,7 @@ class CommandDispatcherTest extends \PHPUnit_Framework_TestCase
      */
     public function test_dispatchCommandShouldNotSuccessOnConcurencyException()
     {
-        $aggregateId = new Guid;
+        $aggregateId = 123;
         $aggregateClass = 'agg';
 
         $command = new CommandForConcurencyException($aggregateId);
@@ -149,10 +148,7 @@ class Command1 implements \Gica\Cqrs\Command
         $this->aggregateId = $aggregateId;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getAggregateId(): Guid
+    public function getAggregateId()
     {
         return $this->aggregateId;
     }
@@ -172,10 +168,7 @@ class CommandForConcurencyException implements \Gica\Cqrs\Command
         $this->aggregateId = $aggregateId;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getAggregateId(): Guid
+    public function getAggregateId()
     {
         return $this->aggregateId;
     }

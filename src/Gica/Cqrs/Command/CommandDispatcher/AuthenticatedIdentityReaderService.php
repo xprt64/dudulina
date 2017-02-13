@@ -6,8 +6,6 @@
 namespace Gica\Cqrs\Command\CommandDispatcher;
 
 
-use Gica\Types\Guid;
-
 interface AuthenticatedIdentityReaderService
 {
 

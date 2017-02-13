@@ -8,5 +8,5 @@ namespace Gica\Cqrs;
 
 interface Command
 {
-    public function getAggregateId():\Gica\Types\Guid;
+    public function getAggregateId();
 }

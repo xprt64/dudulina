@@ -6,8 +6,6 @@
 namespace Gica\Cqrs\Event;
 
 
-use Gica\Types\Guid;
-
 class MetaData
 {
 
@@ -16,7 +14,6 @@ class MetaData
      */
     private $dateCreated;
 
-    /** @var Guid */
     private $aggregateId;
     private $authenticatedUserId;
 
@@ -24,10 +21,10 @@ class MetaData
     private $aggregateClass;
 
     public function __construct(
-        Guid $aggregateId,
+        $aggregateId,
         string $aggregateClass,
         \DateTimeImmutable $dateCreated,
-        Guid $authenticatedUserId = null
+        $authenticatedUserId = null
     )
     {
         $this->dateCreated = $dateCreated->setTimezone(new \DateTimeZone('Europe/Bucharest'));
@@ -41,7 +38,7 @@ class MetaData
         return $this->dateCreated;
     }
 
-    public function getAggregateId():Guid
+    public function getAggregateId()
     {
         return $this->aggregateId;
     }

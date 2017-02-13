@@ -7,14 +7,13 @@ namespace Gica\Cqrs;
 
 
 use Gica\Cqrs\Event\EventWithMetaData;
-use Gica\Types\Guid;
 
 interface EventStore
 {
     public function loadEventsForAggregate(string $aggregateClass, $aggregateId): EventStore\AggregateEventStream;
 
     /**
-     * @param Guid $aggregateId
+     * @param $aggregateId
      * @param string $aggregateClass
      * @param EventWithMetaData[] $eventsWithMetaData
      * @param int $expectedVersion
