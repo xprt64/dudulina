@@ -12,7 +12,7 @@ use Psr\Log\LoggerInterface;
 class AggregateEventApplyHandlerValidator
 {
     public function validate(
-        LoggerInterface $logger,
+        LoggerInterface $logger = null,
         string $searchDirectory
     )
     {
@@ -21,6 +21,8 @@ class AggregateEventApplyHandlerValidator
 
         $validator->validateEventHandlers($searchDirectory);
 
-        $logger->info("Aggregate event handlers are valid in $searchDirectory");
+        if ($logger) {
+            $logger->info("Aggregate event handlers are valid in $searchDirectory");
+        }
     }
 }

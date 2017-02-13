@@ -40,7 +40,7 @@ class AggregateRepository
         $this->aggregateToEventStreamMap = new \SplObjectStorage();
     }
 
-    public function loadAggregate(string $aggregateClass, Guid $aggregateId)
+    public function loadAggregate(string $aggregateClass, $aggregateId)
     {
         $aggregate = new $aggregateClass;
 
@@ -57,7 +57,7 @@ class AggregateRepository
     /**
      * @inheritdoc
      */
-    public function saveAggregate(Guid $aggregateId, $aggregate, $newEventsWithMetaData)
+    public function saveAggregate($aggregateId, $aggregate, $newEventsWithMetaData)
     {
         /** @var AggregateEventStream $priorEvents */
         $priorEvents = $this->aggregateToEventStreamMap[$aggregate];

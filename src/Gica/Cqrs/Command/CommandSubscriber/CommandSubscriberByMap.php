@@ -6,33 +6,37 @@
 namespace Gica\Cqrs\Command\CommandSubscriber;
 
 
+use Gica\Cqrs\Command;
+use Gica\Cqrs\Command\CommandSubscriber;
+use Gica\Cqrs\Command\Exception\CommandHandlerNotFound;
 use Gica\Cqrs\Command\ValueObject\CommandHandlerDescriptor;
 
-abstract class CommandSubscriberByMap implements \Gica\Cqrs\Command\CommandSubscriber
+abstract class CommandSubscriberByMap implements CommandSubscriber
 {
     /**
-     * @param \Gica\Cqrs\Command $command
+     * @param Command $command
      * @return CommandHandlerDescriptor
-     * @throws \Gica\Cqrs\Command\Exception\CommandHandlerNotFound
+     * @throws CommandHandlerNotFound
      */
-    public function getHandlerForCommand(\Gica\Cqrs\Command $command)
+    public function getHandlerForCommand(Command $command)
     {
         $commandHandlersDefinitions = $this->getCommandHandlersDefinitions();
 
-        $handlersForCommand = $commandHandlersDefinitions[get_class($command)];
+        if (isset($commandHandlersDefinitions[get_class($command)])) {
+            $handlersForCommand = $commandHandlersDefinitions[get_class($command)];
 
-        if($handlersForCommand)
-        {
-            foreach ($handlersForCommand as $commandDefinition) {
+            if ($handlersForCommand) {
+                foreach ($handlersForCommand as $commandDefinition) {
 
-                list($aggregateClass, $methodName) = $commandDefinition;
+                    list($aggregateClass, $methodName) = $commandDefinition;
 
-                return new CommandHandlerDescriptor($aggregateClass, $methodName);
+                    return new CommandHandlerDescriptor($aggregateClass, $methodName);
+                }
             }
         }
 
-        throw new \Gica\Cqrs\Command\Exception\CommandHandlerNotFound(sprintf("A handler for command %s was not found", get_class($command)));
+        throw new CommandHandlerNotFound(sprintf("A handler for command %s was not found", get_class($command)));
     }
 
-    abstract protected function getCommandHandlersDefinitions():array;
+    abstract protected function getCommandHandlersDefinitions(): array;
 }

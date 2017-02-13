@@ -17,6 +17,7 @@ use Gica\Cqrs\Event\EventDispatcher;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
 use Gica\Cqrs\Event\EventSubscriber;
 use Gica\Cqrs\Event\EventWithMetaData;
+use Gica\Cqrs\Event\FutureEvent;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\FutureEventsStore;
 
@@ -119,13 +120,13 @@ class CommandDispatcher
      * @param EventWithMetaData[] $decoratedEvents
      * @return array
      */
-    public function splitFutureEvents($decoratedEvents)
+    private function splitFutureEvents($decoratedEvents)
     {
         $nowEvents = [];
         $futureEvents = [];
 
         foreach ($decoratedEvents as $decoratedEvent) {
-            if ($decoratedEvent->getEvent() instanceof Event\FutureEvent) {
+            if ($decoratedEvent->getEvent() instanceof FutureEvent) {
                 $futureEvents[] = $decoratedEvent;
             } else {
                 $nowEvents[] = $decoratedEvent;

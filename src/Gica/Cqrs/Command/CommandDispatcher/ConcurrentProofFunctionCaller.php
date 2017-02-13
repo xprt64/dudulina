@@ -20,18 +20,20 @@ class ConcurrentProofFunctionCaller
                 /**
                  * The real function call
                  */
-                return call_user_func($pureFunction, $arguments);
+                return call_user_func_array($pureFunction, $arguments);
 
             } catch (ConcurrentModificationException $e) {
 
                 $retries++;
                 if ($retries >= $maxRetries) {
-                    throw new TooManyCommandExecutionRetries(sprintf("TooManyCommandExecutionRetries: %d (%s)", $retries, $e->getMessage()));
+                    break;
                 }
 
                 continue;//retry
             }
 
         } while (true);
+
+        throw new TooManyCommandExecutionRetries(sprintf("TooManyCommandExecutionRetries: %d (%s)", $retries, $e->getMessage()));
     }
 }

@@ -4,40 +4,37 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <phpunit
-	bootstrap="../../../vendor/autoload.php"
-	colors="true"
-    backupStaticAttributes="false"
-    backupGlobals="false"
+        bootstrap="../../../vendor/autoload.php"
+        colors="true"
+        backupStaticAttributes="false"
+        backupGlobals="false"
 >
-	<php>
-<!--		<ini name="display_errors" value="true"/>-->
-		<ini name="log_errors" value="true"/>
-<!--		<ini name="error_reporting" value="65535"/>-->
+    <php>
+        <!--		<ini name="display_errors" value="true"/>-->
+        <ini name="log_errors" value="true"/>
+        <!--		<ini name="error_reporting" value="65535"/>-->
     </php>
-	<testsuites>
-		<testsuite name="app">
-			<directory>application</directory>
-			<directory>bin</directory>
-		</testsuite>
-	</testsuites>
+    <testsuites>
+        <testsuite name="app">
+            <directory>application</directory>
+            <directory>bin</directory>
+        </testsuite>
+    </testsuites>
 
     <!--<logging>-->
-        <!--<log type="coverage-html"-->
-             <!--target="/tmp/code-coverage"-->
-             <!--lowUpperBound="35"-->
-             <!--highLowerBound="70"/>-->
+    <!--<log type="coverage-html"-->
+    <!--target="/tmp/code-coverage"-->
+    <!--lowUpperBound="35"-->
+    <!--highLowerBound="70"/>-->
     <!--</logging>-->
 
-    <!--<filter>-->
-        <!--<whitelist processUncoveredFilesFromWhitelist="true">-->
-            <!--<directory suffix=".php">../Gica</directory>-->
-            <!--&lt;!&ndash;<directory suffix=".php">../application</directory>&ndash;&gt;-->
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">../../src/Gica</directory>
+            <!--<directory suffix=".php">../application</directory>-->
             <!--<exclude>-->
-               <!--<directory suffix=".php">../../application/Zend</directory>-->
-               <!--<directory suffix=".php">../../application/lib</directory>-->
-                <!--<directory suffix=".php">../../Gica/Test</directory>-->
-                <!--<directory suffix=".php">../../Gica/Interfaces</directory>-->
+                <!--<directory suffix=".php">../../application/Zend</directory>-->
             <!--</exclude>-->
-        <!--</whitelist>-->
-    <!--</filter>-->
+        </whitelist>
+    </filter>
 </phpunit>

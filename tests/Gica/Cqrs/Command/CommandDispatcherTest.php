@@ -3,7 +3,7 @@
  * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace tests\unit\Gica\Cqrs;
+namespace tests\Gica\Cqrs\Command;
 
 
 use Gica\Cqrs\Aggregate\AggregateRepository;
@@ -316,12 +316,12 @@ class InMemoryEventStore implements \Gica\Cqrs\EventStore
         $this->addEventsToArrayForAggregate($aggregateId, $aggregateClass, $this->decorateEventsWithMetadata($aggregateClass, $aggregateId, [new Event0($aggregateId)]));
     }
 
-    public function loadEventsForAggregate(string $aggregateClass, Guid $aggregateId): \Gica\Cqrs\EventStore\AggregateEventStream
+    public function loadEventsForAggregate(string $aggregateClass, $aggregateId): \Gica\Cqrs\EventStore\AggregateEventStream
     {
         return new MockEventStream($this->getEventsArrayForAggregate($aggregateId), $aggregateClass, $aggregateId);
     }
 
-    public function appendEventsForAggregate(Guid $aggregateId, string $aggregateClass, $eventsWithMetaData, int $expectedVersion, int $expectedSequence)
+    public function appendEventsForAggregate($aggregateId, string $aggregateClass, $eventsWithMetaData, int $expectedVersion, int $expectedSequence)
     {
         if (count($this->getEventsArrayForAggregate($aggregateId)) != $expectedVersion) {
             throw new \Gica\Cqrs\EventStore\Exception\ConcurrentModificationException();
@@ -355,7 +355,7 @@ class InMemoryEventStore implements \Gica\Cqrs\EventStore
         // TODO: Implement loadEventsByClassNames() method.
     }
 
-    public function getAggregateVersion(string $aggregateClass, Guid $aggregateId)
+    public function getAggregateVersion(string $aggregateClass, $aggregateId)
     {
         return $this->versions[(string)$aggregateId];
     }

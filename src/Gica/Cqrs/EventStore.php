@@ -11,7 +11,7 @@ use Gica\Types\Guid;
 
 interface EventStore
 {
-    public function loadEventsForAggregate(string $aggregateClass, Guid $aggregateId): EventStore\AggregateEventStream;
+    public function loadEventsForAggregate(string $aggregateClass, $aggregateId): EventStore\AggregateEventStream;
 
     /**
      * @param Guid $aggregateId
@@ -21,11 +21,11 @@ interface EventStore
      * @param int $expectedSequence
      * @return
      */
-    public function appendEventsForAggregate(Guid $aggregateId, string $aggregateClass, $eventsWithMetaData, int $expectedVersion, int $expectedSequence);
+    public function appendEventsForAggregate($aggregateId, string $aggregateClass, $eventsWithMetaData, int $expectedVersion, int $expectedSequence);
 
     public function loadEventsByClassNames(array $eventClasses): EventStore\EventStream;
 
-    public function getAggregateVersion(string $aggregateClass, Guid $aggregateId);
+    public function getAggregateVersion(string $aggregateClass, $aggregateId);
 
-    public function fetchLatestSequence() : int;
+    public function fetchLatestSequence(): int;
 }

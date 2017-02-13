@@ -19,13 +19,13 @@ abstract class CommandValidatorSubscriberByMap implements CommandValidation\Comm
     {
         $commandHandlersDefinitions = $this->getCommandHandlersDefinitions();
 
+        if (!isset($commandHandlersDefinitions[get_class($command)])) {
+            return [];
+        }
+
         $handlersForCommand = $commandHandlersDefinitions[get_class($command)];
 
         $result = [];
-
-        if (!$handlersForCommand) {
-            return $result;
-        }
 
         foreach ($handlersForCommand as $commandDefinition) {
 
@@ -37,5 +37,5 @@ abstract class CommandValidatorSubscriberByMap implements CommandValidation\Comm
         return $result;
     }
 
-    abstract protected function getCommandHandlersDefinitions():array;
+    abstract protected function getCommandHandlersDefinitions(): array;
 }

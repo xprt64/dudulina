@@ -12,7 +12,7 @@ interface AuthenticatedIdentityReaderService
 {
 
     /**
-     * @return Guid|null
+     * @return mixed|null
      */
     public function getAuthenticatedIdentityId();
 }
