@@ -6,21 +6,24 @@
 namespace Gica\Cqrs\ReadModel;
 
 
+use Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener;
+use Gica\Cqrs\EventStore;
+
 class ReadModelRecreator
 {
 
     /**
-     * @var \Gica\Cqrs\EventStore
+     * @var EventStore
      */
     private $eventStore;
     /**
-     * @var \Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener
+     * @var EventsApplierOnListener
      */
     private $eventsApplierOnListener;
 
     public function __construct(
-        \Gica\Cqrs\EventStore $eventStore,
-        \Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener $eventsApplierOnListener
+        EventStore $eventStore,
+        EventsApplierOnListener $eventsApplierOnListener
     )
     {
         $this->eventStore = $eventStore;

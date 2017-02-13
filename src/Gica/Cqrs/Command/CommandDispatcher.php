@@ -98,7 +98,9 @@ class CommandDispatcher
             return $this->tryDispatchCommandAndSaveAggregate($command);
         }, self::MAXIMUM_SAVE_RETRIES);
 
-        $this->eventDispatcher->dispatchEvents($eventsWithMetaData);
+        foreach ($eventsWithMetaData as $eventWithMetaData) {
+            $this->eventDispatcher->dispatchEvent($eventWithMetaData);
+        }
 
         $this->futureEventsStore->scheduleEvents($futureEventsWithMetaData);
     }
@@ -126,7 +128,7 @@ class CommandDispatcher
         $futureEvents = [];
 
         foreach ($decoratedEvents as $decoratedEvent) {
-            if ($decoratedEvent->getEvent() instanceof FutureEvent) {
+            if ($this->isFutureEvent($decoratedEvent->getEvent())) {
                 $futureEvents[] = $decoratedEvent;
             } else {
                 $nowEvents[] = $decoratedEvent;
@@ -139,6 +141,10 @@ class CommandDispatcher
     public function canExecuteCommand(Command $command): bool
     {
         try {
+            $errors = $this->commandValidator->validateCommand($command);
+            if ($errors) {
+                return false;
+            }
             $commandHandlerAndAggregate = $this->loadCommandHandlerAndAggregate($command);
             $this->applyCommandAndReturnEvents($command, $commandHandlerAndAggregate);
             return true;
@@ -185,11 +191,18 @@ class CommandDispatcher
         foreach ($newEventsGenerator as $event) {
             $eventWithMetaData = $this->decorateEventWithMetaData($event, $metaData);
 
-            $this->eventsApplierOnAggregate->applyEventsOnAggregate($aggregate, [$eventWithMetaData]);
+            if (!$this->isFutureEvent($event)) {
+                $this->eventsApplierOnAggregate->applyEventsOnAggregate($aggregate, [$eventWithMetaData]);
+            }
 
             $eventsWithMetaData[] = $eventWithMetaData;
         }
 
         return $eventsWithMetaData;
+    }
+
+    private function isFutureEvent($event): bool
+    {
+        return $event instanceof FutureEvent;
     }
 }

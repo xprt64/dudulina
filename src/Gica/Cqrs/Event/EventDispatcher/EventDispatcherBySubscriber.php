@@ -7,6 +7,7 @@ namespace Gica\Cqrs\Event\EventDispatcher;
 
 
 use Gica\Cqrs\Event\EventSubscriber;
+use Gica\Cqrs\Event\EventWithMetaData;
 
 class EventDispatcherBySubscriber implements \Gica\Cqrs\Event\EventDispatcher
 {
@@ -20,17 +21,7 @@ class EventDispatcherBySubscriber implements \Gica\Cqrs\Event\EventDispatcher
         $this->eventSubscriber = $eventSubscriber;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function dispatchEvents(array $eventsWithMetaData)
-    {
-        foreach ($eventsWithMetaData as $eventWithMetaData) {
-            $this->dispatchEvent($eventWithMetaData);
-        }
-    }
-
-    protected function dispatchEvent(\Gica\Cqrs\Event\EventWithMetaData $eventWithMetaData)
+    public function dispatchEvent(EventWithMetaData $eventWithMetaData)
     {
         $listeners = $this->eventSubscriber->getListenersForEvent($eventWithMetaData->getEvent());
 

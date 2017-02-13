@@ -6,27 +6,27 @@
 namespace Gica\Cqrs\Event\EventDispatcher;
 
 
-class CompositeEventDispatcher implements \Gica\Cqrs\Event\EventDispatcher
+use Gica\Cqrs\Event\EventDispatcher;
+use Gica\Cqrs\Event\EventWithMetaData;
+
+class CompositeEventDispatcher implements EventDispatcher
 {
     /**
-     * @var \Gica\Cqrs\Event\EventDispatcher[]
+     * @var EventDispatcher[]
      */
     private $eventDispatchers;
 
     public function __construct(
-        \Gica\Cqrs\Event\EventDispatcher ...$eventDispatchers
+        EventDispatcher ...$eventDispatchers
     )
     {
         $this->eventDispatchers = $eventDispatchers;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function dispatchEvents(array $eventsWithMetaData)
+    public function dispatchEvent(EventWithMetaData $eventWithMetaData)
     {
         foreach ($this->eventDispatchers as $i => $eventDispatcher) {
-            $eventDispatcher->dispatchEvents($eventsWithMetaData);
+            $eventDispatcher->dispatchEvent($eventWithMetaData);
         }
     }
 }

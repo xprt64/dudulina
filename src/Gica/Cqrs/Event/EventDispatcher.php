@@ -7,8 +7,5 @@ namespace Gica\Cqrs\Event;
 
 interface EventDispatcher
 {
-    /**
-     * @param \Gica\Cqrs\Event\EventWithMetaData[] $eventsWithMetaData
-     */
-    public function dispatchEvents(array $eventsWithMetaData);
+    public function dispatchEvent(\Gica\Cqrs\Event\EventWithMetaData $eventWithMetaData);
 }
