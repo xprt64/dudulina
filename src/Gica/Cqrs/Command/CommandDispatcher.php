@@ -15,7 +15,6 @@ use Gica\Cqrs\Command\ValueObject\CommandHandlerAndAggregate;
 use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventDispatcher;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
-use Gica\Cqrs\Event\EventSubscriber;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\FutureEvent;
 use Gica\Cqrs\Event\MetaData;
@@ -30,7 +29,7 @@ class CommandDispatcher
      */
     private $commandSubscriber;
     /**
-     * @var EventSubscriber
+     * @var EventDispatcher
      */
     private $eventDispatcher;
     /**
@@ -58,7 +57,7 @@ class CommandDispatcher
      */
     private $futureEventsStore;
     /**
-     * @var \Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate
+     * @var EventsApplierOnAggregate
      */
     private $eventsApplierOnAggregate;
 
