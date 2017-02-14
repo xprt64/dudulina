@@ -27,7 +27,7 @@ class MetaData
         $authenticatedUserId = null
     )
     {
-        $this->dateCreated = $dateCreated->setTimezone(new \DateTimeZone('Europe/Bucharest'));
+        $this->dateCreated = $dateCreated->getTimezone() ? $dateCreated : $dateCreated->setTimezone(new \DateTimeZone('Europe/Bucharest'));
         $this->aggregateId = $aggregateId;
         $this->authenticatedUserId = $authenticatedUserId;
         $this->aggregateClass = $aggregateClass;

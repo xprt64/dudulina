@@ -49,7 +49,7 @@ class ScheduledEventsPlayer
         $this->futureEventsStore->loadAndProcessScheduledEvents(function (ScheduledEvent $scheduledEvent) {
 
             $this->saveEventToStore($scheduledEvent);
-            $this->eventDispatcher->dispatchEvents([$scheduledEvent->getEventWithMetaData()]);
+            $this->eventDispatcher->dispatchEvent($scheduledEvent->getEventWithMetaData());
 
         });
     }
@@ -68,8 +68,8 @@ class ScheduledEventsPlayer
         $eventWithMetaData = $scheduledEvent->getEventWithMetaData();
         $metaData = $eventWithMetaData->getMetaData();
 
-        $nextSequence = 1 + $this->eventStore->fetchLatestSequence();
+        $expectedSequence = $this->eventStore->fetchLatestSequence();
 
-        $this->eventStore->appendEventsForAggregate($metaData->getAggregateId(), $metaData->getAggregateClass(), [$eventWithMetaData], $version, $nextSequence);
+        $this->eventStore->appendEventsForAggregate($metaData->getAggregateId(), $metaData->getAggregateClass(), [$eventWithMetaData], $version, $expectedSequence);
     }
 }

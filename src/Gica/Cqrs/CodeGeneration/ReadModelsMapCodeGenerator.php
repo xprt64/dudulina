@@ -6,26 +6,31 @@
 namespace Gica\Cqrs\CodeGeneration;
 
 
-use Psr\Log\LoggerInterface;
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ClassSorter\ByConstructorDependencySorter;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ReadModelMapperWriter;
 use Gica\Cqrs\Command\CodeAnalysis\ReadModelEventHandlerDetector;
 use Gica\Cqrs\ReadModel\ListenerClassValidator\OnlyReadModels;
+use Gica\FileSystem\FileSystemInterface;
+use Gica\FileSystem\OperatingSystemFileSystem;
+use Psr\Log\LoggerInterface;
 
 class ReadModelsMapCodeGenerator
 {
     public function generate(
         LoggerInterface $logger,
+        FileSystemInterface $fileSystem = null,
         string $readModelMapTemplateClassName,
         string $searchDirectory,
         string $outputFilePath,
         string $outputShortClassName
     )
     {
+        $fileSystem = $fileSystem ?? new OperatingSystemFileSystem();
+
         $classInfo = new \ReflectionClass($readModelMapTemplateClassName);
 
-        @unlink($outputFilePath);
+        $this->deleteFileIfExists($fileSystem, $outputFilePath);
 
         $discoverer = new MethodListenerDiscovery(
             new ReadModelEventHandlerDetector(),
@@ -39,7 +44,7 @@ class ReadModelsMapCodeGenerator
 
         $writer = new ReadModelMapperWriter();
 
-        $template = file_get_contents($classInfo->getFileName());
+        $template = $fileSystem->fileGetContents($classInfo->getFileName());
 
         $template = str_replace($classInfo->getShortName() /*ReadModelMapTemplate*/, $outputShortClassName /* ReadModelMap */, $template);
 
@@ -47,11 +52,18 @@ class ReadModelsMapCodeGenerator
 
         $code = $writer->generateAndGetFileContents($map, $template);
 
-        if (false === file_put_contents($outputFilePath, $code))
-            $logger->error("write error");
+        $fileSystem->filePutContents($outputFilePath, $code);
 
-        chmod($outputFilePath, 0777);
+        $fileSystem->fileSetPermissions($outputFilePath, 0777);
 
         $logger->info("Read models map wrote to: $outputFilePath (searched in $searchDirectory)");
+    }
+
+    private function deleteFileIfExists(FileSystemInterface $fileSystem, string $outputFilePath)
+    {
+        try {
+            $fileSystem->fileDelete($outputFilePath);
+        } catch (\Exception $exception) {
+        }
     }
 }

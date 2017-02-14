@@ -8,6 +8,7 @@ namespace Gica\Cqrs\ReadModel;
 
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener;
 use Gica\Cqrs\EventStore;
+use Psr\Log\LoggerInterface;
 
 class ReadModelRecreator
 {
@@ -20,24 +21,31 @@ class ReadModelRecreator
      * @var EventsApplierOnListener
      */
     private $eventsApplierOnListener;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     public function __construct(
         EventStore $eventStore,
-        EventsApplierOnListener $eventsApplierOnListener
+        EventsApplierOnListener $eventsApplierOnListener,
+        LoggerInterface $logger
     )
     {
         $this->eventStore = $eventStore;
         $this->eventsApplierOnListener = $eventsApplierOnListener;
+        $this->logger = $logger;
     }
 
     public function recreateRead(ReadModelInterface $readModel)
     {
         $eventClasses = $this->getListenerEventClasses(get_class($readModel));
 
-        print_r($eventClasses);
-        echo "loading events...\n";
+        $this->logger->info(print_r($eventClasses, true));
+        $this->logger->info("loading events...");
         $allEvents = $this->eventStore->loadEventsByClassNames($eventClasses);
-        echo "applying events...\n";
+
+        $this->logger->info("applying events...");
 
         $this->eventsApplierOnListener->applyEventsOnListener($readModel, $allEvents);
     }

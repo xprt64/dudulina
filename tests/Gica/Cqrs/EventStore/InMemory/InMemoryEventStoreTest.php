@@ -78,13 +78,10 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(AggregateEventStream::class, $eventsforAggregate);
         $this->assertCount(3, iterator_to_array($eventsforAggregate));
-
     }
 
     public function test_appendEventsForAggregateWithConcurrentModificationException()
     {
-        $this->expectException(ConcurrentModificationException::class);
-
         $store = new InMemoryEventStore();
 
         /** @var Event $event1 */
@@ -105,9 +102,33 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
             ),
         ];
 
+        $this->expectException(ConcurrentModificationException::class);
+
         $store->appendEventsForAggregate($aggregateId, $aggregateClass, $eventsWithMetaData, 0, 0);
 
         $store->appendEventsForAggregate($aggregateId, $aggregateClass, $eventsWithMetaData, 0, 0);
+    }
+
+    public function test_appendEventsForAggregateWithoutChecking()
+    {
+        $store = new InMemoryEventStore();
+
+        $event1 = new Event1();
+
+        $event2 = new Event2;
+
+        $aggregateClass = \stdClass::class;
+        $aggregateId = 123;
+
+        $store->appendEventsForAggregateWithoutChecking($aggregateId, $aggregateClass, [$event1, $event2]);
+
+        $this->assertEquals(1, $store->getAggregateVersion($aggregateClass, $aggregateId));
+        $this->assertEquals(1, $store->fetchLatestSequence());
+
+        $store->appendEventsForAggregateWithoutChecking($aggregateId, $aggregateClass, [$event1, $event2]);
+
+        $this->assertEquals(2, $store->getAggregateVersion($aggregateClass, $aggregateId));
+        $this->assertEquals(2, $store->fetchLatestSequence());
     }
 }
 

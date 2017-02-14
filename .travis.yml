@@ -1,0 +1,12 @@
+language: php
+php:
+  - '7.0'
+  - '7.1'
+
+install:
+  - curl -s http://getcomposer.org/installer | php
+  - php composer.phar install --dev --no-interaction
+
+script:
+  - mkdir -p build/logs
+  - phpunit --configuration tests/phpunit.xml --coverage-clover=coverage.clover tests/

@@ -25,16 +25,8 @@ class EventDispatcherBySubscriber implements \Gica\Cqrs\Event\EventDispatcher
     {
         $listeners = $this->eventSubscriber->getListenersForEvent($eventWithMetaData->getEvent());
 
-        if (!$listeners) {
-            return;
-        }
-
         foreach ($listeners as $listener) {
-            $returnValue = call_user_func($listener, $eventWithMetaData->getEvent(), $eventWithMetaData->getMetaData());
-
-            if (false === $returnValue) {
-                break;
-            }
+            call_user_func($listener, $eventWithMetaData->getEvent(), $eventWithMetaData->getMetaData());
         }
     }
 }

@@ -17,9 +17,7 @@ class ListSerializer
      */
     public static function serializeList($objectList)
     {
-        if (!$objectList) {
-            $objectList = [];
-        }
+        $objectList = $objectList ?: [];
 
         $iteratorMapper = new IteratorMapper(function ($object) {
             /** @var SerializableInterface $object */
@@ -31,9 +29,7 @@ class ListSerializer
 
     public static function deserializeList(string $objectClass, $serializedObjectList = null)
     {
-        if (null === $serializedObjectList) {
-            $serializedObjectList = [];
-        } else if ($serializedObjectList instanceof \Iterator) {
+        if ($serializedObjectList instanceof \Iterator) {
             $serializedObjectList = iterator_to_array($serializedObjectList);
         }
 

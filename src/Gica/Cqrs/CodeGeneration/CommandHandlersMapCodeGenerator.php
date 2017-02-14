@@ -10,22 +10,27 @@ use Gica\CodeAnalysis\MethodListenerDiscovery\ClassSorter\ByConstructorDependenc
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
 use Gica\CodeAnalysis\MethodListenerDiscovery\MethodListenerMapperWriter;
 use Gica\Cqrs\Command\CodeAnalysis\AggregateCommandHandlerDetector;
+use Gica\FileSystem\FileSystemInterface;
+use Gica\FileSystem\OperatingSystemFileSystem;
 use Psr\Log\LoggerInterface;
 
 class CommandHandlersMapCodeGenerator
 {
     public function generate(
         LoggerInterface $logger,
+        FileSystemInterface $fileSystem = null,
         string $commandSubscriberTemplateClassName,
         string $searchDirectory,
         string $outputFilePath,
         string $outputShortClassName = 'CommandHandlerSubscriber')
     {
+        $fileSystem = $fileSystem ?? new OperatingSystemFileSystem();
+
         $classInfo = new \ReflectionClass($commandSubscriberTemplateClassName);
 
         $classInfo->getShortName();
 
-        @unlink($outputFilePath);
+        $this->deleteFileIfExists($fileSystem, $outputFilePath);
 
         $discoverer = new MethodListenerDiscovery(
             new AggregateCommandHandlerDetector(),
@@ -48,20 +53,28 @@ class CommandHandlersMapCodeGenerator
 
         $code = $writer->generateAndGetFileContents($map, $template);
 
-        if (false === file_put_contents($outputFilePath, $code))
-            $logger->error("write error");
+        $fileSystem->filePutContents($outputFilePath, $code);
 
-        chmod($outputFilePath, 0777);
+        $fileSystem->fileSetPermissions($outputFilePath, 0777);
 
         $logger->info("Commands map wrote to: $outputFilePath (searched in $searchDirectory)");
 
+    }
+
+    private function deleteFileIfExists(FileSystemInterface $fileSystem, string $outputFilePath)
+    {
+        try {
+            $fileSystem->fileDelete($outputFilePath);
+        } catch (\Exception $exception) {
+        }
     }
 
     private function validateMap(array $map)
     {
         foreach ($map as $command => $commandHandlers) {
             if (count($commandHandlers) > 1) {
-                throw new \Exception(sprintf("multiple handlers exists for command %s", $command));
+                throw new \Exception(
+                    sprintf("multiple handlers exists for command %s", $command));
             }
         }
     }

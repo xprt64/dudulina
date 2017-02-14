@@ -11,21 +11,26 @@ use Gica\CodeAnalysis\MethodListenerDiscovery\ClassSorter\ByConstructorDependenc
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
 use Gica\CodeAnalysis\MethodListenerDiscovery\MethodListenerMapperWriter;
 use Gica\Cqrs\Command\CodeAnalysis\AggregateCommandValidatorDetector;
+use Gica\FileSystem\FileSystemInterface;
+use Gica\FileSystem\OperatingSystemFileSystem;
 use Psr\Log\LoggerInterface;
 
 class CommandValidatorsMapCodeGenerator
 {
     public function generate(
         LoggerInterface $logger,
+        FileSystemInterface $fileSystem = null,
         string $commandValidatorSubscriberTemplateClassName,
         string $searchDirectory,
         string $outputFilePath,
         string $outputShortClassName
     )
     {
+        $fileSystem = $fileSystem ?? new OperatingSystemFileSystem();
+
         $classInfo = new \ReflectionClass($commandValidatorSubscriberTemplateClassName);
 
-        @unlink($outputFilePath);
+        $this->deleteFileIfExists($fileSystem, $outputFilePath);
 
         $discoverer = new MethodListenerDiscovery(
             new AggregateCommandValidatorDetector(),
@@ -38,7 +43,7 @@ class CommandValidatorsMapCodeGenerator
 
         $writer = new MethodListenerMapperWriter();
 
-        $template = file_get_contents($classInfo->getFileName());
+        $template = $fileSystem->fileGetContents($classInfo->getFileName());
 
         $template = str_replace($classInfo->getShortName() /*CommandValidatorSubscriberTemplate*/, $outputShortClassName /*CommandValidatorSubscriber*/, $template);
 
@@ -46,11 +51,18 @@ class CommandValidatorsMapCodeGenerator
 
         $code = $writer->generateAndGetFileContents($map, $template);
 
-        if (false === file_put_contents($outputFilePath, $code))
-            $logger->error("write error");
+        $fileSystem->filePutContents($outputFilePath, $code);
 
-        chmod($outputFilePath, 0777);
+        $fileSystem->fileSetPermissions($outputFilePath, 0777);
 
         $logger->info("Commands validators wrote to: $outputFilePath");
+    }
+
+    private function deleteFileIfExists(FileSystemInterface $fileSystem, string $outputFilePath)
+    {
+        try {
+            $fileSystem->fileDelete($outputFilePath);
+        } catch (\Exception $exception) {
+        }
     }
 }

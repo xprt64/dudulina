@@ -8,6 +8,7 @@ namespace Gica\Cqrs\EventStore\Debug;
 
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener;
 use Gica\Cqrs\EventStore;
+use Psr\Log\LoggerInterface;
 
 class DumpEventsByClass
 {
@@ -20,29 +21,35 @@ class DumpEventsByClass
      * @var \Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener
      */
     private $eventsApplierOnListener;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     public function __construct(
         EventStore $eventStore,
-        EventsApplierOnListener $eventsApplierOnListener
+        EventsApplierOnListener $eventsApplierOnListener,
+        LoggerInterface $logger
     )
     {
         $this->eventStore = $eventStore;
         $this->eventsApplierOnListener = $eventsApplierOnListener;
+        $this->logger = $logger;
     }
 
     public function dumpEvents(array $eventClasses)
     {
-        print_r($eventClasses);
-        echo "loading events...\n";
+        $this->logger->info(print_r($eventClasses, 1));
+        $this->logger->info("loading events...\n");
         /** @var \Gica\Cqrs\Event\EventWithMetaData[] $allEvents */
         $allEvents = $this->eventStore->loadEventsByClassNames($eventClasses);
-        echo "dumping events...\n";
+        $this->logger->info("dumping events...\n");
 
         foreach ($allEvents as $eventWithMetaData) {
-            echo "\n";
-            echo "Event: " . get_class($eventWithMetaData->getEvent()) . "\n";
-            echo "Aggregate: " . $eventWithMetaData->getMetaData()->getAggregateClass() . '#' . $eventWithMetaData->getMetaData()->getAggregateId() . "\n";
-            echo "Created: " . $eventWithMetaData->getMetaData()->getDateCreated()->format('c') . "\n";
+            $this->logger->info("\n");
+            $this->logger->info("Event: " . get_class($eventWithMetaData->getEvent()) . "\n");
+            $this->logger->info("Aggregate: " . $eventWithMetaData->getMetaData()->getAggregateClass() . '#' . $eventWithMetaData->getMetaData()->getAggregateId() . "\n");
+            $this->logger->info("Created: " . $eventWithMetaData->getMetaData()->getDateCreated()->format('c') . "\n");
         }
     }
 }

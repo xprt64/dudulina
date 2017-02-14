@@ -38,6 +38,15 @@ class InMemoryEventStore implements EventStore
     public function appendEventsForAggregateWithoutChecking($aggregateId, $aggregateClass, $newEvents)
     {
         $this->addEventsToArrayForAggregate($aggregateId, $aggregateClass, $this->decorateEventsWithMetadata($aggregateClass, $aggregateId, $newEvents));
+
+        $constructKey = $this->constructKey($aggregateClass, $aggregateId);
+
+        if (!isset($this->versions[$constructKey])) {
+            $this->versions[$constructKey] = 0;
+        }
+
+        $this->versions[$constructKey]++;
+        $this->latestSequence++;
     }
 
     private function getEventsArrayForAggregate(string $aggregateClass, $aggregateId)

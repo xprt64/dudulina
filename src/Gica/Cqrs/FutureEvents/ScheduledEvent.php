@@ -6,35 +6,34 @@
 namespace Gica\Cqrs\FutureEvents;
 
 
+use Gica\Cqrs\Event\EventWithMetaData;
+
 class ScheduledEvent
 {
     private $eventId;
     /**
-     * @var \Gica\Cqrs\Event\EventWithMetaData
+     * @var EventWithMetaData
      */
     private $eventWithMetaData;
 
     public function __construct(
         $eventId,
-        \Gica\Cqrs\Event\EventWithMetaData $eventWithMetaData
+        EventWithMetaData $eventWithMetaData
     )
     {
         $this->eventId = $eventId;
         $this->eventWithMetaData = $eventWithMetaData;
     }
 
-    /**
-     * @return mixed
-     */
     public function getEventId()
     {
         return $this->eventId;
     }
 
     /**
-     * @return \Gica\Cqrs\Event\EventWithMetaData
+     * @return EventWithMetaData
      */
-    public function getEventWithMetaData(): \Gica\Cqrs\Event\EventWithMetaData
+    public function getEventWithMetaData(): EventWithMetaData
     {
         return $this->eventWithMetaData;
     }
