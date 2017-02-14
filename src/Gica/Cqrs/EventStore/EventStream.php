@@ -6,7 +6,7 @@
 namespace Gica\Cqrs\EventStore;
 
 
-interface EventStream extends  \IteratorAggregate
+interface EventStream extends \IteratorAggregate
 {
 
 }
