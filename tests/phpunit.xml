@@ -4,7 +4,7 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <phpunit
-        bootstrap="../../../vendor/autoload.php"
+        bootstrap="../vendor/autoload.php"
         colors="true"
         backupStaticAttributes="false"
         backupGlobals="false"
@@ -30,7 +30,7 @@
 
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">../../src/Gica</directory>
+            <directory suffix=".php">../src/Gica</directory>
             <!--<directory suffix=".php">../application</directory>-->
             <exclude>
                 <directory suffix=".php">.</directory>
