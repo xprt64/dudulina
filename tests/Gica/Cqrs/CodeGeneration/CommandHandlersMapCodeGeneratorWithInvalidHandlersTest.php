@@ -6,7 +6,8 @@ namespace tests\Gica\Cqrs\CodeGeneration;
 
 use Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGenerator;
 use Gica\FileSystem\InMemoryFileSystem;
-use tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorWithInvalidHandlersData\CommandHandlersMap;
+use /** @noinspection PhpUndefinedClassInspection */
+    tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorWithInvalidHandlersData\CommandHandlersMap;
 use tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorWithInvalidHandlersData\CommandHandlersMapTemplate;
 
 

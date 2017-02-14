@@ -50,6 +50,7 @@ class ReadModelEventListenersMapCodeGeneratorTest extends \PHPUnit_Framework_Tes
 
         $this->evaluateGeneratedClass($fileSystem);
 
+        /** @noinspection PhpUndefinedClassInspection */
         $mapper = new ReadModelMap();
 
         $map = $mapper->getMap();

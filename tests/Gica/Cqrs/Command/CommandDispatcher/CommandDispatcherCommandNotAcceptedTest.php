@@ -156,6 +156,7 @@ class Aggregate1
 
         throw new \Exception("Command not accepted");
 
+        /** @noinspection PhpUnreachableStatementInspection */
         yield "event";
     }
 }

@@ -20,6 +20,8 @@ class OnlyAggregateByNameTest extends \PHPUnit_Framework_TestCase
         $acceptedClass->method('getName')
             ->willReturn('SomeAggregate');
 
+        /** @var \ReflectionClass $acceptedClass */
+
         $this->assertTrue($sut->isClassAccepted($acceptedClass));
 
     }
@@ -33,6 +35,8 @@ class OnlyAggregateByNameTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $acceptedClass->method('getName')
             ->willReturn('SomeAggregateThatIsNotAccepted');
+
+        /** @var \ReflectionClass $acceptedClass */
 
         $this->assertFalse($sut->isClassAccepted($acceptedClass));
     }

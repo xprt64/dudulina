@@ -9,8 +9,8 @@ use Gica\FileSystem\FileSystemInterface;
 use Gica\FileSystem\InMemoryFileSystem;
 use tests\Gica\Cqrs\CodeGeneration\CommandValidatorsMapCodeGeneratorData\Command1;
 use tests\Gica\Cqrs\CodeGeneration\CommandValidatorsMapCodeGeneratorData\Command2;
-use tests\Gica\Cqrs\CodeGeneration\CommandValidatorsMapCodeGeneratorData\CommandValidatorSubscriberTemplate;
 use tests\Gica\Cqrs\CodeGeneration\CommandValidatorsMapCodeGeneratorData\CommandValidatorSubscriber;
+use tests\Gica\Cqrs\CodeGeneration\CommandValidatorsMapCodeGeneratorData\CommandValidatorSubscriberTemplate;
 use tests\Gica\Cqrs\CodeGeneration\CommandValidatorsMapCodeGeneratorData\ValidatorForCommand1;
 use tests\Gica\Cqrs\CodeGeneration\CommandValidatorsMapCodeGeneratorData\ValidatorForCommand2;
 
@@ -22,16 +22,16 @@ class CommandValidatorsMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
         Command2::class => [
             [
                 ValidatorForCommand2::class,
-                'validateCommand2'
-            ]
+                'validateCommand2',
+            ],
         ],
         Command1::class => [
             [
                 ValidatorForCommand1::class,
-                'validateCommand1'
-            ]
+                'validateCommand1',
+            ],
         ],
-     ];
+    ];
 
     public function test()
     {
@@ -50,6 +50,7 @@ class CommandValidatorsMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $this->evaluateGeneratedClass($fileSystem);
 
+        /** @noinspection PhpUndefinedClassInspection */
         $mapper = new CommandValidatorSubscriber();
 
         $map = $mapper->getCommandHandlersDefinitions();

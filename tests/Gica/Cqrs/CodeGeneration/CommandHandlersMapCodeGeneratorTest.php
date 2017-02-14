@@ -8,7 +8,8 @@ use Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGenerator;
 use Gica\FileSystem\FileSystemInterface;
 use Gica\FileSystem\InMemoryFileSystem;
 use tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorData\CommandHandlersMapTemplate;
-use tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorData\CommandHandlersMap;
+use /** @noinspection PhpUndefinedClassInspection */
+    tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorData\CommandHandlersMap;
 
 
 class CommandHandlersMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
@@ -58,6 +59,7 @@ class CommandHandlersMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $this->evaluateGeneratedClass($fileSystem);
 
+        /** @noinspection PhpUndefinedClassInspection */
         $mapper = new CommandHandlersMap();
 
         $map = $mapper->getCommandHandlersDefinitions();
@@ -78,6 +80,7 @@ class CommandHandlersMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
     private function evaluateGeneratedClass(FileSystemInterface $fileSystem)
     {
+        /** @noinspection PhpUndefinedClassInspection */
         if (class_exists(CommandHandlersMap::class)) {
             return;
         }
