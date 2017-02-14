@@ -4,8 +4,6 @@
 namespace tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorWithInvalidHandlersData;
 
 
-use Gica\Cqrs\Command;
-
 class FirstAggregate
 {
     public function handleCommand1(Command1 $command)
@@ -21,23 +19,5 @@ class FirstAggregate
     public function someMethod()
     {
 
-    }
-}
-
-class Command1 implements Command
-{
-
-    public function getAggregateId()
-    {
-        // TODO: Implement getAggregateId() method.
-    }
-}
-
-class Command2 implements Command
-{
-
-    public function getAggregateId()
-    {
-        // TODO: Implement getAggregateId() method.
     }
 }
