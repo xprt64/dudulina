@@ -10,12 +10,12 @@ class AggregateCommandValidatorDetector implements \Gica\CodeAnalysis\MethodList
 {
     public function isMessageClass(\ReflectionClass $typeHintedClass):bool
     {
-        return is_subclass_of($typeHintedClass->getName(), \Gica\Cqrs\Command::class) &&
-        $typeHintedClass->getName() != \Gica\Cqrs\Command::class;
+        return is_subclass_of($typeHintedClass->name, \Gica\Cqrs\Command::class) &&
+        $typeHintedClass->name != \Gica\Cqrs\Command::class;
     }
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod):bool
     {
-        return 0 === stripos($reflectionMethod->getName(), 'validate');
+        return 0 === stripos($reflectionMethod->name, 'validate');
     }
 }

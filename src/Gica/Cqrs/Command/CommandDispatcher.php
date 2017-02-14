@@ -89,7 +89,7 @@ class CommandDispatcher
     {
         $errors = $this->commandValidator->validateCommand($command);
 
-        if ($errors) {
+        if (!empty($errors)) {
             throw new CommandValidationFailed($errors);
         }
 
@@ -142,7 +142,7 @@ class CommandDispatcher
     {
         try {
             $errors = $this->commandValidator->validateCommand($command);
-            if ($errors) {
+            if (!empty($errors)) {
                 return false;
             }
             $commandHandlerAndAggregate = $this->loadCommandHandlerAndAggregate($command);

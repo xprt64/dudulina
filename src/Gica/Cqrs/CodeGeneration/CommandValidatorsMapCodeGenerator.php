@@ -63,6 +63,7 @@ class CommandValidatorsMapCodeGenerator
         try {
             $fileSystem->fileDelete($outputFilePath);
         } catch (\Exception $exception) {
+            //it's ok
         }
     }
 }

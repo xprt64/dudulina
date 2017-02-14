@@ -66,6 +66,7 @@ class CommandHandlersMapCodeGenerator
         try {
             $fileSystem->fileDelete($outputFilePath);
         } catch (\Exception $exception) {
+            //it's ok
         }
     }
 

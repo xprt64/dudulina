@@ -25,7 +25,7 @@ class AggregateRepository
     private $eventsApplierOnAggregate;
 
     /**
-     * @var EventStream[]
+     * @var \SplObjectStorage
      */
     private $aggregateToEventStreamMap;
 

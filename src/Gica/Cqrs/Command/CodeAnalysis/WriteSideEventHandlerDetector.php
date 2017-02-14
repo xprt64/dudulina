@@ -10,12 +10,12 @@ class WriteSideEventHandlerDetector implements \Gica\CodeAnalysis\MethodListener
 {
     public function isMessageClass(\ReflectionClass $typeHintedClass):bool
     {
-        return is_subclass_of($typeHintedClass->getName(), \Gica\Cqrs\Event::class) &&
-        $typeHintedClass->getName() != \Gica\Cqrs\Event::class;
+        return is_subclass_of($typeHintedClass->name, \Gica\Cqrs\Event::class) &&
+        $typeHintedClass->name != \Gica\Cqrs\Event::class;
     }
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod):bool
     {
-        return 0 === stripos($reflectionMethod->getName(), 'process');
+        return 0 === stripos($reflectionMethod->name, 'process');
     }
 }

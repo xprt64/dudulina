@@ -82,8 +82,8 @@ class ReadModelRecreator
 
     private function tryToExtractEventClassFromParameter(\ReflectionParameter $reflectionParameter)
     {
-        if ($reflectionParameter->getClass() && is_subclass_of($reflectionParameter->getClass()->getName(), \Gica\Cqrs\Event::class)) {
-            return $reflectionParameter->getClass()->getName();
+        if ($reflectionParameter->getClass() && is_subclass_of($reflectionParameter->getClass()->name, \Gica\Cqrs\Event::class)) {
+            return $reflectionParameter->getClass()->name;
         }
 
         return false;
