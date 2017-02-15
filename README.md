@@ -29,6 +29,7 @@ class DoSomethingImportantCommand implements Command
 {
     private $idOfTheAggregate;
     private $someDataInTheCommand;
+
     public function __construct($idOfTheAggregate, $someDataInTheCommand)
     {
         $this->idOfTheAggregate = $this->idOfTheAggregate;
