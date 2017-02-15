@@ -63,14 +63,29 @@ class SomethingImportantHappened implements Event
     }
 }
 ```
+
 Somewhere in the UI or Application layer:
 ```php
-$this->commandDispatcher->dispatchCommand(new DoSomethingImportantCommand(
-    $idOfTheAggregate,
-    $someDataInTheCommand
-));
+
+class SomeHttpAction
+{
+    public function getDoSomethingImportant(RequestInterface $request)
+    {
+        $idOfTheAggregate = $request->getParsedBody()['id'];
+        $someDataInTheCommand = $request->getParsedBody()['data'];
+
+        $this->commandDispatcher->dispatchCommand(new DoSomethingImportantCommand(
+            $idOfTheAggregate,
+            $someDataInTheCommand
+        ));
+
+        return new JsonResponse([
+            'success' => 1,
+        ]);
+    }
 
 ```
+
 That's it. No transaction management, no loading from the repository, nothing.
 The command arrives to the aggregate's command handler, as an argument, like this:
 ```php
