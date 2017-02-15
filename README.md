@@ -21,15 +21,105 @@ This is a non-obtrusive CQRS + Event Sourcing library that helps building comple
 
 On the write side, you only need to instantiate a command and send it to the `CommandDispatcher`;
 
-Somewhere in the UI or Application layer:
+Let's create a command.
+```php
+// immutable and Plain PHP Object (Value Object)
+// No inheritance!
+class DoSomethingImportantCommand implements Command
+{
+    private $idOfTheAggregate;
+    private $someDataInTheCommand;
+    public function __construct($idOfTheAggregate, $someDataInTheCommand)
+    {
+        $this->idOfTheAggregate = $this->idOfTheAggregate;
+        $this->someDataInTheCommand = $this->someDataInTheCommand;
+    }
+
+    public function getAggregateId()
+    {
+        return $this->idOfTheAggregate;
+    }
+
+    public function getSomeDataInTheCommand()
+    {
+        return $this->someDataInTheCommand;
+    }
+}
 ```
+
+Now, let's create a simple event:
+```php
+// immutable, simple object, no inheritance, minimum dependency
+class SomethingImportantHappened implements Event
+{
+    public function __construct($someDataInTheEvent)
+    {
+        $this->someDataInTheEvent = $someDataInTheEvent;
+    }
+
+    public function getSomeDataInTheEvent()
+    {
+        return $this->someDataInTheEvent;
+    }
+}
+```
+Somewhere in the UI or Application layer:
+```php
 $this->commandDispatcher->dispatchCommand(new DoSomethingImportantCommand(
     $idOfTheAggregate,
     $someDataInTheCommand
 ));
 
 ```
-Then, the following things happen:
+That's it. No transaction management, no loading from the repository, nothing.
+The command arrives to the aggregate's command handler, as an argument, like this:
+```php
+class OurAggregate
+{
+    //....
+    public function handleDoSomethingImportant(DoSomethingImportantCommand $command)
+    {
+        if($this->outStateDoesNotPermitThis()){
+            throw new \Exception("No no, it is not possible!");
+        }
+
+        yield new SomethingImportantHappened($command->getSomeDataInTheCommand());
+    }
+
+    public function applySomethingImportantHappened(SomethingImportantHappened $event, Metadata $metadata)
+    {
+        //Metadata is optional
+        $this->someNewState = $event->someDataInTheEvent;
+    }
+}
+```
+
+The read models receive the raised event to. They process the event after it is persisted. Take a look at an possible read model:
+```php
+class SomeReadModel
+{
+    //...some database initialization, i.e. a MongoDB database injected in the constructor
+
+    public function onSomethingImportantHappened(SomethingImportantHappened $event, Metadata $metadata)
+    {
+        $this->database->getCollection('ourReadModel')->insertOne([
+            '_id' => $metadata->getAggregateId()
+            'someData' => $event->getSomeDataInTheEvent()
+        ]);
+    }
+
+    //this method could be used by the UI to display the data
+    public function getSomeDataById($id)
+    {
+        $document = $this->database->getCollection('ourReadModel')->findOne([
+            '_id' => $metadata->getAggregateId()
+         ]);
+
+         return $document ? $document['someData'] : null;
+    }
+}
+```
+So, when a command is dispatched the following things happen:
 - the aggregate class is identified
 - the aggregate is loaded from the repository, replaying all previous events
 - the command is dispatched to the aggregate instance
