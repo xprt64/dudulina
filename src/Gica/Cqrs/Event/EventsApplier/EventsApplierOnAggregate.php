@@ -21,14 +21,14 @@ class EventsApplierOnAggregate
 
     private function applyEvent($aggregate, \Gica\Cqrs\Event\EventWithMetaData $eventWithMetaData)
     {
-        $methodName = $this->getMethodName($eventWithMetaData->getEvent());
+        $methodName = self::getMethodName($eventWithMetaData->getEvent());
 
         if (is_callable([$aggregate, $methodName])) {
             call_user_func([$aggregate, $methodName], $eventWithMetaData->getEvent(), $eventWithMetaData->getMetaData());
         }
     }
 
-    private function getMethodName(\Gica\Cqrs\Event $event)
+    public static function getMethodName(\Gica\Cqrs\Event $event)
     {
         $parts = explode('\\', get_class($event));
 

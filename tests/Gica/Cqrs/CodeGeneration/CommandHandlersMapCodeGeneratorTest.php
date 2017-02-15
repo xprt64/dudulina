@@ -48,6 +48,8 @@ class CommandHandlersMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
         
         $sut = new CommandHandlersMapCodeGenerator();
 
+        $fileSystem->filePutContents(__DIR__ . '/CommandHandlersMapCodeGeneratorData/CommandHandlersMap.php', 'some content');
+
         $sut->generate(
             $this->mockLogger(),
             $fileSystem,

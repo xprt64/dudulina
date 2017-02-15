@@ -56,12 +56,8 @@ class CodeGenerator
 
     private function deleteFileIfExists(FileSystemInterface $fileSystem, string $outputFilePath)
     {
-        try {
-            if ($fileSystem->fileExists($outputFilePath)) {
-                $fileSystem->fileDelete($outputFilePath);
-            }
-        } catch (\Exception $exception) {
-            //it's ok
+        if ($fileSystem->fileExists($outputFilePath)) {
+            $fileSystem->fileDelete($outputFilePath);
         }
     }
 

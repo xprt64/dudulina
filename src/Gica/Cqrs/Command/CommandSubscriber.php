@@ -5,12 +5,16 @@
 
 namespace Gica\Cqrs\Command;
 
+use Gica\Cqrs\Command;
+use Gica\Cqrs\Command\Exception\CommandHandlerNotFound;
+use Gica\Cqrs\Command\ValueObject\CommandHandlerDescriptor;
+
 interface CommandSubscriber
 {
     /**
-     * @param \Gica\Cqrs\Command $command
-     * @return \Gica\Cqrs\Command\ValueObject\CommandHandlerDescriptor
-     * @throws \Gica\Cqrs\Command\Exception\CommandHandlerNotFound
+     * @param Command $command
+     * @return CommandHandlerDescriptor
+     * @throws CommandHandlerNotFound
      */
-    public function getHandlerForCommand(\Gica\Cqrs\Command $command);
+    public function getHandlerForCommand(Command $command);
 }
