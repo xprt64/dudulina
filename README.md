@@ -152,4 +152,4 @@ So, when a command is dispatched the following things happen:
 
 If an exception is thrown by the command handler on the aggregate, no events are persisted and the exception reach the caller
 
-Read more [documentation here]("DOCUMENTATION.md")
+Read more [documentation here](DOCUMENTATION.md)
