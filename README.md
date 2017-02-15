@@ -19,7 +19,9 @@ No inheritance! Your domain code remains clean and infrastructure/framework agno
 
 - `\Gica\Cqrs\ReadModel\ReadModelInterface` for each read model; this is required only if you use the `ReadModelRecreator` to rebuild your read-models (projections)
 
-Even if only a few interfaces need to be implemented, you could loose the coupling to the library even mode. You could define and use your own domain interfaces and only that interfaces would inherit from the library interfaces. In this way, when you change the library, you change only those interfaces.
+Even if only a few interfaces need to be implemented, you could loose the coupling to the library even more.
+You could define and use your own domain interfaces and only that interfaces would inherit from the library interfaces.
+In this way, when you change the library, you change only those interfaces.
 
 ## Minimum code duplication on the write side ##
 
