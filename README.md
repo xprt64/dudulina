@@ -116,7 +116,7 @@ class OurAggregate
 }
 ```
 
-The read models receive the raised event to. They process the event after it is persisted. Take a look at an possible read model:
+The read models receive the raised event to. They process the event after it is persisted. Take a look at a possible read model:
 ```php
 class SomeReadModel
 {
