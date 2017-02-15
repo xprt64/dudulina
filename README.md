@@ -83,7 +83,7 @@ class SomeHttpAction
             'success' => 1,
         ]);
     }
-
+}
 ```
 
 That's it. No transaction management, no loading from the repository, nothing.
