@@ -37,11 +37,12 @@ class CommandValidatorsMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
     {
         $fileSystem = $this->stubFileSystem();
 
-        $sut = new CommandValidatorsMapCodeGenerator();
+        $sut = new CommandValidatorsMapCodeGenerator(
+            $this->mockLogger(),
+            $fileSystem
+        );
 
         $sut->generate(
-            $this->mockLogger(),
-            $fileSystem,
             CommandValidatorSubscriberTemplate::class,
             __DIR__ . '/CommandValidatorsMapCodeGeneratorData',
             __DIR__ . '/CommandValidatorsMapCodeGeneratorData/CommandValidatorSubscriber.php',

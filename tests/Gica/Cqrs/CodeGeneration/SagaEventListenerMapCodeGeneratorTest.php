@@ -11,8 +11,8 @@ use tests\Gica\Cqrs\CodeGeneration\SagaEventListenerMapCodeGeneratorData\Event1;
 use tests\Gica\Cqrs\CodeGeneration\SagaEventListenerMapCodeGeneratorData\Event2;
 use tests\Gica\Cqrs\CodeGeneration\SagaEventListenerMapCodeGeneratorData\Saga1;
 use tests\Gica\Cqrs\CodeGeneration\SagaEventListenerMapCodeGeneratorData\Saga2;
-use tests\Gica\Cqrs\CodeGeneration\SagaEventListenerMapCodeGeneratorData\SagaEventProcessorsMapTemplate;
 use tests\Gica\Cqrs\CodeGeneration\SagaEventListenerMapCodeGeneratorData\SagaEventProcessorsMap;
+use tests\Gica\Cqrs\CodeGeneration\SagaEventListenerMapCodeGeneratorData\SagaEventProcessorsMapTemplate;
 
 
 class SagaEventListenerMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
@@ -37,11 +37,11 @@ class SagaEventListenerMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
     {
         $fileSystem = $this->stubFileSystem();
 
-        $sut = new SagaEventListenerMapCodeGenerator();
+        $sut = new SagaEventListenerMapCodeGenerator(
+            $this->mockLogger(),
+            $fileSystem);
 
         $sut->generate(
-            $this->mockLogger(),
-            $fileSystem,
             SagaEventProcessorsMapTemplate::class,
             __DIR__ . '/SagaEventListenerMapCodeGeneratorData',
             __DIR__ . '/SagaEventListenerMapCodeGeneratorData/SagaEventProcessorsMap.php',

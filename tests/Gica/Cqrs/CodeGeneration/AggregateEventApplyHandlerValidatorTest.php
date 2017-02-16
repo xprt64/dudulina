@@ -14,10 +14,12 @@ class AggregateEventApplyHandlerValidatorTest extends \PHPUnit_Framework_TestCas
     public function test()
     {
         $logger = $this->getMockBuilder(LoggerInterface::class)
-        ->getMock();
+            ->getMock();
 
-        $sut = new AggregateEventApplyHandlerValidator();
+        $sut = new AggregateEventApplyHandlerValidator(
+            $logger
+        );
 
-        $sut->validate($logger, __DIR__ . '/AggregateEventApplyHandlerValidatorData/Valid');
+        $sut->validate(__DIR__ . '/AggregateEventApplyHandlerValidatorData/Valid');
     }
 }

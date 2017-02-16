@@ -26,13 +26,14 @@ class ReadModelsMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function test_generate()
     {
-        $sut = new ReadModelsMapCodeGenerator();
-
         $fileSystem = $this->stubFileSystem();
 
-        $sut->generate(
+        $sut = new ReadModelsMapCodeGenerator(
             $this->mockLogger(),
-            $fileSystem,
+            $fileSystem
+        );
+
+        $sut->generate(
             ReadModelsMapTemplate::class,
             __DIR__ . '/ReadModelsMapCodeGeneratorData',
             __DIR__ . '/ReadModelsMapCodeGeneratorData/ReadModelsMap.php',
@@ -41,6 +42,8 @@ class ReadModelsMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $this->evaluateGeneratedClass($fileSystem);
 
+        /** @var ReadModelsMapTemplate $mapper */
+        /** @noinspection PhpUndefinedClassInspection */
         $mapper = new ReadModelsMap();
 
         $map = $mapper->getEventHandlersDefinitions();

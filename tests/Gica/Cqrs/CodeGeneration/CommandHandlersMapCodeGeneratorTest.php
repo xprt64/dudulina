@@ -7,9 +7,8 @@ namespace tests\Gica\Cqrs\CodeGeneration;
 use Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGenerator;
 use Gica\FileSystem\FileSystemInterface;
 use Gica\FileSystem\InMemoryFileSystem;
+use tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorData\CommandHandlersMap;
 use tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorData\CommandHandlersMapTemplate;
-use /** @noinspection PhpUndefinedClassInspection */
-    tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorData\CommandHandlersMap;
 
 
 class CommandHandlersMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
@@ -19,40 +18,41 @@ class CommandHandlersMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
         \tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorData\Command1::class => [
             [
                 \tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorData\FirstAggregate::class,
-                'handleCommand1'
-            ]
+                'handleCommand1',
+            ],
         ],
         \tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorData\Command2::class => [
             [
                 \tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorData\FirstAggregate::class,
-                'handleCommand2'
-            ]
+                'handleCommand2',
+            ],
         ],
         \tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorData\Command3::class => [
             [
                 \tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorData\SecondAggregate::class,
-                'handleCommand3'
-            ]
+                'handleCommand3',
+            ],
         ],
         \tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorData\Command4::class => [
             [
                 \tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorData\SecondAggregate::class,
-                'handleCommand4'
-            ]
+                'handleCommand4',
+            ],
         ],
     ];
 
     public function test()
     {
         $fileSystem = $this->stubFileSystem();
-        
-        $sut = new CommandHandlersMapCodeGenerator();
+
+        $sut = new CommandHandlersMapCodeGenerator(
+            $this->mockLogger(),
+            $fileSystem
+        );
 
         $fileSystem->filePutContents(__DIR__ . '/CommandHandlersMapCodeGeneratorData/CommandHandlersMap.php', 'some content');
 
         $sut->generate(
-            $this->mockLogger(),
-            $fileSystem,
             CommandHandlersMapTemplate::class,
             __DIR__ . '/CommandHandlersMapCodeGeneratorData',
             __DIR__ . '/CommandHandlersMapCodeGeneratorData/CommandHandlersMap.php',
@@ -61,6 +61,7 @@ class CommandHandlersMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $this->evaluateGeneratedClass($fileSystem);
 
+        /** @var CommandHandlersMapTemplate $mapper */
         /** @noinspection PhpUndefinedClassInspection */
         $mapper = new CommandHandlersMap();
 

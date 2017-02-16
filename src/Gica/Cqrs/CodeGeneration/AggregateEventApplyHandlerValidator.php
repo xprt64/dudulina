@@ -11,8 +11,19 @@ use Psr\Log\LoggerInterface;
 
 class AggregateEventApplyHandlerValidator
 {
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(
+        LoggerInterface $logger = null
+    )
+    {
+        $this->logger = $logger;
+    }
+
     public function validate(
-        LoggerInterface $logger = null,
         string $searchDirectory
     )
     {
@@ -21,8 +32,8 @@ class AggregateEventApplyHandlerValidator
 
         $validator->validateEventHandlers($searchDirectory);
 
-        if ($logger) {
-            $logger->info("Aggregate event handlers are valid in $searchDirectory");
+        if ($this->logger) {
+            $this->logger->info("Aggregate event handlers are valid in $searchDirectory");
         }
     }
 }

@@ -37,11 +37,12 @@ class ReadModelEventListenersMapCodeGeneratorTest extends \PHPUnit_Framework_Tes
     {
         $fileSystem = $this->stubFileSystem();
 
-        $sut = new ReadModelEventListenersMapCodeGenerator();
+        $sut = new ReadModelEventListenersMapCodeGenerator(
+            $this->mockLogger(),
+            $fileSystem
+        );
 
         $sut->generate(
-            $this->mockLogger(),
-            $fileSystem,
             ReadModelMapTemplate::class,
             __DIR__ . '/ReadModelEventListenersMapCodeGeneratorData',
             __DIR__ . '/ReadModelEventListenersMapCodeGeneratorData/ReadModelMap.php',

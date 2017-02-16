@@ -6,33 +6,19 @@
 namespace Gica\Cqrs\CodeGeneration;
 
 use Gica\CodeAnalysis\MethodListenerDiscovery;
-use Gica\CodeAnalysis\Shared\ClassSorter\ByConstructorDependencySorter;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
-use Gica\CodeAnalysis\MethodListenerDiscovery\MapCodeGenerator\GroupedByEventMapCodeGenerator;
 use Gica\CodeAnalysis\MethodListenerDiscovery\MapGrouper\GrouperByEvent;
+use Gica\CodeAnalysis\Shared\ClassSorter\ByConstructorDependencySorter;
+use Gica\Cqrs\CodeGeneration\Traits\GroupedByEventTrait;
 use Gica\Cqrs\Command\CodeAnalysis\AggregateCommandHandlerDetector;
-use Gica\FileSystem\FileSystemInterface;
-use Psr\Log\LoggerInterface;
 
 class CommandHandlersMapCodeGenerator
 {
-    public function generate(
-        LoggerInterface $logger,
-        FileSystemInterface $fileSystem = null,
-        string $templateClassName,
-        string $searchDirectory,
-        string $outputFilePath,
-        string $outputShortClassName = 'CommandHandlerSubscriber')
-    {
-        (new CodeGenerator(new GroupedByEventMapCodeGenerator(), $fileSystem))
-            ->discoverAndPutContents(
-                $this->discover($searchDirectory),
-                $templateClassName,
-                $outputFilePath,
-                $outputShortClassName
-            );
+    use GroupedByEventTrait;
 
-        $logger->info("Commands map wrote to: $outputFilePath (searched in $searchDirectory)");
+    protected function log($outputFilePath, $searchDirectory)
+    {
+        $this->logger->info("Commands map wrote to: $outputFilePath (searched in $searchDirectory)");
     }
 
     private function validateMap(array $map)
@@ -45,7 +31,7 @@ class CommandHandlersMapCodeGenerator
         }
     }
 
-    private function discover(string $searchDirectory)
+    protected function discover(string $searchDirectory)
     {
         $discoverer = new MethodListenerDiscovery(
             new AggregateCommandHandlerDetector(),

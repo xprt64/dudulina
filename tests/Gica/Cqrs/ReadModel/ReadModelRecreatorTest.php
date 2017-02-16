@@ -21,7 +21,7 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
         $eventStore = $this->getMockBuilder(EventStore::class)
             ->getMock();
 
-        $eventsApplierOnListener = $this->getMockBuilder(EventsApplierOnListener::class)
+        $eventsApplier = $this->getMockBuilder(EventsApplierOnListener::class)
             ->getMock();
 
         $events = [
@@ -31,7 +31,7 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
 
         $eventStream = new RawEventStream($events);
 
-        $eventsApplierOnListener->expects($this->once())
+        $eventsApplier->expects($this->once())
             ->method('applyEventsOnListener')
             ->with($this->isInstanceOf(ReadModel::class), $eventStream);
 
@@ -45,11 +45,11 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
             ->willReturn($eventStream);
 
         /** @var EventStore $eventStore */
-        /** @var EventsApplierOnListener $eventsApplierOnListener */
+        /** @var EventsApplierOnListener $eventsApplier */
 
         $sut = new ReadModelRecreator(
             $eventStore,
-            $eventsApplierOnListener,
+            $eventsApplier,
             $logger
         );
 
@@ -70,17 +70,22 @@ class ReadModel implements ReadModelInterface
 
     public function onEvent1(Event1 $event)
     {
-
+        return $event;
     }
 
     public function onEvent2(Event2 $event)
     {
-
+        return $event;
     }
 
     public function someOtherMethod($argument)
     {
+        return $argument;
+    }
 
+    public function someOtherMethod2(\stdClass $argument)
+    {
+        return $argument;
     }
 }
 

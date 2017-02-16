@@ -6,8 +6,7 @@ namespace tests\Gica\Cqrs\CodeGeneration;
 
 use Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGenerator;
 use Gica\FileSystem\InMemoryFileSystem;
-use /** @noinspection PhpUndefinedClassInspection */
-    tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorWithInvalidHandlersData\CommandHandlersMap;
+use tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorWithInvalidHandlersData\CommandHandlersMap;
 use tests\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGeneratorWithInvalidHandlersData\CommandHandlersMapTemplate;
 
 
@@ -18,14 +17,15 @@ class CommandHandlersMapCodeGeneratorWithInvalidHandlersTest extends \PHPUnit_Fr
 
         $fileSystem = $this->stubFileSystem();
 
-        $sut = new CommandHandlersMapCodeGenerator();
+        $sut = new CommandHandlersMapCodeGenerator(
+            $this->mockLogger(),
+            $fileSystem
+        );
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessageRegExp('#multiple handlers exists for command#ims');
 
         $sut->generate(
-            $this->mockLogger(),
-            $fileSystem,
             CommandHandlersMapTemplate::class,
             __DIR__ . '/CommandHandlersMapCodeGeneratorWithInvalidHandlersData',
             __DIR__ . '/CommandHandlersMapCodeGeneratorWithInvalidHandlersData/CommandHandlersMap.php',
