@@ -7,7 +7,7 @@ namespace Gica\Cqrs\CodeGeneration;
 
 
 use Gica\CodeAnalysis\MethodListenerDiscovery;
-use Gica\CodeAnalysis\MethodListenerDiscovery\ClassSorter\ByConstructorDependencySorter;
+use Gica\CodeAnalysis\Shared\ClassSorter\ByConstructorDependencySorter;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
 use Gica\CodeAnalysis\MethodListenerDiscovery\MapCodeGenerator\GroupedByEventMapCodeGenerator;
 use Gica\Cqrs\Command\CodeAnalysis\WriteSideEventHandlerDetector;

@@ -7,7 +7,7 @@ namespace Gica\Cqrs\CodeGeneration;
 
 
 use Gica\CodeAnalysis\MethodListenerDiscovery;
-use Gica\CodeAnalysis\MethodListenerDiscovery\ClassSorter\ByConstructorDependencySorter;
+use Gica\CodeAnalysis\Shared\ClassSorter\ByConstructorDependencySorter;
 use Gica\CodeAnalysis\MethodListenerDiscovery\MapCodeGenerator\GroupedByListenerMapCodeGenerator;
 use Gica\Cqrs\Command\CodeAnalysis\ReadModelEventHandlerDetector;
 use Gica\Cqrs\ReadModel\ListenerClassValidator\OnlyReadModels;
