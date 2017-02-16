@@ -8,7 +8,8 @@ namespace Gica\Cqrs\CodeGeneration;
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ClassSorter\ByConstructorDependencySorter;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
-use Gica\CodeAnalysis\MethodListenerDiscovery\MethodListenerMapperWriter;
+use Gica\CodeAnalysis\MethodListenerDiscovery\MapCodeGenerator\GroupedByEventMapCodeGenerator;
+use Gica\CodeAnalysis\MethodListenerDiscovery\MapGrouper\GrouperByEvent;
 use Gica\Cqrs\Command\CodeAnalysis\AggregateCommandHandlerDetector;
 use Gica\FileSystem\FileSystemInterface;
 use Psr\Log\LoggerInterface;
@@ -23,7 +24,7 @@ class CommandHandlersMapCodeGenerator
         string $outputFilePath,
         string $outputShortClassName = 'CommandHandlerSubscriber')
     {
-        (new CodeGenerator(new MethodListenerMapperWriter(), $fileSystem))
+        (new CodeGenerator(new GroupedByEventMapCodeGenerator(), $fileSystem))
             ->discoverAndPutContents(
                 $this->discover($searchDirectory),
                 $commandSubscriberTemplateClassName,
@@ -51,12 +52,15 @@ class CommandHandlersMapCodeGenerator
             new AnyPhpClassIsAccepted,
             new ByConstructorDependencySorter());
 
-        $discoverer->discoverListeners($searchDirectory);
+        $map = $discoverer->discoverListeners($searchDirectory);
 
-        $map = $discoverer->getEventToListenerMap();
-
-        $this->validateMap($map);
+        $this->validateMap($this->groupMap($map));
 
         return $map;
+    }
+
+    private function groupMap(array $map)
+    {
+        return (new GrouperByEvent())->groupMap($map);
     }
 }

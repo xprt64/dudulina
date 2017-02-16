@@ -4,7 +4,6 @@
 namespace Gica\Cqrs\CodeGeneration;
 
 use Gica\CodeAnalysis\MethodListenerDiscovery\MapCodeGenerator;
-use Gica\CodeAnalysis\MethodListenerDiscovery\MethodListenerMapperWriter;
 use Gica\FileSystem\FileSystemInterface;
 use Gica\FileSystem\OperatingSystemFileSystem;
 

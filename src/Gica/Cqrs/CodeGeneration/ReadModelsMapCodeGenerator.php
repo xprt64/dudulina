@@ -8,7 +8,7 @@ namespace Gica\Cqrs\CodeGeneration;
 
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ClassSorter\ByConstructorDependencySorter;
-use Gica\CodeAnalysis\MethodListenerDiscovery\ReadModelMapperWriter;
+use Gica\CodeAnalysis\MethodListenerDiscovery\MapCodeGenerator\GroupedByListenerMapCodeGenerator;
 use Gica\Cqrs\Command\CodeAnalysis\ReadModelEventHandlerDetector;
 use Gica\Cqrs\ReadModel\ListenerClassValidator\OnlyReadModels;
 use Gica\FileSystem\FileSystemInterface;
@@ -26,7 +26,7 @@ class ReadModelsMapCodeGenerator
     )
     {
         $generator = new CodeGenerator(
-            new ReadModelMapperWriter(),
+            new GroupedByListenerMapCodeGenerator(),
             $fileSystem
         );
 
@@ -48,8 +48,6 @@ class ReadModelsMapCodeGenerator
             new ByConstructorDependencySorter()
         );
 
-        $discoverer->discoverListeners($searchDirectory);
-
-        return $discoverer->getAllEventsListeners();
+        return $discoverer->discoverListeners($searchDirectory);
     }
 }
