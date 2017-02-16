@@ -66,7 +66,7 @@ class InMemoryEventStore implements EventStore
     {
         $result = [];
 
-        foreach ($this->events as $aggregateKey => $events) {
+        foreach ($this->events as $events) {
             /** @var EventWithMetaData[] $events */
             foreach ($events as $eventWithMetaData) {
                 if ($this->eventHasAnyOfThisClasses($eventWithMetaData->getEvent(), $eventClasses)) {

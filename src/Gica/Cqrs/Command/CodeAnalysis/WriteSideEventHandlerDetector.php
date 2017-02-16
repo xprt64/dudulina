@@ -6,12 +6,15 @@
 namespace Gica\Cqrs\Command\CodeAnalysis;
 
 
-class WriteSideEventHandlerDetector implements \Gica\CodeAnalysis\MethodListenerDiscovery\MessageClassDetector
+use Gica\CodeAnalysis\MethodListenerDiscovery\MessageClassDetector;
+use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
+use Gica\Cqrs\Event;
+
+class WriteSideEventHandlerDetector implements MessageClassDetector
 {
     public function isMessageClass(\ReflectionClass $typeHintedClass):bool
     {
-        return is_subclass_of($typeHintedClass->name, \Gica\Cqrs\Event::class) &&
-        $typeHintedClass->name != \Gica\Cqrs\Event::class;
+        return (new SubclassComparator())->isASubClassButNoSameClass($typeHintedClass->name, Event::class);
     }
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod):bool

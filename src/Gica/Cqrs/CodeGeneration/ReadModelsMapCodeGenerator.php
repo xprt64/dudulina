@@ -19,7 +19,7 @@ class ReadModelsMapCodeGenerator
     public function generate(
         LoggerInterface $logger,
         FileSystemInterface $fileSystem = null,
-        string $readModelMapTemplateClassName,
+        string $templateClassName,
         string $searchDirectory,
         string $outputFilePath,
         string $outputShortClassName
@@ -32,7 +32,7 @@ class ReadModelsMapCodeGenerator
 
         $generator->discoverAndPutContents(
             $this->discover($searchDirectory),
-            $readModelMapTemplateClassName,
+            $templateClassName,
             $outputFilePath,
             $outputShortClassName
         );

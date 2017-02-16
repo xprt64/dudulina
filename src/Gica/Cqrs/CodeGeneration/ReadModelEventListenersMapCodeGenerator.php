@@ -19,7 +19,7 @@ class ReadModelEventListenersMapCodeGenerator
     public function generate(
         LoggerInterface $logger,
         FileSystemInterface $fileSystem = null,
-        string $eventSubscriberTemplateClassName,
+        string $templateClassName,
         string $searchDirectory,
         string $outputFilePath,
         string $outputShortClassName
@@ -32,7 +32,7 @@ class ReadModelEventListenersMapCodeGenerator
 
         $generator->discoverAndPutContents(
             $this->discover($searchDirectory),
-            $eventSubscriberTemplateClassName,
+            $templateClassName,
             $outputFilePath,
             $outputShortClassName
         );

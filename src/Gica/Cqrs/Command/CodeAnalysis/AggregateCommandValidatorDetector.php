@@ -6,12 +6,15 @@
 namespace Gica\Cqrs\Command\CodeAnalysis;
 
 
-class AggregateCommandValidatorDetector implements \Gica\CodeAnalysis\MethodListenerDiscovery\MessageClassDetector
+use Gica\CodeAnalysis\MethodListenerDiscovery\MessageClassDetector;
+use Gica\Cqrs\Command;
+
+class AggregateCommandValidatorDetector implements MessageClassDetector
 {
     public function isMessageClass(\ReflectionClass $typeHintedClass):bool
     {
-        return is_subclass_of($typeHintedClass->name, \Gica\Cqrs\Command::class) &&
-        $typeHintedClass->name != \Gica\Cqrs\Command::class;
+        return is_subclass_of($typeHintedClass->name, Command::class) &&
+        $typeHintedClass->name != Command::class;
     }
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod):bool

@@ -7,5 +7,5 @@ namespace Gica\Cqrs\Event;
 
 interface EventDispatcher
 {
-    public function dispatchEvent(\Gica\Cqrs\Event\EventWithMetaData $eventWithMetaData);
+    public function dispatchEvent(EventWithMetaData $eventWithMetaData);
 }

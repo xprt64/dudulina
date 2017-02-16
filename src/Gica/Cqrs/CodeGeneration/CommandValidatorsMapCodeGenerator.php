@@ -19,7 +19,7 @@ class CommandValidatorsMapCodeGenerator
     public function generate(
         LoggerInterface $logger,
         FileSystemInterface $fileSystem = null,
-        string $commandValidatorSubscriberTemplateClassName,
+        string $templateClassName,
         string $searchDirectory,
         string $outputFilePath,
         string $outputShortClassName
@@ -32,7 +32,7 @@ class CommandValidatorsMapCodeGenerator
 
         $generator->discoverAndPutContents(
             $this->discover($searchDirectory),
-            $commandValidatorSubscriberTemplateClassName,
+            $templateClassName,
             $outputFilePath,
             $outputShortClassName
         );

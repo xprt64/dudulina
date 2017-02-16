@@ -19,7 +19,7 @@ class CommandHandlersMapCodeGenerator
     public function generate(
         LoggerInterface $logger,
         FileSystemInterface $fileSystem = null,
-        string $commandSubscriberTemplateClassName,
+        string $templateClassName,
         string $searchDirectory,
         string $outputFilePath,
         string $outputShortClassName = 'CommandHandlerSubscriber')
@@ -27,7 +27,7 @@ class CommandHandlersMapCodeGenerator
         (new CodeGenerator(new GroupedByEventMapCodeGenerator(), $fileSystem))
             ->discoverAndPutContents(
                 $this->discover($searchDirectory),
-                $commandSubscriberTemplateClassName,
+                $templateClassName,
                 $outputFilePath,
                 $outputShortClassName
             );

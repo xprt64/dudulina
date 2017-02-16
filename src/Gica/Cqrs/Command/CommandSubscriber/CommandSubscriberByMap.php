@@ -20,10 +20,10 @@ abstract class CommandSubscriberByMap implements CommandSubscriber
      */
     public function getHandlerForCommand(Command $command)
     {
-        $commandHandlersDefinitions = $this->getCommandHandlersDefinitions();
+        $definitions = $this->getCommandHandlersDefinitions();
 
-        if (isset($commandHandlersDefinitions[get_class($command)])) {
-            $handlersForCommand = $commandHandlersDefinitions[get_class($command)];
+        if (isset($definitions[get_class($command)])) {
+            $handlersForCommand = $definitions[get_class($command)];
 
             if ($handlersForCommand) {
                 foreach ($handlersForCommand as $commandDefinition) {

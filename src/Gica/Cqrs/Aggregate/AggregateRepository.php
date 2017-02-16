@@ -10,7 +10,6 @@ use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\EventStore;
 use Gica\Cqrs\EventStore\AggregateEventStream;
-use Gica\Cqrs\EventStore\EventStream;
 
 class AggregateRepository
 {
@@ -22,7 +21,7 @@ class AggregateRepository
     /**
      * @var EventsApplierOnAggregate
      */
-    private $eventsApplierOnAggregate;
+    private $eventsApplier;
 
     /**
      * @var \SplObjectStorage
@@ -31,11 +30,11 @@ class AggregateRepository
 
     public function __construct(
         EventStore $eventStore,
-        EventsApplierOnAggregate $eventsApplierOnAggregate
+        EventsApplierOnAggregate $eventsApplier
     )
     {
         $this->eventStore = $eventStore;
-        $this->eventsApplierOnAggregate = $eventsApplierOnAggregate;
+        $this->eventsApplier = $eventsApplier;
         $this->aggregateToEventStreamMap = new \SplObjectStorage();
     }
 
@@ -48,20 +47,22 @@ class AggregateRepository
         $this->aggregateToEventStreamMap[$aggregate] = $priorEvents;
 
         /** @var EventWithMetaData[] $priorEvents */
-        $this->eventsApplierOnAggregate->applyEventsOnAggregate($aggregate, $priorEvents);
+        $this->eventsApplier->applyEventsOnAggregate($aggregate, $priorEvents);
 
         return $aggregate;
     }
 
     /**
-     * @inheritdoc
+     * @param $aggregateId
+     * @param $aggregate
+     * @param EventWithMetaData[] $newEventsWithMeta
      */
-    public function saveAggregate($aggregateId, $aggregate, $newEventsWithMetaData)
+    public function saveAggregate($aggregateId, $aggregate, $newEventsWithMeta)
     {
         /** @var AggregateEventStream $priorEvents */
         $priorEvents = $this->aggregateToEventStreamMap[$aggregate];
 
         $this->eventStore->appendEventsForAggregate(
-            $aggregateId, get_class($aggregate), $newEventsWithMetaData, $priorEvents->getVersion(), $priorEvents->getSequence());
+            $aggregateId, get_class($aggregate), $newEventsWithMeta, $priorEvents->getVersion(), $priorEvents->getSequence());
     }
 }

@@ -29,14 +29,14 @@ class CodeGenerator
 
     public function discoverAndPutContents(
         array $map,
-        string $commandSubscriberTemplateClassName,
+        string $templateClassName,
         string $outputFilePath,
         string $outputShortClassName)
     {
 
         $this->deleteFileIfExists($outputFilePath);
 
-        $template = $this->loadTemplate($commandSubscriberTemplateClassName, $outputShortClassName);
+        $template = $this->loadTemplate($templateClassName, $outputShortClassName);
 
         $code = $this->codeGenerator->generateAndGetFileContents(
             $map,
@@ -54,9 +54,9 @@ class CodeGenerator
         }
     }
 
-    private function loadTemplate(string $commandSubscriberTemplateClassName, string $outputShortClassName)
+    private function loadTemplate(string $templateClassName, string $outputShortClassName)
     {
-        $classInfo = new \ReflectionClass($commandSubscriberTemplateClassName);
+        $classInfo = new \ReflectionClass($templateClassName);
 
         $template = file_get_contents($classInfo->getFileName());
 

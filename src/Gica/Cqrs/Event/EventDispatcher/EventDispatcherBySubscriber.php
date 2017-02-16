@@ -6,10 +6,11 @@
 namespace Gica\Cqrs\Event\EventDispatcher;
 
 
+use Gica\Cqrs\Event\EventDispatcher;
 use Gica\Cqrs\Event\EventSubscriber;
 use Gica\Cqrs\Event\EventWithMetaData;
 
-class EventDispatcherBySubscriber implements \Gica\Cqrs\Event\EventDispatcher
+class EventDispatcherBySubscriber implements EventDispatcher
 {
     /** @var EventSubscriber */
     private $eventSubscriber;

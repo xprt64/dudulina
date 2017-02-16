@@ -6,6 +6,8 @@
 namespace Gica\Cqrs\ReadModel;
 
 
+use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
+use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener;
 use Gica\Cqrs\EventStore;
 use Psr\Log\LoggerInterface;
@@ -28,12 +30,12 @@ class ReadModelRecreator
 
     public function __construct(
         EventStore $eventStore,
-        EventsApplierOnListener $eventsApplierOnListener,
+        EventsApplierOnListener $eventsApplier,
         LoggerInterface $logger
     )
     {
         $this->eventStore = $eventStore;
-        $this->eventsApplierOnListener = $eventsApplierOnListener;
+        $this->eventsApplierOnListener = $eventsApplier;
         $this->logger = $logger;
     }
 
@@ -82,7 +84,10 @@ class ReadModelRecreator
 
     private function tryToExtractEventClassFromParameter(\ReflectionParameter $reflectionParameter)
     {
-        if ($reflectionParameter->getClass() && is_subclass_of($reflectionParameter->getClass()->name, \Gica\Cqrs\Event::class)) {
+        if (!$reflectionParameter->getClass())
+            return false;
+
+        if ((new SubclassComparator())->isASubClassButNoSameClass($reflectionParameter->getClass()->name, Event::class)) {
             return $reflectionParameter->getClass()->name;
         }
 

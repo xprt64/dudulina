@@ -28,12 +28,12 @@ class DumpEventsByClass
 
     public function __construct(
         EventStore $eventStore,
-        EventsApplierOnListener $eventsApplierOnListener,
+        EventsApplierOnListener $eventsApplier,
         LoggerInterface $logger
     )
     {
         $this->eventStore = $eventStore;
-        $this->eventsApplierOnListener = $eventsApplierOnListener;
+        $this->eventsApplierOnListener = $eventsApplier;
         $this->logger = $logger;
     }
 

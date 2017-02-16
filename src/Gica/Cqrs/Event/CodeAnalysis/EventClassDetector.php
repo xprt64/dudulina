@@ -6,11 +6,13 @@
 namespace Gica\Cqrs\Event\CodeAnalysis;
 
 
+use Gica\Cqrs\Event;
+
 class EventClassDetector implements \Gica\CodeAnalysis\MethodListenerDiscovery\MessageClassDetector
 {
     public function isMessageClass(\ReflectionClass $typeHintedClass):bool
     {
-        return is_subclass_of($typeHintedClass->name, \Gica\Cqrs\Event::class) && $typeHintedClass->name != \Gica\Cqrs\Event::class;
+        return is_subclass_of($typeHintedClass->name, Event::class) && $typeHintedClass->name != Event::class;
     }
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod):bool

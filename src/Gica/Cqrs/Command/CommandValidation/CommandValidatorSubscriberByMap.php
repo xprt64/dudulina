@@ -17,13 +17,13 @@ abstract class CommandValidatorSubscriberByMap implements CommandValidation\Comm
      */
     public function getHandlersForCommand(Command $command)
     {
-        $commandHandlersDefinitions = $this->getCommandHandlersDefinitions();
+        $definitions = $this->getCommandHandlersDefinitions();
 
-        if (!isset($commandHandlersDefinitions[get_class($command)])) {
+        if (!isset($definitions[get_class($command)])) {
             return [];
         }
 
-        $handlersForCommand = $commandHandlersDefinitions[get_class($command)];
+        $handlersForCommand = $definitions[get_class($command)];
 
         $result = [];
 

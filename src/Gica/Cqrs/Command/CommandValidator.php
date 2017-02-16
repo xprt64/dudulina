@@ -24,11 +24,11 @@ class CommandValidator
     private $abstractFactory;
 
     public function __construct(
-        CommandValidatorSubscriber $commandValidatorSubscriber,
+        CommandValidatorSubscriber $subscriber,
         AbstractFactory $abstractFactory
     )
     {
-        $this->commandValidatorSubscriber = $commandValidatorSubscriber;
+        $this->commandValidatorSubscriber = $subscriber;
         $this->abstractFactory = $abstractFactory;
     }
 

@@ -66,22 +66,22 @@ class CommandDispatcher
         EventDispatcher $eventDispatcher,
         CommandApplier $commandApplier,
         AggregateRepository $aggregateRepository,
-        ConcurrentProofFunctionCaller $concurrentProofFunctionCaller,
+        ConcurrentProofFunctionCaller $functionCaller,
         CommandValidator $commandValidator,
-        AuthenticatedIdentityReaderService $authenticatedIdentityServiceReader,
+        AuthenticatedIdentityReaderService $authService,
         FutureEventsStore $futureEventsStore,
-        EventsApplierOnAggregate $eventsApplierOnAggregate
+        EventsApplierOnAggregate $eventsApplier
     )
     {
         $this->commandSubscriber = $commandSubscriber;
         $this->eventDispatcher = $eventDispatcher;
         $this->commandApplier = $commandApplier;
         $this->aggregateRepository = $aggregateRepository;
-        $this->concurrentProofFunctionCaller = $concurrentProofFunctionCaller;
+        $this->concurrentProofFunctionCaller = $functionCaller;
         $this->commandValidator = $commandValidator;
-        $this->authenticatedIdentityServiceReader = $authenticatedIdentityServiceReader;
+        $this->authenticatedIdentityServiceReader = $authService;
         $this->futureEventsStore = $futureEventsStore;
-        $this->eventsApplierOnAggregate = $eventsApplierOnAggregate;
+        $this->eventsApplierOnAggregate = $eventsApplier;
     }
 
     public function dispatchCommand(Command $command)
@@ -93,7 +93,7 @@ class CommandDispatcher
         }
 
         /** @var EventWithMetaData[] $eventsWithMetaData */
-        list($eventsWithMetaData, $futureEventsWithMetaData) = $this->concurrentProofFunctionCaller->executeFunction(function () use ($command) {
+        list($eventsWithMetaData, $futureEventsWithMeta) = $this->concurrentProofFunctionCaller->executeFunction(function () use ($command) {
             return $this->tryDispatchCommandAndSaveAggregate($command);
         }, self::MAXIMUM_SAVE_RETRIES);
 
@@ -101,20 +101,20 @@ class CommandDispatcher
             $this->eventDispatcher->dispatchEvent($eventWithMetaData);
         }
 
-        $this->futureEventsStore->scheduleEvents($futureEventsWithMetaData);
+        $this->futureEventsStore->scheduleEvents($futureEventsWithMeta);
     }
 
     private function tryDispatchCommandAndSaveAggregate(Command $command)
     {
-        $commandHandlerAndAggregate = $this->loadCommandHandlerAndAggregate($command);
+        $handlerAndAggregate = $this->loadCommandHandlerAndAggregate($command);
 
-        $eventsWithMetaData = $this->applyCommandAndReturnEvents($command, $commandHandlerAndAggregate);
+        $eventsWithMetaData = $this->applyCommandAndReturnEvents($command, $handlerAndAggregate);
 
-        list($eventsForNowWithMetaData, $eventsForTheFutureWithMetaData) = $this->splitFutureEvents($eventsWithMetaData);
+        list($eventsForNow, $eventsForTheFuture) = $this->splitFutureEvents($eventsWithMetaData);
 
-        $this->aggregateRepository->saveAggregate($command->getAggregateId(), $commandHandlerAndAggregate->getAggregate(), $eventsForNowWithMetaData);
+        $this->aggregateRepository->saveAggregate($command->getAggregateId(), $handlerAndAggregate->getAggregate(), $eventsForNow);
 
-        return [$eventsForNowWithMetaData, $eventsForTheFutureWithMetaData];
+        return [$eventsForNow, $eventsForTheFuture];
     }
 
     /**
@@ -144,8 +144,8 @@ class CommandDispatcher
             if (!empty($errors)) {
                 return false;
             }
-            $commandHandlerAndAggregate = $this->loadCommandHandlerAndAggregate($command);
-            $this->applyCommandAndReturnEvents($command, $commandHandlerAndAggregate);
+            $handlerAndAggregate = $this->loadCommandHandlerAndAggregate($command);
+            $this->applyCommandAndReturnEvents($command, $handlerAndAggregate);
             return true;
         } catch (\Exception $exception) {
             return false;
@@ -176,11 +176,7 @@ class CommandDispatcher
         $aggregate = $handlerAndAggregate->getAggregate();
         $handler = $handlerAndAggregate->getCommandHandler();
 
-        $metaData = new MetaData(
-            $command->getAggregateId(),
-            get_class($aggregate),
-            new \DateTimeImmutable(),
-            $this->authenticatedIdentityServiceReader->getAuthenticatedIdentityId());
+        $metaData = $this->factoryMetadata($command, $aggregate);
 
         $newEventsGenerator = $this->commandApplier->applyCommand($aggregate, $command, $handler->getMethodName());
 
@@ -203,5 +199,14 @@ class CommandDispatcher
     private function isFutureEvent($event): bool
     {
         return $event instanceof FutureEvent;
+    }
+
+    private function factoryMetadata(Command $command, $aggregate): MetaData
+    {
+        return new MetaData(
+            $command->getAggregateId(),
+            get_class($aggregate),
+            new \DateTimeImmutable(),
+            $this->authenticatedIdentityServiceReader->getAuthenticatedIdentityId());
     }
 }

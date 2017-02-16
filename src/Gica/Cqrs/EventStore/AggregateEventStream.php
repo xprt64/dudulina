@@ -6,9 +6,9 @@
 namespace Gica\Cqrs\EventStore;
 
 
-interface AggregateEventStream extends \Gica\Cqrs\EventStore\EventStream
+interface AggregateEventStream extends EventStream
 {
-    public function getVersion():int;
+    public function getVersion(): int;
 
-    public function getSequence() : int;
+    public function getSequence(): int;
 }

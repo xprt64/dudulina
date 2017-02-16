@@ -6,7 +6,10 @@
 namespace Gica\Cqrs\Event\EventSubscriber;
 
 
-class ManualEventSubscriber implements \Gica\Cqrs\Event\EventSubscriber
+use Gica\Cqrs\Event;
+use Gica\Cqrs\Event\EventSubscriber;
+
+class ManualEventSubscriber implements EventSubscriber
 {
     private $eventListeners = [];
 
@@ -19,7 +22,7 @@ class ManualEventSubscriber implements \Gica\Cqrs\Event\EventSubscriber
      * @param $event
      * @return callable[]
      */
-    public function getListenersForEvent(\Gica\Cqrs\Event $event)
+    public function getListenersForEvent(Event $event)
     {
         $result = [];
 

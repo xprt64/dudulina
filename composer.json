@@ -22,7 +22,7 @@
   "require": {
     "php": "^7.0",
     "xprt64/types": "^1.0",
-    "xprt64/code-analysis": "^1.1.1",
+    "xprt64/code-analysis": "^1.1.2",
     "xprt64/iterator": "^1.0",
     "xprt64/dependency": "^1.0",
     "xprt64/filesystem": "^1.0.1",

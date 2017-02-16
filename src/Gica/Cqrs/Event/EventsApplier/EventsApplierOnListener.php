@@ -6,24 +6,27 @@
 namespace Gica\Cqrs\Event\EventsApplier;
 
 
+use Gica\Cqrs\Event;
+use Gica\Cqrs\Event\EventWithMetaData;
+
 class EventsApplierOnListener
 {
     public function applyEventsOnListener($listener, $eventsWithMetaData)
     {
-        /** @var \Gica\Cqrs\Event\EventWithMetaData $eventWithMetaData */
+        /** @var EventWithMetaData $eventWithMetaData */
         foreach ($eventsWithMetaData as $eventWithMetaData) {
              $this->applyEvent($listener, $eventWithMetaData);
         }
     }
 
-    private function applyEvent($listener, \Gica\Cqrs\Event\EventWithMetaData $eventWithMetaData)
+    private function applyEvent($listener, EventWithMetaData $eventWithMetaData)
     {
         $methodName = $this->getMethodName($eventWithMetaData->getEvent());
 
         call_user_func([$listener, $methodName], $eventWithMetaData->getEvent(), $eventWithMetaData->getMetaData());
     }
 
-    private function getMethodName(\Gica\Cqrs\Event $event)
+    private function getMethodName(Event $event)
     {
         $parts = explode('\\', get_class($event));
 

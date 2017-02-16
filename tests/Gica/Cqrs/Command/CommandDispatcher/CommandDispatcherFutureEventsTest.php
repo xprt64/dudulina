@@ -141,11 +141,11 @@ class StubFutureEventsStore implements FutureEventsStore
     }
 
     /**
-     * @param \Gica\Cqrs\Event\EventWithMetaData[] $futureEventsWithMetaData
+     * @param \Gica\Cqrs\Event\EventWithMetaData[] $eventWithMetaData
      */
-    public function scheduleEvents($futureEventsWithMetaData)
+    public function scheduleEvents($eventWithMetaData)
     {
-        $this->scheduledEvents = $futureEventsWithMetaData;
+        $this->scheduledEvents = $eventWithMetaData;
     }
 
     public function scheduleEvent(Event\EventWithMetaData $eventWithMetaData, \DateTimeImmutable $date)

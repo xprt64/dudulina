@@ -19,7 +19,7 @@ class SagaEventListenerMapCodeGenerator
     public function generate(
         LoggerInterface $logger,
         FileSystemInterface $fileSystem = null,
-        $eventSubscriberTemplateClassName,
+        $templateClassName,
         string $searchDirectory,
         string $outputFilePath,
         string $outputShortClassName
@@ -32,7 +32,7 @@ class SagaEventListenerMapCodeGenerator
 
         $generator->discoverAndPutContents(
             $this->discover($searchDirectory),
-            $eventSubscriberTemplateClassName,
+            $templateClassName,
             $outputFilePath,
             $outputShortClassName
         );

@@ -6,9 +6,11 @@
 namespace Gica\Cqrs\Command;
 
 
+use Gica\Cqrs\Command;
+
 class CommandApplier
 {
-    public function applyCommand($aggregate, \Gica\Cqrs\Command $command, $methodName)
+    public function applyCommand($aggregate, Command $command, $methodName)
     {
         $generator = call_user_func([$aggregate, $methodName], $command);
 

@@ -6,11 +6,14 @@
 namespace Gica\Cqrs\Event\EventsApplier;
 
 
+use Gica\Cqrs\Event;
+use Gica\Cqrs\Event\EventWithMetaData;
+
 class EventsApplierOnAggregate
 {
     /**
      * @param $aggregate
-     * @param \Gica\Cqrs\Event\EventWithMetaData[] $priorEvents
+     * @param EventWithMetaData[] $priorEvents
      */
     public function applyEventsOnAggregate($aggregate, $priorEvents)
     {
@@ -19,7 +22,7 @@ class EventsApplierOnAggregate
         }
     }
 
-    private function applyEvent($aggregate, \Gica\Cqrs\Event\EventWithMetaData $eventWithMetaData)
+    private function applyEvent($aggregate, EventWithMetaData $eventWithMetaData)
     {
         $methodName = self::getMethodName($eventWithMetaData->getEvent());
 
@@ -28,7 +31,7 @@ class EventsApplierOnAggregate
         }
     }
 
-    public static function getMethodName(\Gica\Cqrs\Event $event)
+    public static function getMethodName(Event $event)
     {
         $parts = explode('\\', get_class($event));
 

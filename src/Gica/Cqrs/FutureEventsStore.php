@@ -5,14 +5,16 @@
 
 namespace Gica\Cqrs;
 
+use Gica\Cqrs\Event\EventWithMetaData;
+
 interface FutureEventsStore
 {
     public function loadAndProcessScheduledEvents(callable $eventProcessor /** function(ScheduledEvent) */);
 
     /**
-     * @param \Gica\Cqrs\Event\EventWithMetaData[] $futureEventsWithMetaData
+     * @param EventWithMetaData[] $eventWithMetaData
      */
-    public function scheduleEvents($futureEventsWithMetaData);
+    public function scheduleEvents($eventWithMetaData);
 
-    public function scheduleEvent(Event\EventWithMetaData $eventWithMetaData, \DateTimeImmutable $date);
+    public function scheduleEvent(EventWithMetaData $eventWithMetaData, \DateTimeImmutable $date);
 }

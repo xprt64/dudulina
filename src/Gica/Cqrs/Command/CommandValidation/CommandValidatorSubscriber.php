@@ -14,7 +14,7 @@ interface CommandValidatorSubscriber
     /**
      * @param Command $command
      * @return CommandHandlerDescriptor[]
-     * @throws \Gica\Cqrs\Command\Exception\CommandHandlerNotFound
+     * @throws CommandHandlerNotFound
      */
     public function getHandlersForCommand(Command $command);
 }

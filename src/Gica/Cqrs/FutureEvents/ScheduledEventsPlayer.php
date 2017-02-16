@@ -35,13 +35,13 @@ class ScheduledEventsPlayer
         FutureEventsStore $futureEventsStore,
         EventDispatcher $eventDispatcher,
         EventStore $eventStore,
-        ConcurrentProofFunctionCaller $concurrentProofFunctionCaller
+        ConcurrentProofFunctionCaller $functionCaller
     )
     {
         $this->futureEventsStore = $futureEventsStore;
         $this->eventDispatcher = $eventDispatcher;
         $this->eventStore = $eventStore;
-        $this->concurrentProofFunctionCaller = $concurrentProofFunctionCaller;
+        $this->concurrentProofFunctionCaller = $functionCaller;
     }
 
     public function run()
