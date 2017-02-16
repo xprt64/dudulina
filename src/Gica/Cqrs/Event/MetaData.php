@@ -27,7 +27,7 @@ class MetaData
         $authenticatedUserId = null
     )
     {
-        $this->dateCreated = $dateCreated->getTimezone() ? $dateCreated : $dateCreated->setTimezone(new \DateTimeZone('Europe/Bucharest'));
+        $this->dateCreated = $this->addTimeZone($dateCreated);
         $this->aggregateId = $aggregateId;
         $this->authenticatedUserId = $authenticatedUserId;
         $this->aggregateClass = $aggregateClass;
@@ -51,5 +51,11 @@ class MetaData
     public function getAuthenticatedUserId()
     {
         return $this->authenticatedUserId;
+    }
+
+    private function addTimeZone(\DateTimeImmutable $dateCreated): \DateTimeImmutable
+    {
+        return $dateCreated->getTimezone() ? $dateCreated :
+            ($dateCreated->setTimezone(new \DateTimeZone('Europe/Bucharest')) ?: $dateCreated);
     }
 }

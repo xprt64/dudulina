@@ -16,9 +16,9 @@ use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
 use Gica\Cqrs\Event\EventSubscriber\ManualEventSubscriber;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
-use Gica\Cqrs\Testing\Exceptions\TooManyEventsFired;
 use Gica\Cqrs\Testing\Exceptions\ExpectedEventNotYielded;
 use Gica\Cqrs\Testing\Exceptions\NoExceptionThrown;
+use Gica\Cqrs\Testing\Exceptions\TooManyEventsFired;
 use Gica\Cqrs\Testing\Exceptions\WrongEventClassYielded;
 use Gica\Cqrs\Testing\Exceptions\WrongExceptionClassThrown;
 use Gica\Cqrs\Testing\Exceptions\WrongExceptionMessageWasThrown;
@@ -33,6 +33,7 @@ class BddAggregateTestHelper
 
     private $priorEvents = [];
 
+    /** @var Command */
     private $command;
     private $aggregate;
 
@@ -100,8 +101,15 @@ class BddAggregateTestHelper
         $this->assertTheseEvents($expectedEvents, $newEvents);
     }
 
-    public function executeCommand(Command $command)
+    /**
+     * @param Command|null $command
+     * @return array
+     * @throws \Exception
+     */
+    public function executeCommand($command)
     {
+        $this->checkCommand($command);
+
         $handler = $this->getCommandSubscriber()->getHandlerForCommand($command);
 
         $newEventsGenerator = $this->commandApplier->applyCommand($this->aggregate, $command, $handler->getMethodName());
@@ -134,6 +142,8 @@ class BddAggregateTestHelper
 
     public function thenShouldFailWith($expectedExceptionClass, $expectedExceptionMessage = null)
     {
+        $this->checkCommand($this->command);
+
         try {
             $handler = $this->getCommandSubscriber()->getHandlerForCommand($this->command);
 
@@ -221,5 +231,12 @@ class BddAggregateTestHelper
     private function isClassOrSubClass(string $parentClass, $childClass): bool
     {
         return get_class($childClass) == $parentClass || is_subclass_of($childClass, $parentClass);
+    }
+
+    private function checkCommand($command)
+    {
+        if (!$command instanceof Command) {
+            throw new \Exception("Command is missing. Have you called method when()?");
+        }
     }
 }
