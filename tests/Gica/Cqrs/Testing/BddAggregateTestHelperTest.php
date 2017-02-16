@@ -441,6 +441,60 @@ class BddAggregateTestHelperTest extends \PHPUnit_Framework_TestCase
         $sut->thenShouldFailWith(get_class($expectedException), "some message");
     }
 
+    public function testWithoutACommand()
+    {
+        $command = $this->getMockBuilder(Command::class)
+            ->getMock();
+        $command->method('getAggregateId')
+            ->willReturn(123);
+
+        /** @var Event $event1 */
+        $event1 = $this->getMockBuilder(Event::class)
+            ->getMock();
+
+        /** @var Event $event2 */
+        $event2 = $this->getMockBuilder(Event::class)
+            ->getMock();
+
+        $aggregateCommandHandlerName = 'handle' . get_class($command);
+
+        $aggregate = $this->getMockBuilder(\stdClass::class)
+            ->setMethods([$aggregateCommandHandlerName, $this->getApplyEventMethodName($event1)])
+            ->getMock();
+
+        $expectedException = new \Exception("a test message");
+
+        $aggregate->method($aggregateCommandHandlerName)
+            ->with($command)
+            ->willReturn(new \ArrayIterator([$event2]));
+
+        $aggregate->method($this->getApplyEventMethodName($event1))
+            ->with($event1);
+
+        $commandSubscriber = $this->getMockBuilder(CommandSubscriber::class)
+            ->getMock();
+
+        $commandSubscriber
+            ->method('getHandlerForCommand')
+            ->with($command)
+            ->willReturn(new CommandHandlerDescriptor(
+                get_class($aggregate),
+                $aggregateCommandHandlerName
+            ));
+
+        /** @var CommandSubscriber $commandSubscriber */
+
+        $sut = new BddAggregateTestHelper(
+            $commandSubscriber
+        );
+
+        $this->expectException(\Exception::class);
+
+        $sut->onAggregate($aggregate);
+        $sut->given($event1);
+        $sut->thenShouldFailWith(get_class($expectedException), "some message");
+    }
+
     private function getApplyEventMethodName(Event $event1)
     {
         return EventsApplierOnAggregate::getMethodName($event1);
