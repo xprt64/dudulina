@@ -87,13 +87,15 @@ class BddAggregateTestHelper
         }, $priorEvents);
     }
 
-    public function when($command)
+    public function when(Command $command)
     {
         $this->command = $command;
     }
 
     public function then(...$expectedEvents)
     {
+        $this->checkCommand($this->command);
+
         $this->eventsApplierOnAggregate->applyEventsOnAggregate($this->aggregate, $this->priorEvents);
 
         $newEvents = $this->executeCommand($this->command);
@@ -108,8 +110,6 @@ class BddAggregateTestHelper
      */
     public function executeCommand(Command $command)
     {
-        $this->checkCommand($command);
-
         $handler = $this->getCommandSubscriber()->getHandlerForCommand($command);
 
         $newEventsGenerator = $this->commandApplier->applyCommand($this->aggregate, $command, $handler->getMethodName());
