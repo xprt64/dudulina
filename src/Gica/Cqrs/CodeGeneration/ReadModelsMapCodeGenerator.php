@@ -14,7 +14,7 @@ use Gica\Cqrs\ReadModel\ListenerClassValidator\OnlyReadModels;
 use Gica\FileSystem\FileSystemInterface;
 use Psr\Log\LoggerInterface;
 
-class ReadModelsMapCodeGenerator implements Discoverer
+class ReadModelsMapCodeGenerator
 {
     public function generate(
         LoggerInterface $logger,
@@ -25,13 +25,14 @@ class ReadModelsMapCodeGenerator implements Discoverer
         string $outputShortClassName
     )
     {
-        (new CodeGenerator(
-            new ReadModelMapperWriter()
-        ))->discoverAndPutContents(
-            $this,
-            $fileSystem,
+        $generator = new CodeGenerator(
+            new ReadModelMapperWriter(),
+            $fileSystem
+        );
+
+        $generator->discoverAndPutContents(
+            $this->discover($searchDirectory),
             $readModelMapTemplateClassName,
-            $searchDirectory,
             $outputFilePath,
             $outputShortClassName
         );
@@ -39,7 +40,7 @@ class ReadModelsMapCodeGenerator implements Discoverer
         $logger->info("Read models map wrote to: $outputFilePath (searched in $searchDirectory)");
     }
 
-    public function discover(string $searchDirectory)
+    private function discover(string $searchDirectory)
     {
         $discoverer = new MethodListenerDiscovery(
             new ReadModelEventHandlerDetector(),

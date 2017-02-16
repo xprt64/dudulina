@@ -8,11 +8,12 @@ namespace Gica\Cqrs\CodeGeneration;
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ClassSorter\ByConstructorDependencySorter;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
+use Gica\CodeAnalysis\MethodListenerDiscovery\MethodListenerMapperWriter;
 use Gica\Cqrs\Command\CodeAnalysis\AggregateCommandHandlerDetector;
 use Gica\FileSystem\FileSystemInterface;
 use Psr\Log\LoggerInterface;
 
-class CommandHandlersMapCodeGenerator implements Discoverer
+class CommandHandlersMapCodeGenerator
 {
     public function generate(
         LoggerInterface $logger,
@@ -22,16 +23,13 @@ class CommandHandlersMapCodeGenerator implements Discoverer
         string $outputFilePath,
         string $outputShortClassName = 'CommandHandlerSubscriber')
     {
-        $generator = new CodeGenerator();
-
-        $generator->discoverAndPutContents(
-            $this,
-            $fileSystem,
-            $commandSubscriberTemplateClassName,
-            $searchDirectory,
-            $outputFilePath,
-            $outputShortClassName
-        );
+        (new CodeGenerator(new MethodListenerMapperWriter(), $fileSystem))
+            ->discoverAndPutContents(
+                $this->discover($searchDirectory),
+                $commandSubscriberTemplateClassName,
+                $outputFilePath,
+                $outputShortClassName
+            );
 
         $logger->info("Commands map wrote to: $outputFilePath (searched in $searchDirectory)");
     }
@@ -46,7 +44,7 @@ class CommandHandlersMapCodeGenerator implements Discoverer
         }
     }
 
-    public function discover(string $searchDirectory)
+    private function discover(string $searchDirectory)
     {
         $discoverer = new MethodListenerDiscovery(
             new AggregateCommandHandlerDetector(),

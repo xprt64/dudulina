@@ -9,11 +9,12 @@ namespace Gica\Cqrs\CodeGeneration;
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ClassSorter\ByConstructorDependencySorter;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
+use Gica\CodeAnalysis\MethodListenerDiscovery\MethodListenerMapperWriter;
 use Gica\Cqrs\Command\CodeAnalysis\AggregateCommandValidatorDetector;
 use Gica\FileSystem\FileSystemInterface;
 use Psr\Log\LoggerInterface;
 
-class CommandValidatorsMapCodeGenerator implements Discoverer
+class CommandValidatorsMapCodeGenerator
 {
     public function generate(
         LoggerInterface $logger,
@@ -24,13 +25,14 @@ class CommandValidatorsMapCodeGenerator implements Discoverer
         string $outputShortClassName
     )
     {
-        $generator = new CodeGenerator();
+        $generator = new CodeGenerator(
+            new MethodListenerMapperWriter(),
+            $fileSystem
+        );
 
         $generator->discoverAndPutContents(
-            $this,
-            $fileSystem,
+            $this->discover($searchDirectory),
             $commandValidatorSubscriberTemplateClassName,
-            $searchDirectory,
             $outputFilePath,
             $outputShortClassName
         );
@@ -38,7 +40,7 @@ class CommandValidatorsMapCodeGenerator implements Discoverer
         $logger->info("Commands validators wrote to: $outputFilePath");
     }
 
-    public function discover(string $searchDirectory)
+    private function discover(string $searchDirectory)
     {
         $discoverer = new MethodListenerDiscovery(
             new AggregateCommandValidatorDetector(),

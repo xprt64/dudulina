@@ -9,11 +9,12 @@ namespace Gica\Cqrs\CodeGeneration;
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ClassSorter\ByConstructorDependencySorter;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
+use Gica\CodeAnalysis\MethodListenerDiscovery\MethodListenerMapperWriter;
 use Gica\Cqrs\Command\CodeAnalysis\WriteSideEventHandlerDetector;
 use Gica\FileSystem\FileSystemInterface;
 use Psr\Log\LoggerInterface;
 
-class SagaEventListenerMapCodeGenerator implements Discoverer
+class SagaEventListenerMapCodeGenerator
 {
     public function generate(
         LoggerInterface $logger,
@@ -24,11 +25,14 @@ class SagaEventListenerMapCodeGenerator implements Discoverer
         string $outputShortClassName
     )
     {
-        (new CodeGenerator())->discoverAndPutContents(
-            $this,
-            $fileSystem,
+        $generator = new CodeGenerator(
+            new MethodListenerMapperWriter(),
+            $fileSystem
+        );
+
+        $generator->discoverAndPutContents(
+            $this->discover($searchDirectory),
             $eventSubscriberTemplateClassName,
-            $searchDirectory,
             $outputFilePath,
             $outputShortClassName
         );
@@ -36,7 +40,7 @@ class SagaEventListenerMapCodeGenerator implements Discoverer
         $logger->info("Command side (saga) events handlers map wrote to: $outputFilePath (searched in $searchDirectory)");
     }
 
-    public function discover(string $searchDirectory)
+    private function discover(string $searchDirectory)
     {
         $discoverer = new MethodListenerDiscovery(
             new WriteSideEventHandlerDetector(),

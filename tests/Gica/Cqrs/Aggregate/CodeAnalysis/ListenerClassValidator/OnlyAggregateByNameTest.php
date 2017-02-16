@@ -14,30 +14,27 @@ class OnlyAggregateByNameTest extends \PHPUnit_Framework_TestCase
     {
         $sut = new OnlyAggregateByName();
 
-        $acceptedClass = $this->getMockBuilder(\ReflectionClass::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $acceptedClass->method('getName')
-            ->willReturn('SomeAggregate');
-
-        /** @var \ReflectionClass $acceptedClass */
+        $acceptedClass = new \ReflectionClass(SomeAggregate::class);
 
         $this->assertTrue($sut->isClassAccepted($acceptedClass));
-
     }
 
     public function testOnlyAggregateByNameFalse()
     {
         $sut = new OnlyAggregateByName();
 
-        $acceptedClass = $this->getMockBuilder(\ReflectionClass::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $acceptedClass->method('getName')
-            ->willReturn('SomeAggregateThatIsNotAccepted');
-
-        /** @var \ReflectionClass $acceptedClass */
+        $acceptedClass = new \ReflectionClass(SomeAggregateWithInvalidName::class);
 
         $this->assertFalse($sut->isClassAccepted($acceptedClass));
     }
+}
+
+class SomeAggregate
+{
+
+}
+
+class SomeAggregateWithInvalidName
+{
+
 }
