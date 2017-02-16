@@ -16,7 +16,7 @@ use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
 use Gica\Cqrs\Event\EventSubscriber\ManualEventSubscriber;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
-use Gica\Cqrs\Testing\Exceptions\EventNotExpected;
+use Gica\Cqrs\Testing\Exceptions\TooManyEventsFired;
 use Gica\Cqrs\Testing\Exceptions\ExpectedEventNotYielded;
 use Gica\Cqrs\Testing\Exceptions\NoExceptionThrown;
 use Gica\Cqrs\Testing\Exceptions\WrongEventClassYielded;
@@ -172,34 +172,37 @@ class BddAggregateTestHelper
         }
     }
 
-
     public function assertTheseEvents(array $expectedEvents, array $actualEvents)
     {
         $expectedEvents = array_values($expectedEvents);
         $actualEvents = array_values($actualEvents);
 
+        $this->checkForToFewEvents($expectedEvents, $actualEvents);
+        $this->checkForToManyEvents(count($actualEvents) - count($expectedEvents));
+    }
+
+    private function checkForToFewEvents(array $expectedEvents, array $actualEvents)
+    {
         foreach ($expectedEvents as $k => $expectedEvent) {
             if (!isset($actualEvents[$k])) {
-                throw new ExpectedEventNotYielded("Expected event #$k not fired (should have class " . get_class($expectedEvent) . ")");
+                throw new ExpectedEventNotYielded(
+                    "Expected event no. $k not fired (should have class: " . get_class($expectedEvent) . ")");
             }
 
             $actualEvent = $actualEvents[$k];
 
             if ($this->hashEvent($expectedEvent) != $this->hashEvent($actualEvent)) {
-                throw new WrongEventClassYielded("Wrong event #{$k} of class " . get_class($expectedEvent) . " emitted");
+                throw new WrongEventClassYielded(
+                    "Wrong event no. {$k} of class " . get_class($expectedEvent) . " emitted");
             }
         }
+    }
 
-        foreach ($actualEvents as $k => $actualEvent) {
-            if (!isset($expectedEvents[$k])) {
-                throw new EventNotExpected("Actual event #$k fired when it should't (should have class " . get_class($actualEvent) . ")");
-            }
-
-            $expectedEvent = $expectedEvents[$k];
-
-            if ($this->hashEvent($expectedEvent) != $this->hashEvent($actualEvent)) {
-                throw new WrongEventClassYielded("Wrong event #{$k} of class " . get_class($expectedEvent) . " emitted");
-            }
+    private function checkForToManyEvents(int $additionalCount)
+    {
+        if ($additionalCount > 0) {
+            throw new TooManyEventsFired(
+                sprintf("Additional %d events fired", $additionalCount));
         }
     }
 

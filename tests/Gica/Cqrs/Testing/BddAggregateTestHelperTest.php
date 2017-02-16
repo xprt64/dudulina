@@ -10,7 +10,7 @@ use Gica\Cqrs\Command\ValueObject\CommandHandlerDescriptor;
 use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
 use Gica\Cqrs\Testing\BddAggregateTestHelper;
-use Gica\Cqrs\Testing\Exceptions\EventNotExpected;
+use Gica\Cqrs\Testing\Exceptions\TooManyEventsFired;
 use Gica\Cqrs\Testing\Exceptions\ExpectedEventNotYielded;
 use Gica\Cqrs\Testing\Exceptions\NoExceptionThrown;
 use Gica\Cqrs\Testing\Exceptions\WrongEventClassYielded;
@@ -214,7 +214,7 @@ class BddAggregateTestHelperTest extends \PHPUnit_Framework_TestCase
                 $aggregateCommandHandlerName
             ));
 
-        $this->expectException(EventNotExpected::class);
+        $this->expectException(TooManyEventsFired::class);
 
         /** @var CommandSubscriber $commandSubscriber */
 

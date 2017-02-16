@@ -4,7 +4,7 @@
 namespace Gica\Cqrs\Testing\Exceptions;
 
 
-class EventNotExpected extends \Exception
+class TooManyEventsFired extends \Exception
 {
 
 }
