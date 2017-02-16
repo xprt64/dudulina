@@ -132,32 +132,43 @@ class BddAggregateTestHelper
         return new EventWithMetaData($event, $this->factoryMetaData());
     }
 
-    public function thenShouldFailWith($exceptionClass, $exceptionMessage = null)
+    public function thenShouldFailWith($expectedExceptionClass, $expectedExceptionMessage = null)
     {
         try {
             $handler = $this->getCommandSubscriber()->getHandlerForCommand($this->command);
 
             $this->eventsApplierOnAggregate->applyEventsOnAggregate($this->aggregate, $this->priorEvents);
 
-            iterator_to_array($this->commandApplier->applyCommand($this->aggregate, $this->command, $handler->getMethodName()));
+            iterator_to_array(
+                $this->commandApplier->applyCommand(
+                    $this->aggregate, $this->command, $handler->getMethodName()));
 
             throw new NoExceptionThrown(
-                sprintf("Exception '%s' was is expected, but none was thrown", $exceptionClass));
-        } catch (\Throwable $exception) {
+                sprintf("Exception '%s' was is expected, but none was thrown", $expectedExceptionClass));
 
-            if ($exception instanceof NoExceptionThrown) {
-                throw $exception;
+        } catch (\Throwable $thrownException) {
+
+            if ($thrownException instanceof NoExceptionThrown) {
+                throw $thrownException;//rethrown
             }
 
-            if (!is_subclass_of($exception, $exceptionClass) && get_class($exception) != $exceptionClass) {
+            if (!$this->isClassOrSubClass($expectedExceptionClass, $thrownException)) {
                 throw new WrongExceptionClassThrown(
-                    sprintf("Exception '%s' was expected, but '%s(%s)' was thrown", $exceptionClass, get_class($exception), $exception->getMessage()));
-            } else {
-                if ($exceptionMessage && $exception->getMessage() != $exceptionMessage) {
-                    throw new WrongExceptionMessageWasThrown(
-                        sprintf("Exception with message '%s' was expected, but '%s' was thrown", $exceptionMessage, $exception->getMessage()));
-                }
+                    sprintf(
+                        "Exception '%s' was expected, but '%s(%s)' was thrown",
+                        $expectedExceptionClass,
+                        get_class($thrownException),
+                        $thrownException->getMessage()));
             }
+
+            if ($expectedExceptionMessage && $thrownException->getMessage() != $expectedExceptionMessage) {
+                throw new WrongExceptionMessageWasThrown(
+                    sprintf(
+                        "Exception with message '%s' was expected, but '%s' was thrown",
+                        $expectedExceptionMessage,
+                        $thrownException->getMessage()));
+            }
+
         }
     }
 
@@ -170,7 +181,6 @@ class BddAggregateTestHelper
         foreach ($expectedEvents as $k => $expectedEvent) {
             if (!isset($actualEvents[$k])) {
                 throw new ExpectedEventNotYielded("Expected event #$k not fired (should have class " . get_class($expectedEvent) . ")");
-                //$this->assertEventsCountAreEqual($expectedEvents, $actualEvents);
             }
 
             $actualEvent = $actualEvents[$k];
@@ -183,7 +193,6 @@ class BddAggregateTestHelper
         foreach ($actualEvents as $k => $actualEvent) {
             if (!isset($expectedEvents[$k])) {
                 throw new EventNotExpected("Actual event #$k fired when it should't (should have class " . get_class($actualEvent) . ")");
-                //$this->assertEventsCountAreEqual($expectedEvents, $actualEvents);
             }
 
             $expectedEvent = $expectedEvents[$k];
@@ -204,5 +213,10 @@ class BddAggregateTestHelper
         return new MetaData(
             $this->aggregateId, get_class($this->aggregate), new \DateTimeImmutable(), new Guid()
         );
+    }
+
+    private function isClassOrSubClass(string $parentClass, $childClass): bool
+    {
+        return get_class($childClass) == $parentClass || is_subclass_of($childClass, $parentClass);
     }
 }
