@@ -38,9 +38,7 @@ class CodeGenerator
 
         $template = $this->loadTemplate($templateClassName, $outputShortClassName);
 
-        $code = $this->codeGenerator->generateAndGetFileContents(
-            $map,
-            $template);
+        $code = $this->codeGenerator->generateAndGetFileContents($map, $template);
 
         $this->fileSystem->filePutContents($outputFilePath, $code);
 
@@ -66,5 +64,4 @@ class CodeGenerator
 
         return $template;
     }
-
 }
