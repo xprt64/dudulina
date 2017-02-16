@@ -102,11 +102,11 @@ class BddAggregateTestHelper
     }
 
     /**
-     * @param Command|null $command
+     * @param Command $command
      * @return array
      * @throws \Exception
      */
-    public function executeCommand($command)
+    public function executeCommand(Command $command)
     {
         $this->checkCommand($command);
 
