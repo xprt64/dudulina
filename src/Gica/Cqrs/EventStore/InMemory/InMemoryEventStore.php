@@ -4,6 +4,7 @@
 namespace Gica\Cqrs\EventStore\InMemory;
 
 
+use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
 use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
@@ -81,7 +82,8 @@ class InMemoryEventStore implements EventStore
     private function eventHasAnyOfThisClasses($event, array $eventClasses)
     {
         foreach ($eventClasses as $eventClass) {
-            if (is_subclass_of($event, $eventClass) || get_class($event) === $eventClass) {
+
+            if ((new SubclassComparator())->isASubClassOrSameClass($event, $eventClass)) {
                 return true;
             }
         }

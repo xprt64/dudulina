@@ -6,6 +6,7 @@
 namespace Gica\Cqrs\Testing;
 
 
+use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
 use Gica\Cqrs\Command;
 use Gica\Cqrs\Command\CommandApplier;
 use Gica\Cqrs\Command\CommandSubscriber;
@@ -228,7 +229,7 @@ class BddAggregateTestHelper
 
     private function isClassOrSubClass(string $parentClass, $childClass): bool
     {
-        return get_class($childClass) == $parentClass || is_subclass_of($childClass, $parentClass);
+        return (new SubclassComparator())->isASubClassOrSameClass($childClass, $parentClass);
     }
 
     private function checkCommand($command)

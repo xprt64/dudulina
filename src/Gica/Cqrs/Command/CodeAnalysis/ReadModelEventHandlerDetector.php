@@ -7,17 +7,17 @@ namespace Gica\Cqrs\Command\CodeAnalysis;
 
 
 use Gica\CodeAnalysis\MethodListenerDiscovery\MessageClassDetector;
+use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
 use Gica\Cqrs\Event;
 
 class ReadModelEventHandlerDetector implements MessageClassDetector
 {
-    public function isMessageClass(\ReflectionClass $typeHintedClass):bool
+    public function isMessageClass(\ReflectionClass $typeHintedClass): bool
     {
-        return is_subclass_of($typeHintedClass->name, Event::class) &&
-        $typeHintedClass->name != Event::class;
+        return (new SubclassComparator())->isASubClassButNoSameClass($typeHintedClass->name, Event::class);
     }
 
-    public function isMethodAccepted(\ReflectionMethod $reflectionMethod):bool
+    public function isMethodAccepted(\ReflectionMethod $reflectionMethod): bool
     {
         return 0 === stripos($reflectionMethod->name, 'on');
     }
