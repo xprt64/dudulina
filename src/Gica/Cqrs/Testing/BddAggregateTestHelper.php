@@ -22,7 +22,6 @@ use Gica\Cqrs\Testing\Exceptions\TooManyEventsFired;
 use Gica\Cqrs\Testing\Exceptions\WrongEventClassYielded;
 use Gica\Cqrs\Testing\Exceptions\WrongExceptionClassThrown;
 use Gica\Cqrs\Testing\Exceptions\WrongExceptionMessageWasThrown;
-use Gica\Types\Guid;
 
 class BddAggregateTestHelper
 {
@@ -60,7 +59,7 @@ class BddAggregateTestHelper
         $this->command = null;
     }
 
-    public function getCommandSubscriber(): CommandSubscriber
+    private function getCommandSubscriber(): CommandSubscriber
     {
         return $this->commandSubscriber;
     }
@@ -140,7 +139,7 @@ class BddAggregateTestHelper
         return new EventWithMetaData($event, $this->factoryMetaData());
     }
 
-    public function thenShouldFailWith($expectedExceptionClass, $expectedExceptionMessage = null)
+    public function thenShouldFailWith($exceptionClass, $message = null)
     {
         $this->checkCommand($this->command);
 
@@ -154,7 +153,7 @@ class BddAggregateTestHelper
                     $this->aggregate, $this->command, $handler->getMethodName()));
 
             throw new NoExceptionThrown(
-                sprintf("Exception '%s' was is expected, but none was thrown", $expectedExceptionClass));
+                sprintf("Exception '%s' was is expected, but none was thrown", $exceptionClass));
 
         } catch (\Throwable $thrownException) {
 
@@ -162,23 +161,22 @@ class BddAggregateTestHelper
                 throw $thrownException;//rethrown
             }
 
-            if (!$this->isClassOrSubClass($expectedExceptionClass, $thrownException)) {
+            if (!$this->isClassOrSubClass($exceptionClass, $thrownException)) {
                 throw new WrongExceptionClassThrown(
                     sprintf(
                         "Exception '%s' was expected, but '%s(%s)' was thrown",
-                        $expectedExceptionClass,
+                        $exceptionClass,
                         get_class($thrownException),
                         $thrownException->getMessage()));
             }
 
-            if ($expectedExceptionMessage && $thrownException->getMessage() != $expectedExceptionMessage) {
+            if ($message && $thrownException->getMessage() != $message) {
                 throw new WrongExceptionMessageWasThrown(
                     sprintf(
                         "Exception with message '%s' was expected, but '%s' was thrown",
-                        $expectedExceptionMessage,
+                        $message,
                         $thrownException->getMessage()));
             }
-
         }
     }
 
@@ -224,7 +222,7 @@ class BddAggregateTestHelper
     private function factoryMetaData(): MetaData
     {
         return new MetaData(
-            $this->aggregateId, get_class($this->aggregate), new \DateTimeImmutable(), new Guid()
+            $this->aggregateId, get_class($this->aggregate), new \DateTimeImmutable(), mt_rand()
         );
     }
 
