@@ -16,7 +16,7 @@ class RawEventStream implements ByClassNamesEventStream
     private $limit;
 
     /** @var  int|null */
-    private $skip;
+    private $afterSequenceNumber;
 
     public function __construct($groupedEventsArray)
     {
@@ -49,8 +49,8 @@ class RawEventStream implements ByClassNamesEventStream
             $groupedEvents = iterator_to_array($this->groupedEventsArray);
         }
 
-        if ($this->skip) {
-            $groupedEvents = array_slice($groupedEvents, $this->skip);
+        if ($this->afterSequenceNumber) {
+            $groupedEvents = array_slice($groupedEvents, $this->afterSequenceNumber);
         }
 
         if ($this->limit) {
@@ -65,9 +65,9 @@ class RawEventStream implements ByClassNamesEventStream
         $this->limit = $limit;
     }
 
-    public function skipCommits(int $numberOfCommits)
+    public function afterSequence(int $sequenceNumber)
     {
-        $this->skip = $numberOfCommits;
+        $this->afterSequenceNumber = $sequenceNumber;
     }
 
     public function countCommits(): int

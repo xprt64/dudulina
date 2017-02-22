@@ -24,7 +24,7 @@ class RawEventStreamTest extends \PHPUnit_Framework_TestCase
 
 
         $sut = new RawEventStream($groupedEventsArray);
-        $sut->skipCommits(1);
+        $sut->afterSequence(1);
         $this->assertEquals([3, 4, 5, 6], iterator_to_array($sut->getIterator()));
 
         $sut = new RawEventStream($groupedEventsArray);
@@ -32,7 +32,7 @@ class RawEventStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([1, 2, 3, 4], iterator_to_array($sut->getIterator()));
 
         $sut = new RawEventStream($groupedEventsArray);
-        $sut->skipCommits(1);
+        $sut->afterSequence(1);
         $sut->limitCommits(1);
         $this->assertEquals([3, 4], iterator_to_array($sut->getIterator()));
 

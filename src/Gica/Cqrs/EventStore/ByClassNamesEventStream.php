@@ -8,7 +8,7 @@ interface ByClassNamesEventStream extends EventStream
 {
     public function limitCommits(int $limit);
 
-    public function skipCommits(int $numberOfCommits);
+    public function afterSequence(int $sequenceNumber);
 
     public function countCommits():int;
 
