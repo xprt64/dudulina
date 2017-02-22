@@ -4,24 +4,59 @@
 namespace Gica\Cqrs\EventStore\InMemory;
 
 
-use Gica\Cqrs\EventStore\EventStream;
+use Gica\Cqrs\EventStore\ByClassNamesEventStream;
+use Gica\Iterator\IteratorTransformer\IteratorExpander;
 
-class RawEventStream implements EventStream
+class RawEventStream implements ByClassNamesEventStream
 {
 
-    private $eventsArray = [];
+    private $groupedEventsArray = [];
 
-    public function __construct($eventsArray)
+    /** @var int|null */
+    private $limit;
+
+    /** @var  int|null */
+    private $skip;
+
+    public function __construct($groupedEventsArray)
     {
-        $this->eventsArray = $eventsArray;
+        $this->groupedEventsArray = $groupedEventsArray;
     }
 
     public function getIterator()
     {
-        if ($this->eventsArray instanceof \Iterator || $this->eventsArray instanceof \IteratorAggregate) {
-            return new \ArrayIterator(iterator_to_array($this->eventsArray));
+        $groupedEvents = $this->groupedEventsArray;
+
+        if ($this->groupedEventsArray instanceof \Iterator || $this->groupedEventsArray instanceof \IteratorAggregate) {
+            $groupedEvents = iterator_to_array($this->groupedEventsArray);
         }
 
-        return new \ArrayIterator($this->eventsArray);
+        if ($this->skip) {
+            $groupedEvents = array_slice($groupedEvents, $this->skip);
+        }
+
+        if ($this->limit) {
+            $groupedEvents = array_slice($groupedEvents, 0, $this->limit);
+        }
+
+        $deGrouper = new IteratorExpander(function ($group) {
+            foreach ($group as $event) {
+                yield $event;
+            }
+        });
+
+        $events = iterator_to_array($deGrouper($groupedEvents));
+
+        return new \ArrayIterator($events);
+    }
+
+    public function limitCommits(int $limit)
+    {
+        $this->limit = $limit;
+    }
+
+    public function skipCommits(int $numberOfCommits)
+    {
+        $this->skip = $numberOfCommits;
     }
 }

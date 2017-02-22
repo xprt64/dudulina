@@ -20,20 +20,10 @@ class CommandApplierTest extends \PHPUnit_Framework_TestCase
         $command = $this->getMockBuilder(Command::class)
             ->getMock();
 
-        $aggregate = $this->getMockBuilder(\stdClass::class)
-            ->setMethods(['applySomeCommand'])
-            ->getMock();
-
         $event = new \stdClass();
         $event->someProperty = 'someValue';
 
-        $aggregate->expects($this->once())
-            ->method('applySomeCommand')
-            ->with($this->identicalTo($command))
-            ->willReturnCallback(function () use ($event) {
-
-                yield $event;
-            });
+        $aggregate = new MyAggregate($event);
 
         $sut = new CommandApplier();
 
@@ -44,3 +34,20 @@ class CommandApplierTest extends \PHPUnit_Framework_TestCase
     }
 }
 
+class MyAggregate
+{
+
+    private $eventToBeYielded;
+    private $command;
+
+    public function __construct($eventToBeYielded)
+    {
+        $this->eventToBeYielded = $eventToBeYielded;
+    }
+
+    public function applySomeCommand($command)
+    {
+        $this->command = $command;
+        yield $this->eventToBeYielded;
+    }
+}

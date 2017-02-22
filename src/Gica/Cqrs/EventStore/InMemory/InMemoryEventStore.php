@@ -10,7 +10,7 @@ use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\EventStore;
 use Gica\Cqrs\EventStore\AggregateEventStream;
-use Gica\Cqrs\EventStore\EventStream;
+use Gica\Cqrs\EventStore\ByClassNamesEventStream;
 use Gica\Cqrs\EventStore\Exception\ConcurrentModificationException;
 
 class InMemoryEventStore implements EventStore
@@ -63,15 +63,15 @@ class InMemoryEventStore implements EventStore
         }
     }
 
-    public function loadEventsByClassNames(array $eventClasses): EventStream
+    public function loadEventsByClassNames(array $eventClasses): ByClassNamesEventStream
     {
         $result = [];
 
         foreach ($this->events as $events) {
             /** @var EventWithMetaData[] $events */
-            foreach ($events as $eventWithMetaData) {
+            foreach ($events as $key => $eventWithMetaData) {
                 if ($this->eventHasAnyOfThisClasses($eventWithMetaData->getEvent(), $eventClasses)) {
-                    $result[] = $eventWithMetaData;
+                    $result[$key][] = $eventWithMetaData;
                 }
             }
         }

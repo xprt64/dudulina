@@ -9,6 +9,7 @@ use Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\EventStore;
+use Gica\Cqrs\EventStore\ByClassNamesEventStream;
 use Gica\Cqrs\EventStore\Debug\DumpEventsByClass;
 use Gica\Cqrs\EventStore\EventStream;
 use Psr\Log\LoggerInterface;
@@ -41,7 +42,7 @@ class DumpEventsByClassTest extends \PHPUnit_Framework_TestCase
             ),
         ];
 
-        $eventStream = $this->getMockBuilder(EventStream::class)
+        $eventStream = $this->getMockBuilder(ByClassNamesEventStream::class)
             ->getMock();
         $eventStream->expects($this->once())
             ->method('getIterator')
