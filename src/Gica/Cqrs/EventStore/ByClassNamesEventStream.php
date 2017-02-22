@@ -10,6 +10,8 @@ interface ByClassNamesEventStream extends EventStream
 
     public function afterSequence(int $sequenceNumber);
 
+    public function beforeSequence(int $sequenceNumber);
+
     public function countCommits():int;
 
     /**
