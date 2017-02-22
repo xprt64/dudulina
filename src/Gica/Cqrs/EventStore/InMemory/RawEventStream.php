@@ -25,6 +25,24 @@ class RawEventStream implements ByClassNamesEventStream
 
     public function getIterator()
     {
+        $groupedEvents = $this->fetchCommits();
+
+        $deGrouper = new IteratorExpander(function ($group) {
+            foreach ($group as $event) {
+                yield $event;
+            }
+        });
+
+        $events = iterator_to_array($deGrouper($groupedEvents));
+
+        return new \ArrayIterator($events);
+    }
+
+    /**
+     * @return array|\ArrayIterator
+     */
+    public function fetchCommits()
+    {
         $groupedEvents = $this->groupedEventsArray;
 
         if ($this->groupedEventsArray instanceof \Iterator || $this->groupedEventsArray instanceof \IteratorAggregate) {
@@ -39,15 +57,7 @@ class RawEventStream implements ByClassNamesEventStream
             $groupedEvents = array_slice($groupedEvents, 0, $this->limit);
         }
 
-        $deGrouper = new IteratorExpander(function ($group) {
-            foreach ($group as $event) {
-                yield $event;
-            }
-        });
-
-        $events = iterator_to_array($deGrouper($groupedEvents));
-
-        return new \ArrayIterator($events);
+        return $groupedEvents;
     }
 
     public function limitCommits(int $limit)
@@ -60,7 +70,7 @@ class RawEventStream implements ByClassNamesEventStream
         $this->skip = $numberOfCommits;
     }
 
-    public function countCommits():int
+    public function countCommits(): int
     {
         return count($this->groupedEventsArray);
     }
