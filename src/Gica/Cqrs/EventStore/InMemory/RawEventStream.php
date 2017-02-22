@@ -59,4 +59,9 @@ class RawEventStream implements ByClassNamesEventStream
     {
         $this->skip = $numberOfCommits;
     }
+
+    public function countCommits():int
+    {
+        return count($this->groupedEventsArray);
+    }
 }

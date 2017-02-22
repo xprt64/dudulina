@@ -35,5 +35,7 @@ class RawEventStreamTest extends \PHPUnit_Framework_TestCase
         $sut->skipCommits(1);
         $sut->limitCommits(1);
         $this->assertEquals([3, 4], iterator_to_array($sut->getIterator()));
+
+        $this->assertEquals(3, $sut->countCommits());
     }
 }

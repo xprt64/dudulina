@@ -10,4 +10,5 @@ interface ByClassNamesEventStream extends EventStream
 
     public function skipCommits(int $numberOfCommits);
 
+    public function countCommits():int;
 }
