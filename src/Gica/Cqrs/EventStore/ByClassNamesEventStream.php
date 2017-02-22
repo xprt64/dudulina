@@ -13,7 +13,7 @@ interface ByClassNamesEventStream extends EventStream
     public function countCommits():int;
 
     /**
-     * @return array|\ArrayIterator
+     * @return EventsCommit[]|\ArrayIterator
      */
     public function fetchCommits();
 }
