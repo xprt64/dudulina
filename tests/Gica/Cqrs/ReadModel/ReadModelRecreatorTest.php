@@ -7,7 +7,7 @@ namespace tests\Gica\Cqrs\ReadModel;
 use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener;
 use Gica\Cqrs\EventStore;
-use Gica\Cqrs\EventStore\InMemory\RawEventStream;
+use Gica\Cqrs\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
 use Gica\Cqrs\ReadModel\ReadModelInterface;
 use Gica\Cqrs\ReadModel\ReadModelRecreator;
 use Psr\Log\LoggerInterface;
@@ -29,7 +29,7 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
             new Event2,
         ];
 
-        $eventStream = new RawEventStream($events);
+        $eventStream = new FilteredRawEventStreamGroupedByCommit($events);
 
         $eventsApplier->expects($this->once())
             ->method('applyEventsOnListener')

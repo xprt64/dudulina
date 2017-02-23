@@ -8,7 +8,7 @@ namespace Gica\Cqrs;
 
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\EventStore\AggregateEventStream;
-use Gica\Cqrs\EventStore\ByClassNamesEventStream;
+use Gica\Cqrs\EventStore\EventStreamGroupedByCommit;
 
 interface EventStore
 {
@@ -24,7 +24,7 @@ interface EventStore
      */
     public function appendEventsForAggregate($aggregateId, string $aggregateClass, $eventsWithMetaData, int $expectedVersion, int $expectedSequence);
 
-    public function loadEventsByClassNames(array $eventClasses): ByClassNamesEventStream;
+    public function loadEventsByClassNames(array $eventClasses): EventStreamGroupedByCommit;
 
     public function getAggregateVersion(string $aggregateClass, $aggregateId);
 

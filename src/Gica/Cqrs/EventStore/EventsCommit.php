@@ -4,6 +4,7 @@
 namespace Gica\Cqrs\EventStore;
 
 
+use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
 use Gica\Cqrs\Event\EventWithMetaData;
 
 class EventsCommit
@@ -55,5 +56,30 @@ class EventsCommit
     public function getEventsWithMetadata(): array
     {
         return $this->eventsWithMetadata;
+    }
+
+    public function filterEventsByClass(array $eventClasses): self
+    {
+        $events = array_filter($this->eventsWithMetadata, function (EventWithMetaData $eventWithMetaData) use ($eventClasses) {
+            return $this->eventHasAnyOfThisClasses($eventWithMetaData->getEvent(), $eventClasses);
+        });
+
+        return new self(
+            $this->sequence,
+            $this->version,
+            $events
+        );
+    }
+
+    private function eventHasAnyOfThisClasses($event, array $eventClasses)
+    {
+        foreach ($eventClasses as $eventClass) {
+
+            if ((new SubclassComparator())->isASubClassOrSameClass($event, $eventClass)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

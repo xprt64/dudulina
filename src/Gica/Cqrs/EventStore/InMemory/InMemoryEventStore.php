@@ -4,41 +4,50 @@
 namespace Gica\Cqrs\EventStore\InMemory;
 
 
-use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
 use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\EventStore;
 use Gica\Cqrs\EventStore\AggregateEventStream;
-use Gica\Cqrs\EventStore\ByClassNamesEventStream;
+use Gica\Cqrs\EventStore\EventsCommit;
+use Gica\Cqrs\EventStore\EventStreamGroupedByCommit;
 use Gica\Cqrs\EventStore\Exception\ConcurrentModificationException;
+use Gica\Iterator\IteratorTransformer\IteratorExpander;
 
 class InMemoryEventStore implements EventStore
 {
-    public $events = [];
+    /** @var EventsCommit[] */
+    public $commitsByAggregate = [];
     private $versions = [];
     private $latestSequence = 0;
 
     public function loadEventsForAggregate(string $aggregateClass, $aggregateId): AggregateEventStream
     {
-        return new InMemoryAggregateEventStream($this->getEventsArrayForAggregate($aggregateClass, $aggregateId), $aggregateClass, $aggregateId, $this->latestSequence);
+        return new InMemoryAggregateEventStream(
+            $this->getEventsArrayForAggregate($aggregateClass, $aggregateId), $aggregateClass, $aggregateId, $this->latestSequence);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function appendEventsForAggregate($aggregateId, string $aggregateClass, $eventsWithMetaData, int $expectedVersion, int $expectedSequence)
     {
         if ($this->getAggregateVersion($aggregateClass, $aggregateId) != $expectedVersion) {
             throw new ConcurrentModificationException();
         }
 
-        $this->addEventsToArrayForAggregate($aggregateId, $aggregateClass, $eventsWithMetaData);
-
-        $this->versions[$this->constructKey($aggregateClass, $aggregateId)] = $expectedVersion + 1;
-        $this->latestSequence = $expectedSequence + 1;
+        $this->appendEventsForAggregateWithoutChecking($aggregateId, $aggregateClass, $eventsWithMetaData, $expectedVersion, $expectedSequence);
     }
 
-    public function appendEventsForAggregateWithoutChecking($aggregateId, $aggregateClass, $newEvents)
+    public function appendEventsForAggregateWithoutChecking($aggregateId, $aggregateClass, $newEvents, int $expectedVersion, int $expectedSequence)
     {
-        $this->addEventsToArrayForAggregate($aggregateId, $aggregateClass, $this->decorateEventsWithMetadata($aggregateClass, $aggregateId, $newEvents));
+        $this->addEventsToArrayForAggregate(
+            $aggregateId,
+            $aggregateClass,
+            $this->decorateEventsWithMetadata($aggregateClass, $aggregateId, $newEvents),
+            $expectedVersion,
+            $expectedSequence
+        );
 
         $constructKey = $this->constructKey($aggregateClass, $aggregateId);
 
@@ -53,42 +62,35 @@ class InMemoryEventStore implements EventStore
     private function getEventsArrayForAggregate(string $aggregateClass, $aggregateId)
     {
         $aggregateKey = $this->constructKey($aggregateClass, $aggregateId);
-        return isset($this->events[$aggregateKey]) ? $this->events[$aggregateKey] : [];
+
+        return isset($this->commitsByAggregate[$aggregateKey])
+            ? $this->extractEventsFromCommits($this->commitsByAggregate[$aggregateKey])
+            : [];
     }
 
-    private function addEventsToArrayForAggregate($aggregateId, $aggregateClass, $newEvents)
+    private function addEventsToArrayForAggregate($aggregateId, $aggregateClass, $newEvents, int $expectedVersion, int $expectedSequence)
     {
-        foreach ($newEvents as $event) {
-            $this->events[$this->constructKey($aggregateClass, $aggregateId)][] = $event;
-        }
+        $this->commitsByAggregate[$this->constructKey($aggregateClass, $aggregateId)][] = new EventsCommit(
+            $expectedSequence, $expectedVersion, $newEvents
+        );
     }
 
-    public function loadEventsByClassNames(array $eventClasses): ByClassNamesEventStream
+    public function loadEventsByClassNames(array $eventClasses): EventStreamGroupedByCommit
     {
-        $result = [];
+        $commits = iterator_to_array((new IteratorExpander(function ($aggregateCommits) {
+            yield from $aggregateCommits;
+        }))($this->commitsByAggregate));
 
-        foreach ($this->events as $events) {
-            /** @var EventWithMetaData[] $events */
-            foreach ($events as $key => $eventWithMetaData) {
-                if ($this->eventHasAnyOfThisClasses($eventWithMetaData->getEvent(), $eventClasses)) {
-                    $result[$key][] = $eventWithMetaData;
-                }
-            }
-        }
-
-        return new RawEventStream($result);
+        return new FilteredRawEventStreamGroupedByCommit($commits, $eventClasses);
     }
 
-    private function eventHasAnyOfThisClasses($event, array $eventClasses)
+    private function extractEventsFromCommits(array $commits = [])
     {
-        foreach ($eventClasses as $eventClass) {
+        $eventsExtracter = new IteratorExpander(function (EventsCommit $commit) {
+            yield from $commit->getEventsWithMetadata();
+        });
 
-            if ((new SubclassComparator())->isASubClassOrSameClass($event, $eventClass)) {
-                return true;
-            }
-        }
-
-        return false;
+        return iterator_to_array($eventsExtracter($commits));
     }
 
     public function getAggregateVersion(string $aggregateClass, $aggregateId)
@@ -106,7 +108,11 @@ class InMemoryEventStore implements EventStore
      */
     public function decorateEventsWithMetadata($aggregateClass, $aggregateId, array $priorEvents)
     {
-        return array_map(function (Event $event) use ($aggregateClass, $aggregateId) {
+        return array_map(function ($event) use ($aggregateClass, $aggregateId) {
+            if ($event instanceof EventWithMetaData) {
+                return $event;
+            }
+
             return new EventWithMetaData($event, new MetaData(
                 $aggregateId, $aggregateClass, new \DateTimeImmutable(), null
             ));

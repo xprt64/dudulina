@@ -120,12 +120,12 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
         $aggregateClass = \stdClass::class;
         $aggregateId = 123;
 
-        $store->appendEventsForAggregateWithoutChecking($aggregateId, $aggregateClass, [$event1, $event2]);
+        $store->appendEventsForAggregateWithoutChecking($aggregateId, $aggregateClass, [$event1, $event2], 0, 0);
 
         $this->assertEquals(1, $store->getAggregateVersion($aggregateClass, $aggregateId));
         $this->assertEquals(1, $store->fetchLatestSequence());
 
-        $store->appendEventsForAggregateWithoutChecking($aggregateId, $aggregateClass, [$event1, $event2]);
+        $store->appendEventsForAggregateWithoutChecking($aggregateId, $aggregateClass, [$event1, $event2], 1, 1);
 
         $this->assertEquals(2, $store->getAggregateVersion($aggregateClass, $aggregateId));
         $this->assertEquals(2, $store->fetchLatestSequence());
