@@ -38,7 +38,7 @@ class RawEventStreamTest extends \PHPUnit_Framework_TestCase
 
 
         $sut = new FilteredRawEventStreamGroupedByCommit($eventCommits);
-        $sut->afterSequenceAndAscending(100);
+        $sut->afterSequence(100);
         $this->assertEquals([3, 4, 5, 6], iterator_to_array($sut->getIterator()));
 
         $sut = new FilteredRawEventStreamGroupedByCommit($eventCommits);
@@ -46,15 +46,21 @@ class RawEventStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([1, 2, 3, 4], iterator_to_array($sut->getIterator()));
 
         $sut = new FilteredRawEventStreamGroupedByCommit($eventCommits);
-        $sut->afterSequenceAndAscending(100);
+        $sut->afterSequence(100);
         $sut->limitCommits(1);
         $this->assertEquals([3, 4], iterator_to_array($sut->getIterator()));
         $this->assertEquals(2, $sut->countCommits());
 
         $sut = new FilteredRawEventStreamGroupedByCommit($eventCommits);
-        $sut->beforeSequenceAndDescending(300);
-        $this->assertEquals([3, 4, 1, 2], iterator_to_array($sut->getIterator()));
+        $sut->beforeSequence(300);
+        $this->assertEquals([1, 2, 3, 4], iterator_to_array($sut->getIterator()));
         $this->assertEquals(2, $sut->countCommits());
+
+        $sut = new FilteredRawEventStreamGroupedByCommit($eventCommits);
+        $sut->afterSequence(100);
+        $sut->beforeSequence(300);
+        $this->assertEquals([3, 4], iterator_to_array($sut->getIterator()));
+        $this->assertEquals(1, $sut->countCommits());
     }
 
     public function testWithEventClasses()

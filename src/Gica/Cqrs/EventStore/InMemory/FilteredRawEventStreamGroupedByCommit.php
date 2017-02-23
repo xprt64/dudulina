@@ -25,7 +25,6 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
     /** @var  int|null */
     private $beforeSequenceNumber;
 
-    private $sortAscending = true;
     /**
      * @var array
      */
@@ -61,7 +60,7 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
             $commits = array_slice($commits, 0, $this->limit);
         }
 
-        return $commits;
+        return $this->sortCommits($commits);
     }
 
     public function limitCommits(int $limit)
@@ -69,10 +68,9 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
         $this->limit = $limit;
     }
 
-    public function afterSequenceAndAscending(int $sequenceNumber)
+    public function afterSequence(int $sequenceNumber)
     {
         $this->afterSequenceNumber = $sequenceNumber;
-        $this->sortAscending = true;
     }
 
     public function countCommits(): int
@@ -80,10 +78,9 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
         return count($this->fetchCommitsWithoutLimit());
     }
 
-    public function beforeSequenceAndDescending(int $sequenceNumber)
+    public function beforeSequence(int $sequenceNumber)
     {
         $this->beforeSequenceNumber = $sequenceNumber;
-        $this->sortAscending = false;
     }
 
     /**
@@ -93,11 +90,7 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
     private function sortCommits(array $eventCommits)
     {
         usort($eventCommits, function (EventsCommit $first, EventsCommit $second) {
-            if ($this->sortAscending) {
-                return $first->getSequence() <=> $second->getSequence();
-            } else {
-                return $second->getSequence() <=> $first->getSequence();
-            }
+            return $first->getSequence() <=> $second->getSequence();
         });
 
         return $eventCommits;
@@ -113,8 +106,9 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
             $eventCommits = array_filter($eventCommits, function (EventsCommit $commit) {
                 return $commit->getSequence() > $this->afterSequenceNumber;
             });
+        }
 
-        } else if ($this->beforeSequenceNumber) {
+        if ($this->beforeSequenceNumber) {
             $eventCommits = array_filter($eventCommits, function (EventsCommit $commit) {
                 return $commit->getSequence() < $this->beforeSequenceNumber;
             });
@@ -135,7 +129,7 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
      */
     private function fetchCommitsWithoutLimit()
     {
-        return $this->sortCommits($this->filterCommits($this->eventCommits));
+        return $this->filterCommits($this->eventCommits);
     }
 
 
