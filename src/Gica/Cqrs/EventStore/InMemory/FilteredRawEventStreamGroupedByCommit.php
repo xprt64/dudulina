@@ -30,6 +30,10 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
      */
     private $eventClasses;
 
+    /**
+     * @param  EventsCommit[] $eventCommits
+     * @param array $eventClasses
+     */
     public function __construct($eventCommits, array $eventClasses = [])
     {
         $this->eventCommits = $eventCommits;

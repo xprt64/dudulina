@@ -5,8 +5,10 @@ namespace tests\Gica\Cqrs\ReadModel;
 
 
 use Gica\Cqrs\Event;
-use Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener;
+use Gica\Cqrs\Event\EventWithMetaData;
+use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\EventStore;
+use Gica\Cqrs\EventStore\EventsCommit;
 use Gica\Cqrs\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
 use Gica\Cqrs\ReadModel\ReadModelInterface;
 use Gica\Cqrs\ReadModel\ReadModelRecreator;
@@ -21,19 +23,19 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
         $eventStore = $this->getMockBuilder(EventStore::class)
             ->getMock();
 
-        $eventsApplier = $this->getMockBuilder(EventsApplierOnListener::class)
+        /** @var MetaData $metadata */
+        $metadata = $this->getMockBuilder(MetaData::class)
+            ->disableOriginalConstructor()
             ->getMock();
 
+
+        /** @var EventWithMetaData[] $events */
         $events = [
-            new Event1,
-            new Event2,
+            new EventWithMetaData(new Event1, $metadata),
+            new EventWithMetaData(new Event2, $metadata),
         ];
 
-        $eventStream = new FilteredRawEventStreamGroupedByCommit($events);
-
-        $eventsApplier->expects($this->once())
-            ->method('applyEventsOnListener')
-            ->with($this->isInstanceOf(ReadModel::class), $eventStream);
+        $eventStream = new FilteredRawEventStreamGroupedByCommit([new EventsCommit(1, 1, $events)]);
 
         /** @var LoggerInterface $logger */
         $logger = $this->getMockBuilder(LoggerInterface::class)
@@ -45,20 +47,25 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
             ->willReturn($eventStream);
 
         /** @var EventStore $eventStore */
-        /** @var EventsApplierOnListener $eventsApplier */
 
         $sut = new ReadModelRecreator(
             $eventStore,
-            $eventsApplier,
             $logger
         );
 
-        $sut->recreateRead(new ReadModel());
+        $readModel = new ReadModel();
+
+        $sut->recreateRead($readModel);
+
+        $this->assertSame(1, $readModel->onEvent1Called);
+        $this->assertSame(1, $readModel->onEvent2Called);
     }
 }
 
 class ReadModel implements ReadModelInterface
 {
+    public $onEvent1Called = 0;
+    public $onEvent2Called = 0;
 
     public function clearModel()
     {
@@ -70,11 +77,13 @@ class ReadModel implements ReadModelInterface
 
     public function onEvent1(Event1 $event)
     {
+        $this->onEvent1Called++;
         return $event;
     }
 
     public function onEvent2(Event2 $event)
     {
+        $this->onEvent2Called++;
         return $event;
     }
 

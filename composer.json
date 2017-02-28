@@ -22,11 +22,11 @@
   "require": {
     "php": "^7.0",
     "xprt64/types": "^1.0",
-    "xprt64/code-analysis": "^1.1.2",
     "xprt64/iterator": "^1.0",
     "xprt64/dependency": "^1.0",
     "xprt64/filesystem": "^1.0.1",
-    "psr/log": "^1.0"
+    "psr/log": "^1.0",
+    "xprt64/code-analysis": "^1.1.5"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.4"

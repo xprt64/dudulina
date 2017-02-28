@@ -5,13 +5,12 @@ namespace tests\Gica\Cqrs\EventStore\Debug;
 
 
 use Gica\Cqrs\Event;
-use Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\EventStore;
-use Gica\Cqrs\EventStore\EventStreamGroupedByCommit;
 use Gica\Cqrs\EventStore\Debug\DumpEventsByClass;
 use Gica\Cqrs\EventStore\EventStream;
+use Gica\Cqrs\EventStore\EventStreamGroupedByCommit;
 use Psr\Log\LoggerInterface;
 
 
@@ -61,7 +60,6 @@ class DumpEventsByClassTest extends \PHPUnit_Framework_TestCase
 
         $sut = new DumpEventsByClass(
             $eventStore,
-            new EventsApplierOnListener(),
             $logger
         );
 

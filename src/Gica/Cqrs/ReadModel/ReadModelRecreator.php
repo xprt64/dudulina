@@ -6,9 +6,12 @@
 namespace Gica\Cqrs\ReadModel;
 
 
-use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
-use Gica\Cqrs\Event;
-use Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener;
+use Gica\CodeAnalysis\MethodListenerDiscovery;
+use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
+use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerMethod;
+use Gica\CodeAnalysis\Shared\ClassSorter\ByConstructorDependencySorter;
+use Gica\Cqrs\Command\CodeAnalysis\ReadModelEventHandlerDetector;
+use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\EventStore;
 use Psr\Log\LoggerInterface;
 
@@ -20,77 +23,78 @@ class ReadModelRecreator
      */
     private $eventStore;
     /**
-     * @var EventsApplierOnListener
-     */
-    private $eventsApplierOnListener;
-    /**
      * @var LoggerInterface
      */
     private $logger;
 
     public function __construct(
         EventStore $eventStore,
-        EventsApplierOnListener $eventsApplier,
         LoggerInterface $logger
     )
     {
         $this->eventStore = $eventStore;
-        $this->eventsApplierOnListener = $eventsApplier;
         $this->logger = $logger;
     }
 
     public function recreateRead(ReadModelInterface $readModel)
     {
-        $eventClasses = $this->getListenerEventClasses(get_class($readModel));
+        $discoverer = new MethodListenerDiscovery(
+            new ReadModelEventHandlerDetector(),
+            new AnyPhpClassIsAccepted(),
+            new ByConstructorDependencySorter()
+        );
+
+        $allMethods = $discoverer->findListenerMethodsInClass(get_class($readModel));
+
+        $eventClasses = $this->getEventClassesFromMethods($allMethods);
 
         $this->logger->info(print_r($eventClasses, true));
         $this->logger->info("loading events...");
+
         $allEvents = $this->eventStore->loadEventsByClassNames($eventClasses);
 
         $this->logger->info("applying events...");
 
-        $this->eventsApplierOnListener->applyEventsOnListener($readModel, $allEvents);
+        foreach ($allEvents as $eventWithMetadata) {
+            /** @var EventWithMetaData $eventWithMetadata */
+            $methods = $this->findMethodsByEventClass(get_class($eventWithMetadata->getEvent()), $allMethods);
+
+            foreach ($methods as $method) {
+
+                call_user_func([$readModel, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
+            }
+        }
     }
 
-    private function getListenerEventClasses(string $readModelClass)
+    /**
+     * @param ListenerMethod[] $methods
+     * @return array
+     */
+    private function getEventClassesFromMethods($methods)
+    {
+        $eventClasses = [];
+        foreach ($methods as $listenerMethod) {
+            $eventClasses[] = $listenerMethod->getEventClassName();
+        }
+
+        return $eventClasses;
+    }
+
+    /**
+     * @param string $eventClass
+     * @param ListenerMethod[] $allMethods
+     * @return ListenerMethod[]
+     */
+    private function findMethodsByEventClass(string $eventClass, $allMethods)
     {
         $result = [];
 
-        $classReflection = new \ReflectionClass($readModelClass);
-
-        foreach ($classReflection->getMethods() as $reflectionMethod) {
-            $eventClass = $this->tryToExtractEventClassFromMethod($reflectionMethod);
-
-            if (false !== $eventClass) {
-                $result[] = $eventClass;
+        foreach ($allMethods as $listenerMethod) {
+            if ($listenerMethod->getEventClassName() == $eventClass) {
+                $result[] = $listenerMethod;
             }
         }
 
         return $result;
-    }
-
-    private function tryToExtractEventClassFromMethod(\ReflectionMethod $reflectionMethod)
-    {
-        foreach ($reflectionMethod->getParameters() as $reflectionParameter) {
-            $eventClass = $this->tryToExtractEventClassFromParameter($reflectionParameter);
-
-            if (false !== $eventClass) {
-                return $eventClass;
-            }
-        }
-
-        return false;
-    }
-
-    private function tryToExtractEventClassFromParameter(\ReflectionParameter $reflectionParameter)
-    {
-        if (!$reflectionParameter->getClass())
-            return false;
-
-        if ((new SubclassComparator())->isASubClassButNoSameClass($reflectionParameter->getClass()->name, Event::class)) {
-            return $reflectionParameter->getClass()->name;
-        }
-
-        return false;
     }
 }

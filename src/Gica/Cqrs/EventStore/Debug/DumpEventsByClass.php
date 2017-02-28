@@ -6,7 +6,6 @@
 namespace Gica\Cqrs\EventStore\Debug;
 
 
-use Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener;
 use Gica\Cqrs\EventStore;
 use Psr\Log\LoggerInterface;
 
@@ -18,22 +17,16 @@ class DumpEventsByClass
      */
     private $eventStore;
     /**
-     * @var \Gica\Cqrs\Event\EventsApplier\EventsApplierOnListener
-     */
-    private $eventsApplierOnListener;
-    /**
      * @var LoggerInterface
      */
     private $logger;
 
     public function __construct(
         EventStore $eventStore,
-        EventsApplierOnListener $eventsApplier,
         LoggerInterface $logger
     )
     {
         $this->eventStore = $eventStore;
-        $this->eventsApplierOnListener = $eventsApplier;
         $this->logger = $logger;
     }
 
