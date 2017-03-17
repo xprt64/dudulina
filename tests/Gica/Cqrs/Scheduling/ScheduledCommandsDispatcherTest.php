@@ -5,8 +5,8 @@ namespace tests\Gica\Cqrs\Scheduling;
 
 
 use Gica\Cqrs\Command\CommandDispatcher;
-use Gica\Cqrs\ScheduledCommandStore;
 use Gica\Cqrs\Scheduling\ScheduledCommand;
+use Gica\Cqrs\Scheduling\ScheduledCommandStore;
 use Gica\Cqrs\Scheduling\ScheduledCommandsDispatcher;
 
 
@@ -18,9 +18,6 @@ class ScheduledCommandsDispatcherTest extends \PHPUnit_Framework_TestCase
         $command = $this->getMockBuilder(ScheduledCommand::class)
             ->getMock();
 
-        $commandStore = $this->getMockBuilder(ScheduledCommandStore::class)
-            ->getMock();
-
         $commandDispacther = $this->getMockBuilder(CommandDispatcher::class)
             ->disableOriginalConstructor()
             ->setMethods(['dispatchCommand'])
@@ -29,6 +26,9 @@ class ScheduledCommandsDispatcherTest extends \PHPUnit_Framework_TestCase
         $commandDispacther->expects($this->once())
             ->method('dispatchCommand')
             ->with($command);
+
+        $commandStore = $this->getMockBuilder(ScheduledCommandStore::class)
+            ->getMock();
 
         $commandStore->expects($this->once())
             ->method('loadAndProcessScheduledCommands')

@@ -19,8 +19,8 @@ use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\Event\ScheduledEvent;
 use Gica\Cqrs\FutureEventsStore;
-use Gica\Cqrs\ScheduledCommandStore;
 use Gica\Cqrs\Scheduling\ScheduledCommand;
+use Gica\Cqrs\Scheduling\ScheduledCommandStore;
 use Gica\Cqrs\Scheduling\ScheduledMessage;
 
 class CommandDispatcher
@@ -77,7 +77,7 @@ class CommandDispatcher
      * @param CommandValidator $commandValidator
      * @param AuthenticatedIdentityReaderService $authService
      * @param FutureEventsStore|null $futureEventsStore
-     * @param ScheduledCommandStore|null $commandStore
+     * @param \Gica\Cqrs\Scheduling\ScheduledCommandStore|null $commandStore
      * @param EventsApplierOnAggregate $eventsApplier
      */
     public function __construct(

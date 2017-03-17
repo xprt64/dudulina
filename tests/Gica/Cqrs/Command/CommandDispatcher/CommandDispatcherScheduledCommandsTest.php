@@ -19,8 +19,8 @@ use Gica\Cqrs\Event\EventDispatcher\EventDispatcherBySubscriber;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\EventStore\InMemory\InMemoryEventStore;
-use Gica\Cqrs\ScheduledCommandStore;
 use Gica\Cqrs\Scheduling\ScheduledCommand;
+use Gica\Cqrs\Scheduling\ScheduledCommandStore;
 
 class CommandDispatcherScheduledCommandsTest extends \PHPUnit_Framework_TestCase
 {

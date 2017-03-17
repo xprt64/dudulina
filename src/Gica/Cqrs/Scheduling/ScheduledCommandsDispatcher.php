@@ -7,7 +7,6 @@ namespace Gica\Cqrs\Scheduling;
 
 
 use Gica\Cqrs\Command\CommandDispatcher;
-use Gica\Cqrs\ScheduledCommandStore;
 
 class ScheduledCommandsDispatcher
 {
