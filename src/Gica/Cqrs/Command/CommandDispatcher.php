@@ -16,9 +16,12 @@ use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventDispatcher;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
 use Gica\Cqrs\Event\EventWithMetaData;
-use Gica\Cqrs\Event\FutureEvent;
 use Gica\Cqrs\Event\MetaData;
+use Gica\Cqrs\Event\ScheduledEvent;
 use Gica\Cqrs\FutureEventsStore;
+use Gica\Cqrs\ScheduledCommandStore;
+use Gica\Cqrs\Scheduling\ScheduledCommand;
+use Gica\Cqrs\Scheduling\ScheduledMessage;
 
 class CommandDispatcher
 {
@@ -60,7 +63,23 @@ class CommandDispatcher
      * @var EventsApplierOnAggregate
      */
     private $eventsApplierOnAggregate;
+    /**
+     * @var ScheduledCommandStore|null
+     */
+    private $scheduledCommandStore;
 
+    /**
+     * @param CommandSubscriber $commandSubscriber
+     * @param EventDispatcher $eventDispatcher
+     * @param CommandApplier $commandApplier
+     * @param AggregateRepository $aggregateRepository
+     * @param ConcurrentProofFunctionCaller $functionCaller
+     * @param CommandValidator $commandValidator
+     * @param AuthenticatedIdentityReaderService $authService
+     * @param FutureEventsStore|null $futureEventsStore
+     * @param ScheduledCommandStore|null $commandStore
+     * @param EventsApplierOnAggregate $eventsApplier
+     */
     public function __construct(
         CommandSubscriber $commandSubscriber,
         EventDispatcher $eventDispatcher,
@@ -69,8 +88,9 @@ class CommandDispatcher
         ConcurrentProofFunctionCaller $functionCaller,
         CommandValidator $commandValidator,
         AuthenticatedIdentityReaderService $authService,
-        FutureEventsStore $futureEventsStore,
-        EventsApplierOnAggregate $eventsApplier
+        ?FutureEventsStore $futureEventsStore = null,
+        EventsApplierOnAggregate $eventsApplier,
+        ?ScheduledCommandStore $commandStore = null
     )
     {
         $this->commandSubscriber = $commandSubscriber;
@@ -82,6 +102,7 @@ class CommandDispatcher
         $this->authenticatedIdentityServiceReader = $authService;
         $this->futureEventsStore = $futureEventsStore;
         $this->eventsApplierOnAggregate = $eventsApplier;
+        $this->scheduledCommandStore = $commandStore;
     }
 
     public function dispatchCommand(Command $command)
@@ -93,7 +114,9 @@ class CommandDispatcher
         }
 
         /** @var EventWithMetaData[] $eventsWithMetaData */
-        list($eventsWithMetaData, $futureEventsWithMeta) = $this->concurrentProofFunctionCaller->executeFunction(function () use ($command) {
+        /** @var ScheduledCommand[] $scheduledCommands */
+
+        list($eventsWithMetaData, $futureEventsWithMeta, $scheduledCommands) = $this->concurrentProofFunctionCaller->executeFunction(function () use ($command) {
             return $this->tryDispatchCommandAndSaveAggregate($command);
         }, self::MAXIMUM_SAVE_RETRIES);
 
@@ -101,7 +124,13 @@ class CommandDispatcher
             $this->eventDispatcher->dispatchEvent($eventWithMetaData);
         }
 
-        $this->futureEventsStore->scheduleEvents($futureEventsWithMeta);
+        if ($this->futureEventsStore) {
+            $this->futureEventsStore->scheduleEvents($futureEventsWithMeta);
+        }
+
+        if ($this->scheduledCommandStore && $scheduledCommands) {
+            $this->scheduledCommandStore->scheduleCommands($scheduledCommands);
+        }
     }
 
     private function tryDispatchCommandAndSaveAggregate(Command $command)
@@ -110,31 +139,34 @@ class CommandDispatcher
 
         $eventsWithMetaData = $this->applyCommandAndReturnEvents($command, $handlerAndAggregate);
 
-        list($eventsForNow, $eventsForTheFuture) = $this->splitFutureEvents($eventsWithMetaData);
+        list($eventsForNow, $eventsForTheFuture, $scheduledCommands) = $this->splitMessagesByType($eventsWithMetaData);
 
         $this->aggregateRepository->saveAggregate($command->getAggregateId(), $handlerAndAggregate->getAggregate(), $eventsForNow);
 
-        return [$eventsForNow, $eventsForTheFuture];
+        return [$eventsForNow, $eventsForTheFuture, $scheduledCommands];
     }
 
     /**
-     * @param EventWithMetaData[] $decoratedEvents
+     * @param EventWithMetaData[]|ScheduledCommand[] $messages
      * @return array
      */
-    private function splitFutureEvents($decoratedEvents)
+    private function splitMessagesByType($messages)
     {
         $nowEvents = [];
         $futureEvents = [];
+        $scheduledCommands = [];
 
-        foreach ($decoratedEvents as $decoratedEvent) {
-            if ($this->isFutureEvent($decoratedEvent->getEvent())) {
-                $futureEvents[] = $decoratedEvent;
+        foreach ($messages as $message) {
+            if ($this->isScheduledCommand($message)) {
+                $scheduledCommands[] = $message;
+            } else if ($this->isScheduledEvent($message->getEvent())) {
+                $futureEvents[] = $message;
             } else {
-                $nowEvents[] = $decoratedEvent;
+                $nowEvents[] = $message;
             }
         }
 
-        return [$nowEvents, $futureEvents];
+        return [$nowEvents, $futureEvents, $scheduledCommands];
     }
 
     public function canExecuteCommand(Command $command): bool
@@ -169,7 +201,7 @@ class CommandDispatcher
     /**
      * @param Command $command
      * @param CommandHandlerAndAggregate $handlerAndAggregate
-     * @return EventWithMetaData[]
+     * @return EventWithMetaData[]|ScheduledCommand[]
      */
     private function applyCommandAndReturnEvents(Command $command, CommandHandlerAndAggregate $handlerAndAggregate)
     {
@@ -178,27 +210,39 @@ class CommandDispatcher
 
         $metaData = $this->factoryMetadata($command, $aggregate);
 
-        $newEventsGenerator = $this->commandApplier->applyCommand($aggregate, $command, $handler->getMethodName());
+        $newMessageGenerator = $this->commandApplier->applyCommand($aggregate, $command, $handler->getMethodName());
 
-        /** @var EventWithMetaData[] $eventsWithMetaData */
+        /** @var EventWithMetaData[]|ScheduledCommand[] $eventsWithMetaData */
         $eventsWithMetaData = [];
 
-        foreach ($newEventsGenerator as $event) {
-            $eventWithMetaData = $this->decorateEventWithMetaData($event, $metaData);
-
-            if (!$this->isFutureEvent($event)) {
-                $this->eventsApplierOnAggregate->applyEventsOnAggregate($aggregate, [$eventWithMetaData]);
+        foreach ($newMessageGenerator as $message) {
+            if ($this->isScheduledCommand($message)) {
+                $eventsWithMetaData[] = $message;
+            } else {
+                $eventWithMetaData = $this->decorateEventWithMetaData($message, $metaData);
+                if (!$this->isScheduledMessage($message)) {
+                    $this->eventsApplierOnAggregate->applyEventsOnAggregate($aggregate, [$eventWithMetaData]);
+                }
+                $eventsWithMetaData[] = $eventWithMetaData;
             }
-
-            $eventsWithMetaData[] = $eventWithMetaData;
         }
 
         return $eventsWithMetaData;
     }
 
-    private function isFutureEvent($event): bool
+    private function isScheduledEvent($event): bool
     {
-        return $event instanceof FutureEvent;
+        return $event instanceof ScheduledEvent;
+    }
+
+    private function isScheduledCommand($message): bool
+    {
+        return $message instanceof ScheduledCommand;
+    }
+
+    private function isScheduledMessage($message): bool
+    {
+        return $message instanceof ScheduledMessage;
     }
 
     private function factoryMetadata(Command $command, $aggregate): MetaData

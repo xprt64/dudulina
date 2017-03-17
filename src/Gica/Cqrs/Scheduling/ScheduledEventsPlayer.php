@@ -3,7 +3,7 @@
  * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Gica\Cqrs\FutureEvents;
+namespace Gica\Cqrs\Scheduling;
 
 
 use Gica\Cqrs\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
@@ -46,7 +46,7 @@ class ScheduledEventsPlayer
 
     public function run()
     {
-        $this->futureEventsStore->loadAndProcessScheduledEvents(function (ScheduledEvent $scheduledEvent) {
+        $this->futureEventsStore->loadAndProcessScheduledEvents(function (ScheduledEventWithMetadata $scheduledEvent) {
 
             $this->saveEventToStore($scheduledEvent);
             $this->eventDispatcher->dispatchEvent($scheduledEvent->getEventWithMetaData());
@@ -54,7 +54,7 @@ class ScheduledEventsPlayer
         });
     }
 
-    private function saveEventToStore(ScheduledEvent $scheduledEvent)
+    private function saveEventToStore(ScheduledEventWithMetadata $scheduledEvent)
     {
         $this->concurrentProofFunctionCaller->executeFunction(function () use ($scheduledEvent) {
             $metaData = $scheduledEvent->getEventWithMetaData()->getMetaData();
@@ -63,7 +63,7 @@ class ScheduledEventsPlayer
         }, 9999);
     }
 
-    private function trySaveEventToStore(ScheduledEvent $scheduledEvent, $version)
+    private function trySaveEventToStore(ScheduledEventWithMetadata $scheduledEvent, $version)
     {
         $eventWithMetaData = $scheduledEvent->getEventWithMetaData();
         $metaData = $eventWithMetaData->getMetaData();

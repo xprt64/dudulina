@@ -3,7 +3,7 @@
  * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace tests\Gica\Cqrs\Command\CommandDispatcher\CommandDispatcherFutureEventsTest;
+namespace tests\Gica\Cqrs\Command\CommandDispatcher\CommandDispatcherScheduledCommandsTest;
 
 
 use Gica\Cqrs\Aggregate\AggregateRepository;
@@ -18,11 +18,11 @@ use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventDispatcher\EventDispatcherBySubscriber;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
 use Gica\Cqrs\Event\EventWithMetaData;
-use Gica\Cqrs\Event\ScheduledEvent;
 use Gica\Cqrs\EventStore\InMemory\InMemoryEventStore;
-use Gica\Cqrs\FutureEventsStore;
+use Gica\Cqrs\ScheduledCommandStore;
+use Gica\Cqrs\Scheduling\ScheduledCommand;
 
-class CommandDispatcherFutureEventsTest extends \PHPUnit_Framework_TestCase
+class CommandDispatcherScheduledCommandsTest extends \PHPUnit_Framework_TestCase
 {
 
     const AGGREGATE_ID = 123;
@@ -52,7 +52,7 @@ class CommandDispatcherFutureEventsTest extends \PHPUnit_Framework_TestCase
         $authenticatedIdentity = $this->getMockBuilder(AuthenticatedIdentityReaderService::class)
             ->getMock();
 
-        $futureEventsStore = new StubFutureEventsStore();
+        $scheduledCommandStore = new StubScheduledCommandStore();
 
         /** @var CommandValidator $commandValidator */
         $commandValidator = $this->getMockBuilder(CommandValidator::class)
@@ -67,36 +67,23 @@ class CommandDispatcherFutureEventsTest extends \PHPUnit_Framework_TestCase
             $concurrentProofFunctionCaller,
             $commandValidator,
             $authenticatedIdentity,
-            $futureEventsStore,
-            $eventsApplierOnAggregate
+            null,
+            $eventsApplierOnAggregate,
+            $scheduledCommandStore
         );
 
         $commandDispatcher->dispatchCommand($command);
 
-        $this->assertCount(1, $eventStore->loadEventsForAggregate($aggregateClass, $aggregateId));
+        $this->assertCount(1, $scheduledCommandStore->getCommands());
 
-        $this->assertCount(1, $futureEventsStore->scheduledEvents);
+        $scheduledCommand = $scheduledCommandStore->getCommands()[0];
 
-        /** @var EventWithMetaData $eventWithMetadata */
-        $eventWithMetadata = $futureEventsStore->scheduledEvents[0];
-
-        $this->assertInstanceOf(EventInTheFuture::class, $eventWithMetadata->getEvent());
-
-        $this->assertTrue($commandDispatcher->canExecuteCommand($command));
-        $this->assertCount(1, $eventStore->loadEventsForAggregate($aggregateClass, $aggregateId));
+        $this->assertInstanceOf(CommandInTheFuture::class, $scheduledCommand);
     }
 
-    private function mockCommand(): Command
+    private function mockCommand(): Command1
     {
-        $command = $this->getMockBuilder(Command1::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $command->expects($this->any())
-            ->method('getAggregateId')
-            ->willReturn(self::AGGREGATE_ID);
-
-        /** @var Command $command */
-        return $command;
+        return new Command1(self::AGGREGATE_ID);
     }
 
     private function mockCommandSubscriber(): CommandSubscriber
@@ -131,27 +118,33 @@ class CommandDispatcherFutureEventsTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-class StubFutureEventsStore implements FutureEventsStore
+class StubScheduledCommandStore implements ScheduledCommandStore
 {
-    public $scheduledEvents;
+    /**
+     * @var ScheduledCommand[]
+     */
+    private $commands = [];
 
-    public function loadAndProcessScheduledEvents(callable $eventProcessor/** function(ScheduledEventWithMetadata) */)
+    public function loadAndProcessScheduledCommands(callable $eventProcessor/** function(ScheduledCommand $scheduledCommand) */)
     {
-        // TODO: Implement loadAndProcessScheduledEvents() method.
     }
 
     /**
-     * @param \Gica\Cqrs\Event\EventWithMetaData[] $eventWithMetaData
+     * @param ScheduledCommand[] $scheduledCommands
      */
-    public function scheduleEvents($eventWithMetaData)
+    public function scheduleCommands($scheduledCommands)
     {
-        $this->scheduledEvents = $eventWithMetaData;
+        $this->commands = array_merge($this->commands, $scheduledCommands);
     }
 
-    public function scheduleEvent(Event\EventWithMetaData $eventWithMetaData, \DateTimeImmutable $date)
+    /**
+     * @return ScheduledCommand[]
+     */
+    public function getCommands()
     {
-        // TODO: Implement scheduleEvent() method.
+        return $this->commands;
     }
+
 }
 
 class Command1 implements \Gica\Cqrs\Command
@@ -176,20 +169,28 @@ class Command1 implements \Gica\Cqrs\Command
 
 class Aggregate1
 {
+    private $appliedCount = 0;
+
     public function handleCommand1(Command1 $command1)
     {
         yield new Event1($command1->getAggregateId());
-        yield new EventInTheFuture($command1->getAggregateId());
+        yield new CommandInTheFuture($command1->getAggregateId());
     }
 
-    public function applyEventInTheFuture(EventInTheFuture $event)
+    public function applyEvent1(Event1 $event)
     {
-        throw new \Exception("Should not be applied now");
+        $event->getAggregateId();
+        $this->appliedCount++;
+    }
+
+    public function getAppliedCount(): int
+    {
+        return $this->appliedCount;
     }
 }
 
 
-class EventInTheFuture implements Event, ScheduledEvent
+class CommandInTheFuture implements ScheduledCommand
 {
     /**
      * @var

@@ -3,10 +3,11 @@
  * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Gica\Cqrs\Event;
+namespace Gica\Cqrs\Scheduling;
 
 
-interface FutureEvent
+use Gica\Cqrs\Command;
+
+interface ScheduledCommand extends Command, ScheduledMessage
 {
-    public function getFireDate():\DateTimeImmutable;
 }

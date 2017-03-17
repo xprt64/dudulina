@@ -3,12 +3,12 @@
  * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Gica\Cqrs\FutureEvents;
+namespace Gica\Cqrs\Scheduling;
 
 
 use Gica\Cqrs\Event\EventWithMetaData;
 
-class ScheduledEvent
+class ScheduledEventWithMetadata
 {
     private $eventId;
     /**

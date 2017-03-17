@@ -9,7 +9,7 @@ use Gica\Cqrs\Event\EventWithMetaData;
 
 interface FutureEventsStore
 {
-    public function loadAndProcessScheduledEvents(callable $eventProcessor /** function(ScheduledEvent) */);
+    public function loadAndProcessScheduledEvents(callable $eventProcessor /** function(ScheduledEventWithMetadata) */);
 
     /**
      * @param EventWithMetaData[] $eventWithMetaData

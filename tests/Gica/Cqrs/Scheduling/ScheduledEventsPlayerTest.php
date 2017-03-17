@@ -9,9 +9,8 @@ use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventDispatcher;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\EventStore\InMemory\InMemoryEventStore;
-use Gica\Cqrs\FutureEvents\ScheduledEvent;
-use Gica\Cqrs\FutureEvents\ScheduledEventsPlayer;
 use Gica\Cqrs\FutureEventsStore;
+use Gica\Cqrs\Scheduling\ScheduledEventWithMetadata;
 
 
 class ScheduledEventsPlayerTest extends \PHPUnit_Framework_TestCase
@@ -41,7 +40,7 @@ class ScheduledEventsPlayerTest extends \PHPUnit_Framework_TestCase
         $futureEventStore->expects($this->once())
             ->method('loadAndProcessScheduledEvents')
             ->willReturnCallback(function ($processor) use ($eventWithMetadata) {
-                call_user_func($processor, new ScheduledEvent(1, $eventWithMetadata));
+                call_user_func($processor, new ScheduledEventWithMetadata(1, $eventWithMetadata));
             });
 
         $eventDispatcher = $this->getMockBuilder(EventDispatcher::class)
@@ -56,7 +55,7 @@ class ScheduledEventsPlayerTest extends \PHPUnit_Framework_TestCase
         /** @var FutureEventsStore $futureEventStore */
         /** @var EventDispatcher $eventDispatcher */
 
-        $sut = new ScheduledEventsPlayer(
+        $sut = new \Gica\Cqrs\Scheduling\ScheduledEventsPlayer(
             $futureEventStore,
             $eventDispatcher,
             $eventStore,

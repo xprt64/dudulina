@@ -5,7 +5,7 @@ namespace tests\Gica\Cqrs\FutureEvents;
 
 
 use Gica\Cqrs\Event\EventWithMetaData;
-use Gica\Cqrs\FutureEvents\ScheduledEvent;
+use Gica\Cqrs\Scheduling\ScheduledEventWithMetadata;
 
 
 class ScheduledEventTest extends \PHPUnit_Framework_TestCase
@@ -18,7 +18,7 @@ class ScheduledEventTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $sut = new ScheduledEvent(1, $eventWithMetadata);
+        $sut = new ScheduledEventWithMetadata(1, $eventWithMetadata);
 
         $this->assertSame(1, $sut->getEventId());
         $this->assertSame($eventWithMetadata, $sut->getEventWithMetaData());
