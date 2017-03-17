@@ -19,6 +19,7 @@ use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\Event\ScheduledEvent;
 use Gica\Cqrs\FutureEventsStore;
+use Gica\Cqrs\Scheduling\CommandScheduler;
 use Gica\Cqrs\Scheduling\ScheduledCommand;
 use Gica\Cqrs\Scheduling\ScheduledCommandStore;
 use Gica\Cqrs\Scheduling\ScheduledMessage;
@@ -66,7 +67,7 @@ class CommandDispatcher
     /**
      * @var ScheduledCommandStore|null
      */
-    private $scheduledCommandStore;
+    private $commandScheduler;
 
     /**
      * @param CommandSubscriber $commandSubscriber
@@ -77,7 +78,7 @@ class CommandDispatcher
      * @param CommandValidator $commandValidator
      * @param AuthenticatedIdentityReaderService $authService
      * @param FutureEventsStore|null $futureEventsStore
-     * @param \Gica\Cqrs\Scheduling\ScheduledCommandStore|null $commandStore
+     * @param CommandScheduler|null $commandScheduler
      * @param EventsApplierOnAggregate $eventsApplier
      */
     public function __construct(
@@ -90,7 +91,7 @@ class CommandDispatcher
         AuthenticatedIdentityReaderService $authService,
         ?FutureEventsStore $futureEventsStore = null,
         EventsApplierOnAggregate $eventsApplier,
-        ?ScheduledCommandStore $commandStore = null
+        ?CommandScheduler $commandScheduler = null
     )
     {
         $this->commandSubscriber = $commandSubscriber;
@@ -102,7 +103,7 @@ class CommandDispatcher
         $this->authenticatedIdentityServiceReader = $authService;
         $this->futureEventsStore = $futureEventsStore;
         $this->eventsApplierOnAggregate = $eventsApplier;
-        $this->scheduledCommandStore = $commandStore;
+        $this->commandScheduler = $commandScheduler;
     }
 
     public function dispatchCommand(Command $command)
@@ -128,8 +129,8 @@ class CommandDispatcher
             $this->futureEventsStore->scheduleEvents($futureEventsWithMeta);
         }
 
-        if ($this->scheduledCommandStore && $scheduledCommands) {
-            $this->scheduledCommandStore->scheduleCommands($scheduledCommands);
+        if ($this->commandScheduler && $scheduledCommands) {
+            $this->commandScheduler->scheduleCommands($scheduledCommands);
         }
     }
 
