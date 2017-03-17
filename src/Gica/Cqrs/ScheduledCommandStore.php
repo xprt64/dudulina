@@ -15,4 +15,6 @@ interface ScheduledCommandStore
      * @param ScheduledCommand[] $scheduledCommands
      */
     public function scheduleCommands($scheduledCommands);
+
+    public function cancelCommand($commandId);
 }
