@@ -6,11 +6,7 @@ namespace Gica\Cqrs\Scheduling;
 
 interface CommandScheduler
 {
-
-    /**
-     * @param ScheduledCommand[] $scheduledCommands
-     */
-    public function scheduleCommands($scheduledCommands);
+    public function scheduleCommand(ScheduledCommand $scheduledCommand, string $aggregateClass, $aggregateId);
 
     public function cancelCommand($commandId);
 }

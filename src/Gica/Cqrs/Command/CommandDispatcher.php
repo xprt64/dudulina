@@ -117,7 +117,7 @@ class CommandDispatcher
         /** @var EventWithMetaData[] $eventsWithMetaData */
         /** @var ScheduledCommand[] $scheduledCommands */
 
-        list($eventsWithMetaData, $futureEventsWithMeta, $scheduledCommands) = $this->concurrentProofFunctionCaller->executeFunction(function () use ($command) {
+        list($eventsWithMetaData, $futureEventsWithMeta, $scheduledCommands, $aggregateClass) = $this->concurrentProofFunctionCaller->executeFunction(function () use ($command) {
             return $this->tryDispatchCommandAndSaveAggregate($command);
         }, self::MAXIMUM_SAVE_RETRIES);
 
@@ -130,7 +130,10 @@ class CommandDispatcher
         }
 
         if ($this->commandScheduler && $scheduledCommands) {
-            $this->commandScheduler->scheduleCommands($scheduledCommands);
+            foreach($scheduledCommands as $scheduledCommand)
+            {
+                $this->commandScheduler->scheduleCommand($scheduledCommand, $aggregateClass, $command->getAggregateId());
+            }
         }
     }
 
@@ -144,7 +147,7 @@ class CommandDispatcher
 
         $this->aggregateRepository->saveAggregate($command->getAggregateId(), $handlerAndAggregate->getAggregate(), $eventsForNow);
 
-        return [$eventsForNow, $eventsForTheFuture, $scheduledCommands];
+        return [$eventsForNow, $eventsForTheFuture, $scheduledCommands, $handlerAndAggregate->getCommandHandler()->getHandlerClass()];
     }
 
     /**
