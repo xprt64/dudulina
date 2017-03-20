@@ -130,8 +130,7 @@ class CommandDispatcher
         }
 
         if ($this->commandScheduler && $scheduledCommands) {
-            foreach($scheduledCommands as $scheduledCommand)
-            {
+            foreach ($scheduledCommands as $scheduledCommand) {
                 $this->commandScheduler->scheduleCommand($scheduledCommand, $aggregateClass, $command->getAggregateId());
             }
         }
