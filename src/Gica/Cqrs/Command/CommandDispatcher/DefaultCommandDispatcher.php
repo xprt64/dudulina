@@ -22,7 +22,6 @@ use Gica\Cqrs\Event\ScheduledEvent;
 use Gica\Cqrs\FutureEventsStore;
 use Gica\Cqrs\Scheduling\CommandScheduler;
 use Gica\Cqrs\Scheduling\ScheduledCommand;
-use Gica\Cqrs\Scheduling\ScheduledCommandStore;
 
 class DefaultCommandDispatcher implements CommandDispatcher
 {
@@ -109,11 +108,11 @@ class DefaultCommandDispatcher implements CommandDispatcher
             $this->eventDispatcher->dispatchEvent($eventWithMetaData);
         }
 
-        if ($this->futureEventsStore && $futureEventsWithMeta) {
+        if ($this->futureEventsStore && !empty($futureEventsWithMeta)) {
             $this->futureEventsStore->scheduleEvents($futureEventsWithMeta);
         }
 
-        if ($this->commandScheduler && $scheduledCommands) {
+        if ($this->commandScheduler && !empty($scheduledCommands)) {
             foreach ($scheduledCommands as $scheduledCommand) {
                 $this->commandScheduler->scheduleCommand($scheduledCommand, $aggregateClass, $command->getAggregateId(), $metadata);
             }
