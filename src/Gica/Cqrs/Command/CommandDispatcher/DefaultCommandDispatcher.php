@@ -57,7 +57,7 @@ class DefaultCommandDispatcher implements CommandDispatcher
      */
     private $eventsApplierOnAggregate;
     /**
-     * @var ScheduledCommandStore|null
+     * @var CommandScheduler|null
      */
     private $commandScheduler;
     /**
