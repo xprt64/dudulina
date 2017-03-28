@@ -300,3 +300,32 @@ Similar to the Read Models, a map could be used to send events to Sagas. The too
 This tool parses the entire Domain folder and searches for saga event processors.
 The tool must be run after any event processor is created.
 
+
+## Scheduling ##
+
+### Event scheduling ###
+
+There is the possibility that the an `Aggregate` wants to postpone an event. This can be done if the `Aggregate` `yields`
+an `Event` that implements `\Gica\Cqrs\Event\ScheduledEvent`. The event class must implement two methods:
+
+```
+public function getFireDate():\DateTimeImmutable //returns the date that the event will be fired
+```
+
+and
+
+```
+public function getMessageId(); //returns the unique ID of the event
+```
+
+Scheduled events could be processed in a [cron job](https://github.com/xprt64/todosample-cqrs-es/blob/master/deploy/cron).
+See [\Gica\Cqrs\Scheduling\ScheduledEventsPlayer](https://github.com/xprt64/cqrs-es/blob/master/src/Gica/Cqrs/Scheduling/ScheduledEventsPlayer.php) for more informations.
+See a [demo here](https://github.com/xprt64/todosample-cqrs-es/blob/master/bin/cron/play_scheduled_events.php).
+
+### Command scheduling ###
+
+The `Aggregate` can schedule commands. If the `yielded` message is an instance of `\Gica\Cqrs\Scheduling\ScheduledCommand` ([see interface here](https://github.com/xprt64/cqrs-es/blob/master/src/Gica/Cqrs/Scheduling/ScheduledMessage.php)) then
+that command will be scheduled to be dispatched at the specified date by [\Gica\Cqrs\Scheduling\ScheduledMessage::getFireDate](https://github.com/xprt64/cqrs-es/blob/master/src/Gica/Cqrs/Scheduling/ScheduledMessage.php).
+
+Scheduled commands could be processed in a [cron job](https://github.com/xprt64/todosample-cqrs-es/blob/master/deploy/cron). See [\Gica\Cqrs\Scheduling\ScheduledCommandsDispatcher](https://github.com/xprt64/cqrs-es/blob/master/src/Gica/Cqrs/Scheduling/ScheduledCommandsDispatcher.php) for more informations.
+See a [demo here](https://github.com/xprt64/todosample-cqrs-es/blob/master/bin/cron/play_scheduled_commands.php).
