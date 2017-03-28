@@ -82,7 +82,7 @@ class BddAggregateTestHelper
      */
     private function decorateEventsWithMetadata(array $priorEvents)
     {
-        return array_map(function (Event $event) {
+        return array_map(function ($event) {
             return $this->decorateEventWithMetaData($event);
         }, $priorEvents);
     }
@@ -135,7 +135,7 @@ class BddAggregateTestHelper
         return $newEvents;
     }
 
-    private function decorateEventWithMetaData(Event $event): EventWithMetaData
+    private function decorateEventWithMetaData($event): EventWithMetaData
     {
         return new EventWithMetaData($event, $this->factoryMetaData());
     }

@@ -495,7 +495,7 @@ class BddAggregateTestHelperTest extends \PHPUnit_Framework_TestCase
         $sut->thenShouldFailWith(get_class($expectedException), "some message");
     }
 
-    private function getApplyEventMethodName(Event $event1)
+    private function getApplyEventMethodName($event1)
     {
         return EventsApplierOnAggregate::getMethodName($event1);
     }

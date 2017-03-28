@@ -157,3 +157,6 @@ Read the entire [documentation here](DOCUMENTATION.md)
 
 ## Sample application ##
 A Todo list sample application can be found at [github.com/xprt64/todosample-cqrs-es](https://github.com/xprt64/todosample-cqrs-es).
+
+## Questions? ##
+Feel free to post to this group: [https://groups.google.com/forum/#!forum/cqrs--event-sourcing-for-php](https://groups.google.com/forum/#!forum/cqrs--event-sourcing-for-php).

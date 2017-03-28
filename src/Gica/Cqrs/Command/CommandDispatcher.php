@@ -12,7 +12,6 @@ use Gica\Cqrs\Command\CommandDispatcher\AuthenticatedIdentityReaderService;
 use Gica\Cqrs\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
 use Gica\Cqrs\Command\Exception\CommandValidationFailed;
 use Gica\Cqrs\Command\ValueObject\CommandHandlerAndAggregate;
-use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventDispatcher;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
 use Gica\Cqrs\Event\EventWithMetaData;
@@ -125,7 +124,7 @@ class CommandDispatcher
             $this->eventDispatcher->dispatchEvent($eventWithMetaData);
         }
 
-        if ($this->futureEventsStore) {
+        if ($this->futureEventsStore && $futureEventsWithMeta) {
             $this->futureEventsStore->scheduleEvents($futureEventsWithMeta);
         }
 
@@ -196,7 +195,7 @@ class CommandDispatcher
         return new CommandHandlerAndAggregate($handler, $aggregate);
     }
 
-    private function decorateEventWithMetaData(Event $event, MetaData $metaData): EventWithMetaData
+    private function decorateEventWithMetaData($event, MetaData $metaData): EventWithMetaData
     {
         return new EventWithMetaData($event, $metaData);
     }

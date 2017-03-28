@@ -137,7 +137,6 @@ class StubFutureEventsStore implements FutureEventsStore
 
     public function loadAndProcessScheduledEvents(callable $eventProcessor/** function(ScheduledEventWithMetadata) */)
     {
-        // TODO: Implement loadAndProcessScheduledEvents() method.
     }
 
     /**
@@ -150,7 +149,6 @@ class StubFutureEventsStore implements FutureEventsStore
 
     public function scheduleEvent(Event\EventWithMetaData $eventWithMetaData, \DateTimeImmutable $date)
     {
-        // TODO: Implement scheduleEvent() method.
     }
 }
 

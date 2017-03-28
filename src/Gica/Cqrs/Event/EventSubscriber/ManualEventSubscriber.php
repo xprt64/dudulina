@@ -6,7 +6,6 @@
 namespace Gica\Cqrs\Event\EventSubscriber;
 
 
-use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventSubscriber;
 
 class ManualEventSubscriber implements EventSubscriber
@@ -19,10 +18,9 @@ class ManualEventSubscriber implements EventSubscriber
     }
 
     /**
-     * @param $event
-     * @return callable[]
+     * @inheritdoc
      */
-    public function getListenersForEvent(Event $event)
+    public function getListenersForEvent($event)
     {
         $result = [];
 

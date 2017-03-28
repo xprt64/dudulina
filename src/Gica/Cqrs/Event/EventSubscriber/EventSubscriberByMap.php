@@ -6,13 +6,12 @@
 namespace Gica\Cqrs\Event\EventSubscriber;
 
 
-use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventSubscriber;
 use Gica\Dependency\AbstractFactory;
 
 abstract class EventSubscriberByMap implements EventSubscriber
 {
-    abstract protected function getMap():array;
+    abstract protected function getMap(): array;
 
     /** @var AbstractFactory */
     private $abstractFactory;
@@ -49,10 +48,9 @@ abstract class EventSubscriberByMap implements EventSubscriber
     }
 
     /**
-     * @param Event $event
-     * @return callable[]
+     * @inheritdoc
      */
-    public function getListenersForEvent(Event $event)
+    public function getListenersForEvent($event)
     {
         $eventClass = get_class($event);
 

@@ -5,14 +5,9 @@
 
 namespace Gica\Cqrs\Event;
 
-use Gica\Cqrs\Event;
-
 class EventWithMetaData
 {
 
-    /**
-     * @var Event
-     */
     private $event;
     /**
      * @var MetaData
@@ -20,7 +15,7 @@ class EventWithMetaData
     private $metaData;
 
     public function __construct(
-        Event $event,
+        $event,
         MetaData $metaData
     )
     {
@@ -28,17 +23,11 @@ class EventWithMetaData
         $this->metaData = $metaData;
     }
 
-    /**
-     * @return Event
-     */
-    public function getEvent(): Event
+    public function getEvent()
     {
         return $this->event;
     }
 
-    /**
-     * @return MetaData
-     */
     public function getMetaData(): MetaData
     {
         return $this->metaData;

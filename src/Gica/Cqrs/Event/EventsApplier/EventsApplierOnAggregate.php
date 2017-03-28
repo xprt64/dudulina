@@ -6,7 +6,6 @@
 namespace Gica\Cqrs\Event\EventsApplier;
 
 
-use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventWithMetaData;
 
 class EventsApplierOnAggregate
@@ -31,7 +30,7 @@ class EventsApplierOnAggregate
         }
     }
 
-    public static function getMethodName(Event $event)
+    public static function getMethodName($event)
     {
         $parts = explode('\\', get_class($event));
 

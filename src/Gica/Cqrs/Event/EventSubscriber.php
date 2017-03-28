@@ -5,13 +5,11 @@
 
 namespace Gica\Cqrs\Event;
 
-use Gica\Cqrs\Event;
-
 interface EventSubscriber
 {
     /**
-     * @param Event $event
+     * @param $event
      * @return callable[]
      */
-    public function getListenersForEvent(Event $event);
+    public function getListenersForEvent($event);
 }

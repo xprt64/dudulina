@@ -4,7 +4,6 @@
 namespace Gica\Cqrs\EventStore\InMemory;
 
 
-use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\EventStore;
@@ -103,7 +102,7 @@ class InMemoryEventStore implements EventStore
     /**
      * @param $aggregateClass
      * @param $aggregateId
-     * @param Event[] $priorEvents
+     * @param $priorEvents
      * @return EventWithMetaData[]
      */
     public function decorateEventsWithMetadata($aggregateClass, $aggregateId, array $priorEvents)
