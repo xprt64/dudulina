@@ -12,10 +12,13 @@ use Gica\Cqrs\Command\CommandApplier;
 use Gica\Cqrs\Command\CommandDispatcher;
 use Gica\Cqrs\Command\CommandDispatcher\AuthenticatedIdentityReaderService;
 use Gica\Cqrs\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
+use Gica\Cqrs\Command\CommandDispatcher\DefaultCommandDispatcher;
 use Gica\Cqrs\Command\CommandSubscriber;
 use Gica\Cqrs\Command\CommandValidator;
+use Gica\Cqrs\Command\MetadataFactory\DefaultMetadataWrapper;
 use Gica\Cqrs\Event\EventDispatcher\EventDispatcherBySubscriber;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
+use Gica\Cqrs\Event\MetadataFactory\DefaultMetadataFactory;
 use Gica\Cqrs\EventStore\InMemory\InMemoryEventStore;
 use Gica\Cqrs\FutureEventsStore;
 
@@ -56,31 +59,17 @@ class CommandDispatcherCanExecuteCommandCommandNotAcceptedTest extends \PHPUnit_
 
         $concurrentProofFunctionCaller = new ConcurrentProofFunctionCaller;
 
-        /** @var \Gica\Cqrs\Command\CommandDispatcher\AuthenticatedIdentityReaderService $authenticatedIdentity */
-        $authenticatedIdentity = $this->getMockBuilder(AuthenticatedIdentityReaderService::class)
-            ->getMock();
-
-        /** @var FutureEventsStore $futureEventsStore */
-        $futureEventsStore = $this->getMockBuilder(FutureEventsStore::class)
-            ->getMock();
-
-        /** @var CommandValidator $commandValidator */
-        $commandValidator = $this->getMockBuilder(CommandValidator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         Aggregate1::$expectedCommand = $this->command;
 
-        $commandDispatcher = new CommandDispatcher(
+        $commandDispatcher = new DefaultCommandDispatcher(
             $commandSubscriber,
             $eventDispatcher,
             $commandApplier,
             $aggregateRepository,
             $concurrentProofFunctionCaller,
-            $commandValidator,
-            $authenticatedIdentity,
-            $futureEventsStore,
-            $eventsApplierOnAggregate
+            $eventsApplierOnAggregate,
+            new DefaultMetadataFactory(),
+            new DefaultMetadataWrapper()
         );
 
         $this->assertFalse($commandDispatcher->canExecuteCommand($this->command));

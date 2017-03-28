@@ -19,18 +19,21 @@ class MetaData
 
     /* @var string */
     private $aggregateClass;
+    private $commandMetadata;
 
     public function __construct(
         $aggregateId,
         string $aggregateClass,
         \DateTimeImmutable $dateCreated,
-        $authenticatedUserId = null
+        $authenticatedUserId = null,
+        $commandMetadata = null
     )
     {
         $this->dateCreated = $this->addTimeZone($dateCreated);
         $this->aggregateId = $aggregateId;
         $this->authenticatedUserId = $authenticatedUserId;
         $this->aggregateClass = $aggregateClass;
+        $this->commandMetadata = $commandMetadata;
     }
 
     public function getDateCreated(): \DateTimeImmutable
@@ -51,6 +54,11 @@ class MetaData
     public function getAuthenticatedUserId()
     {
         return $this->authenticatedUserId;
+    }
+
+    public function getCommandMetadata()
+    {
+        return $this->commandMetadata;
     }
 
     private function addTimeZone(\DateTimeImmutable $dateCreated): \DateTimeImmutable

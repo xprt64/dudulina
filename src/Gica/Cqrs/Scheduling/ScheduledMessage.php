@@ -4,8 +4,10 @@
 namespace Gica\Cqrs\Scheduling;
 
 
-interface ScheduledMessage
+use Gica\Cqrs\Message\IdentifiedMessage;
+
+interface ScheduledMessage extends IdentifiedMessage
 {
     public function getFireDate():\DateTimeImmutable;
-    public function getMessageId();
+
 }

@@ -18,12 +18,14 @@ class MetaDataTest extends \PHPUnit_Framework_TestCase
             123,
             'aggregateclass',
             $dateCreated,
-            345
+            345,
+            'commandMetadata'
         );
 
         $this->assertEquals(123, $metaData->getAggregateId());
         $this->assertEquals('aggregateclass', $metaData->getAggregateClass());
         $this->assertSame($dateCreated, $metaData->getDateCreated());
         $this->assertSame(345, $metaData->getAuthenticatedUserId());
+        $this->assertSame('commandMetadata', $metaData->getCommandMetadata());
     }
 }

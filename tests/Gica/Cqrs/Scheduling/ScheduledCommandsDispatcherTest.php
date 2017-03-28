@@ -20,7 +20,7 @@ class ScheduledCommandsDispatcherTest extends \PHPUnit_Framework_TestCase
 
         $commandDispacther = $this->getMockBuilder(CommandDispatcher::class)
             ->disableOriginalConstructor()
-            ->setMethods(['dispatchCommand'])
+            ->setMethods(['dispatchCommand', 'canExecuteCommand'])
             ->getMock();
 
         $commandDispacther->expects($this->once())

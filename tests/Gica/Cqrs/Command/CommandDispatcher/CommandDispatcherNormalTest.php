@@ -9,16 +9,17 @@ namespace tests\Gica\Cqrs\Command\CommandDispatcher;
 use Gica\Cqrs\Aggregate\AggregateRepository;
 use Gica\Cqrs\Command;
 use Gica\Cqrs\Command\CommandApplier;
-use Gica\Cqrs\Command\CommandDispatcher;
 use Gica\Cqrs\Command\CommandDispatcher\AuthenticatedIdentityReaderService;
 use Gica\Cqrs\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
+use Gica\Cqrs\Command\CommandDispatcher\DefaultCommandDispatcher;
 use Gica\Cqrs\Command\CommandSubscriber;
 use Gica\Cqrs\Command\CommandValidator;
-use Gica\Cqrs\Command\Exception\CommandValidationFailed;
+use Gica\Cqrs\Command\MetadataFactory\DefaultMetadataWrapper;
 use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventDispatcher\EventDispatcherBySubscriber;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
 use Gica\Cqrs\Event\EventWithMetaData;
+use Gica\Cqrs\Event\MetadataFactory\DefaultMetadataFactory;
 use Gica\Cqrs\EventStore\InMemory\InMemoryEventStore;
 use Gica\Cqrs\FutureEventsStore;
 
@@ -58,31 +59,17 @@ class CommandDispatcherNormalTest extends \PHPUnit_Framework_TestCase
 
         $concurrentProofFunctionCaller = new ConcurrentProofFunctionCaller;
 
-        /** @var \Gica\Cqrs\Command\CommandDispatcher\AuthenticatedIdentityReaderService $authenticatedIdentity */
-        $authenticatedIdentity = $this->getMockBuilder(AuthenticatedIdentityReaderService::class)
-            ->getMock();
-
-        /** @var FutureEventsStore $futureEventsStore */
-        $futureEventsStore = $this->getMockBuilder(FutureEventsStore::class)
-            ->getMock();
-
-        /** @var CommandValidator $commandValidator */
-        $commandValidator = $this->getMockBuilder(CommandValidator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         Aggregate1::$state = 0;
 
-        $commandDispatcher = new CommandDispatcher(
+        $commandDispatcher = new DefaultCommandDispatcher(
             $commandSubscriber,
             $eventDispatcher,
             $commandApplier,
             $aggregateRepository,
             $concurrentProofFunctionCaller,
-            $commandValidator,
-            $authenticatedIdentity,
-            $futureEventsStore,
-            $eventsApplierOnAggregate
+            $eventsApplierOnAggregate,
+            new DefaultMetadataFactory(),
+            new DefaultMetadataWrapper()
         );
 
         $commandDispatcher->dispatchCommand($command);
