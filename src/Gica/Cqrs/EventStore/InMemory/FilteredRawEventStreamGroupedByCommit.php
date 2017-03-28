@@ -60,7 +60,7 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
     {
         $commits = $this->fetchCommitsWithoutLimit();
 
-        if ($this->limit) {
+        if ($this->limit > 0) {
             $commits = array_slice($commits, 0, $this->limit);
         }
 
@@ -106,19 +106,19 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
      */
     private function filterCommits($eventCommits): array
     {
-        if ($this->afterSequenceNumber) {
+        if ($this->afterSequenceNumber > 0) {
             $eventCommits = array_filter($eventCommits, function (EventsCommit $commit) {
                 return $commit->getSequence() > $this->afterSequenceNumber;
             });
         }
 
-        if ($this->beforeSequenceNumber) {
+        if ($this->beforeSequenceNumber > 0) {
             $eventCommits = array_filter($eventCommits, function (EventsCommit $commit) {
                 return $commit->getSequence() < $this->beforeSequenceNumber;
             });
         }
 
-        if ($this->eventClasses) {
+        if (!empty($this->eventClasses)) {
             $eventCommits = array_filter($eventCommits, function (EventsCommit $commit) {
                 $commit = $commit->filterEventsByClass($this->eventClasses);
                 return !empty($commit->getEventsWithMetadata());

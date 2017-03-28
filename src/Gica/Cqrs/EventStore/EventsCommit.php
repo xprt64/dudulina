@@ -53,7 +53,7 @@ class EventsCommit
     /**
      * @return EventWithMetaData[]
      */
-    public function getEventsWithMetadata(): array
+    public function getEventsWithMetadata()
     {
         return $this->eventsWithMetadata;
     }
