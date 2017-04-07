@@ -32,4 +32,11 @@ class EventWithMetaData
     {
         return $this->metaData;
     }
+
+    public function withSequenceAndIndex(int $sequence, int $index): self
+    {
+        $other = clone $this;
+        $other->metaData = $other->metaData->withSequenceAndIndex($sequence, $index);
+        return $other;
+    }
 }

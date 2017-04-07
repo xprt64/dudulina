@@ -56,6 +56,7 @@ class AggregateRepository
      * @param $aggregateId
      * @param $aggregate
      * @param EventWithMetaData[] $newEventsWithMeta
+     * @return EventWithMetaData[] decorated events with sequence and index
      */
     public function saveAggregate($aggregateId, $aggregate, $newEventsWithMeta)
     {
@@ -64,5 +65,13 @@ class AggregateRepository
 
         $this->eventStore->appendEventsForAggregate(
             $aggregateId, get_class($aggregate), $newEventsWithMeta, $priorEvents->getVersion(), $priorEvents->getSequence());
+
+        $decoratedEvents = [];
+
+        foreach ($newEventsWithMeta as $index => $eventWithMetaData) {
+            $decoratedEvents[] = $eventWithMetaData->withSequenceAndIndex($priorEvents->getSequence(), $index);
+        }
+
+        return $decoratedEvents;
     }
 }

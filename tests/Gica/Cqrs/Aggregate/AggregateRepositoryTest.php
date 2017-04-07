@@ -9,6 +9,8 @@ namespace tests\Gica\Cqrs\Aggregate;
 
 use Gica\Cqrs\Aggregate\AggregateRepository;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
+use Gica\Cqrs\Event\EventWithMetaData;
+use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\EventStore;
 use Gica\Cqrs\EventStore\AggregateEventStream;
 
@@ -26,11 +28,19 @@ class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
     /** @var AggregateEventStream */
     private $aggregateEventStream;
 
+    private $firstEventWithMetadata;
+    private $secondEventWithMetadata;
+
+    protected function setUp()
+    {
+        $this->firstEventWithMetadata = new EventWithMetaData(1, new MetaData('', '', new \DateTimeImmutable()));
+        $this->secondEventWithMetadata = new EventWithMetaData(2, new MetaData('', '', new \DateTimeImmutable()));
+    }
+
     public function testLoadAndSaveAggregate()
     {
         $eventStore = $this->mockEventStore();
         $eventsApplier = $this->mockEventsApplierOnAggregate();
-
 
         $aggregateRepository = new AggregateRepository(
             $eventStore,
@@ -41,7 +51,11 @@ class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(Aggregate::class, $aggregate);
 
-        $aggregateRepository->saveAggregate(self::AGGREGATE_ID, $aggregate, $this->getNewEvents());
+        $newDecoratedEvents = $aggregateRepository->saveAggregate(self::AGGREGATE_ID, $aggregate, $this->getNewEvents());
+
+        $this->assertEquals(self::EVENTS_SEQUENCE, $newDecoratedEvents[0]->getMetaData()->getSequence());
+        $this->assertEquals(0, $newDecoratedEvents[0]->getMetaData()->getIndex());
+        $this->assertEquals(1, $newDecoratedEvents[1]->getMetaData()->getIndex());
     }
 
     private function mockEventStore(): EventStore
@@ -110,7 +124,10 @@ class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
 
     private function getNewEvents(): array
     {
-        return [1, 2];
+        return [
+            $this->firstEventWithMetadata,
+            $this->secondEventWithMetadata,
+        ];
     }
 }
 

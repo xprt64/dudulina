@@ -21,6 +21,12 @@ class MetaData
     private $aggregateClass;
     private $commandMetadata;
 
+    /** @var int */
+    private $sequence = null;
+
+    /** @var int */
+    private $index = null;
+
     public function __construct(
         $aggregateId,
         string $aggregateClass,
@@ -65,5 +71,23 @@ class MetaData
     {
         return $dateCreated->getTimezone() ? $dateCreated :
             ($dateCreated->setTimezone(new \DateTimeZone('Europe/Bucharest')) ?: $dateCreated);
+    }
+
+    public function withSequenceAndIndex(int $sequence, int $index):self
+    {
+        $other = clone $this;
+        $other->sequence = $sequence;
+        $other->index = $index;
+        return $other;
+    }
+
+    public function getSequence(): ?int
+    {
+        return $this->sequence;
+    }
+
+    public function getIndex(): ?int
+    {
+        return $this->index;
     }
 }
