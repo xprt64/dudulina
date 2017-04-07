@@ -9,6 +9,7 @@ use Gica\Cqrs\Event\EventSubscriber;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\Saga\SagaEventTrackerRepository;
+use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentModificationException;
 use Gica\Cqrs\Saga\SagasOnlyOnceEventDispatcher;
 
 class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
@@ -105,7 +106,7 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
 
         $repository->method('beginProcessingEventBySaga')
             ->with(get_class($saga), 1, 2)
-            ->willThrowException($this->getMockBuilder(SagaEventTrackerRepository\ConcurentModificationException::class)->getMock());
+            ->willThrowException(new ConcurentModificationException());
 
         $repository
             ->expects($this->never())
