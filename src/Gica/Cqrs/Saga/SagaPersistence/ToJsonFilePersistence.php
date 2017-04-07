@@ -29,7 +29,7 @@ class ToJsonFilePersistence implements SagaPersistence
         $this->directory = $directory;
     }
 
-    public function loadData(string $sagaId):?array
+    public function loadData(string $sagaId)
     {
         try {
             $fileContents = $this->fileSystem->fileGetContents($this->getFilePath($sagaId));
@@ -40,7 +40,7 @@ class ToJsonFilePersistence implements SagaPersistence
         }
     }
 
-    public function saveData(string $sagaId, ?array $data)
+    public function saveData(string $sagaId, $data)
     {
         $this->fileSystem->filePutContents($this->getFilePath($sagaId), json_encode($data));
     }

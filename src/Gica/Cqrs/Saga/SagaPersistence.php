@@ -9,7 +9,7 @@ namespace Gica\Cqrs\Saga;
 interface SagaPersistence
 {
 
-    public function loadData(string $sagaId):?array;
+    public function loadData(string $sagaId);
 
-    public function saveData(string $sagaId, ?array $data);
+    public function saveData(string $sagaId, $data);
 }
