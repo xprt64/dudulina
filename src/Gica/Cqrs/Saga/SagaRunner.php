@@ -13,6 +13,7 @@ use Gica\CodeAnalysis\Shared\ClassSorter\ByConstructorDependencySorter;
 use Gica\Cqrs\Command\CodeAnalysis\WriteSideEventHandlerDetector;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\EventStore;
+use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentModificationException;
 use Psr\Log\LoggerInterface;
 
 class SagaRunner
@@ -27,14 +28,14 @@ class SagaRunner
      */
     private $logger;
     /**
-     * @var SagaRepository
+     * @var SagaEventTrackerRepository
      */
     private $sagaRepository;
 
     public function __construct(
         EventStore $eventStore,
         LoggerInterface $logger,
-        SagaRepository $sagaRepository
+        SagaEventTrackerRepository $sagaRepository
     )
     {
         $this->eventStore = $eventStore;
@@ -72,10 +73,14 @@ class SagaRunner
 
             foreach ($methods as $method) {
 
-                if (!$this->sagaRepository->isEventAlreadyDispatched(get_class($saga), $metaData->getSequence(), $metaData->getIndex())) {
-                    call_user_func([$saga, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
-
-                    $this->sagaRepository->persistLastProcessedEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
+                try {
+                    if (!$this->sagaRepository->isEventAlreadyDispatched(get_class($saga), $metaData->getSequence(), $metaData->getIndex())) {
+                        $this->sagaRepository->beginProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
+                        call_user_func([$saga, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
+                        $this->sagaRepository->endProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
+                    }
+                } catch (ConcurentModificationException $exception) {
+                    continue;
                 }
             }
         }

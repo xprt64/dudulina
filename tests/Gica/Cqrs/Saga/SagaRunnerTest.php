@@ -9,7 +9,7 @@ use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\EventStore;
-use Gica\Cqrs\Saga\SagaRepository;
+use Gica\Cqrs\Saga\SagaEventTrackerRepository;
 use Gica\Cqrs\Saga\SagaRunner;
 use Psr\Log\LoggerInterface;
 
@@ -43,7 +43,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
         $saga = new MySaga();
 
-        $repository = $this->getMockBuilder(SagaRepository::class)
+        $repository = $this->getMockBuilder(SagaEventTrackerRepository::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -54,9 +54,12 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
             });
 
         $repository->expects($this->once())
-            ->method('persistLastProcessedEventBySaga');
+            ->method('beginProcessingEventBySaga');
 
-        /** @var SagaRepository $repository */
+        $repository->expects($this->once())
+            ->method('endProcessingEventBySaga');
+
+        /** @var SagaEventTrackerRepository $repository */
         /** @var LoggerInterface $logger */
         /** @var EventStore $eventStore */
 
@@ -70,6 +73,60 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame(0, $saga->event1Called);
         $this->assertSame(1, $saga->event2Called);
+    }
+
+    public function test_ConcurentModificationException()
+    {
+        $eventStore = $this->getMockBuilder(EventStore::class)
+            //->setMethods(['loadEventsByClassNames'])
+            ->getMock();
+
+        $logger = $this->getMockBuilder(LoggerInterface::class)
+            ->getMock();
+
+        $eventStream = $this->getMockBuilder(\Gica\Cqrs\EventStore\EventStreamGroupedByCommit::class)->getMock();
+
+        $eventStream->method('getIterator')
+            ->willReturn(new \ArrayIterator([
+                new EventWithMetaData(new Event1(), $this->factoryMetadata(3, 33)),
+                new EventWithMetaData(new Event2(), $this->factoryMetadata(4, 44)),
+            ]));
+
+        $eventStore->expects($this->once())
+            ->method('loadEventsByClassNames')
+            ->willReturn($eventStream);
+
+        $saga = new MySaga();
+
+        $repository = $this->getMockBuilder(SagaEventTrackerRepository::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $repository->method('isEventAlreadyDispatched')
+            ->with(get_class($saga))
+            ->willReturn(false);
+
+
+        $repository->method('beginProcessingEventBySaga')
+            ->willThrowException($this->getMockBuilder(SagaEventTrackerRepository\ConcurentModificationException::class)->getMock());
+
+        $repository->expects($this->never())
+            ->method('endProcessingEventBySaga');
+
+        /** @var SagaEventTrackerRepository $repository */
+        /** @var LoggerInterface $logger */
+        /** @var EventStore $eventStore */
+
+        $sut = new SagaRunner(
+            $eventStore,
+            $logger,
+            $repository
+        );
+
+        $sut->feedSagaWithEvents($saga);
+
+        $this->assertSame(0, $saga->event1Called);
+        $this->assertSame(0, $saga->event2Called);
     }
 
 
@@ -102,7 +159,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
         $saga = new MySaga();
 
-        $repository = $this->getMockBuilder(SagaRepository::class)
+        $repository = $this->getMockBuilder(SagaEventTrackerRepository::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -110,7 +167,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->never())
             ->method('isEventAlreadyDispatched');
 
-        /** @var SagaRepository $repository */
+        /** @var SagaEventTrackerRepository $repository */
         /** @var LoggerInterface $logger */
         /** @var EventStore $eventStore */
 

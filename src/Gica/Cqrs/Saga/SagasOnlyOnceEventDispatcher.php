@@ -8,6 +8,7 @@ namespace Gica\Cqrs\Saga;
 
 use Gica\Cqrs\Event\EventSubscriber;
 use Gica\Cqrs\Event\EventWithMetaData;
+use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentModificationException;
 
 class SagasOnlyOnceEventDispatcher implements \Gica\Cqrs\Event\EventDispatcher
 {
@@ -15,17 +16,17 @@ class SagasOnlyOnceEventDispatcher implements \Gica\Cqrs\Event\EventDispatcher
     /** @var EventSubscriber */
     private $eventSubscriber;
     /**
-     * @var SagaRepository
+     * @var SagaEventTrackerRepository
      */
-    private $sagaRepository;
+    private $trackerRepository;
 
     public function __construct(
-        SagaRepository $sagaRepository,
+        SagaEventTrackerRepository $trackerRepository,
         EventSubscriber $eventSubscriber
     )
     {
         $this->eventSubscriber = $eventSubscriber;
-        $this->sagaRepository = $sagaRepository;
+        $this->trackerRepository = $trackerRepository;
     }
 
     public function dispatchEvent(EventWithMetaData $eventWithMetaData)
@@ -38,10 +39,14 @@ class SagasOnlyOnceEventDispatcher implements \Gica\Cqrs\Event\EventDispatcher
             if (is_array($listener)) {
                 $saga = $listener[0];
 
-                if (!$this->sagaRepository->isEventAlreadyDispatched(get_class($saga), $metaData->getSequence(), $metaData->getIndex())) {
-                    call_user_func($listener, $eventWithMetaData->getEvent(), $metaData);
-
-                    $this->sagaRepository->persistLastProcessedEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
+                if (!$this->trackerRepository->isEventAlreadyDispatched(get_class($saga), $metaData->getSequence(), $metaData->getIndex())) {
+                    try {
+                        $this->trackerRepository->beginProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
+                        call_user_func($listener, $eventWithMetaData->getEvent(), $metaData);
+                        $this->trackerRepository->endProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
+                    } catch (ConcurentModificationException $exception) {
+                        continue;
+                    }
                 }
             }
         }
