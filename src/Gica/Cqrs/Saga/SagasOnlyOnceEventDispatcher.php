@@ -8,7 +8,7 @@ namespace Gica\Cqrs\Saga;
 
 use Gica\Cqrs\Event\EventSubscriber;
 use Gica\Cqrs\Event\EventWithMetaData;
-use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentModificationException;
+use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
 
 class SagasOnlyOnceEventDispatcher implements \Gica\Cqrs\Event\EventDispatcher
 {
@@ -44,7 +44,7 @@ class SagasOnlyOnceEventDispatcher implements \Gica\Cqrs\Event\EventDispatcher
                         $this->trackerRepository->beginProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
                         call_user_func($listener, $eventWithMetaData->getEvent(), $metaData);
                         $this->trackerRepository->endProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
-                    } catch (ConcurentModificationException $exception) {
+                    } catch (ConcurentEventProcessingException $exception) {
                         continue;
                     }
                 }

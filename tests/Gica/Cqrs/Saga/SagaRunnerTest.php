@@ -10,7 +10,7 @@ use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\EventStore;
 use Gica\Cqrs\Saga\SagaEventTrackerRepository;
-use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentModificationException;
+use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
 use Gica\Cqrs\Saga\SagaRunner;
 use Psr\Log\LoggerInterface;
 
@@ -109,7 +109,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
 
         $repository->method('beginProcessingEventBySaga')
-            ->willThrowException(new ConcurentModificationException());
+            ->willThrowException(new ConcurentEventProcessingException());
 
         $repository->expects($this->never())
             ->method('endProcessingEventBySaga');

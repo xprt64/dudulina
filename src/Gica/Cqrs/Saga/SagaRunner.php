@@ -13,7 +13,7 @@ use Gica\CodeAnalysis\Shared\ClassSorter\ByConstructorDependencySorter;
 use Gica\Cqrs\Command\CodeAnalysis\WriteSideEventHandlerDetector;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\EventStore;
-use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentModificationException;
+use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
 use Psr\Log\LoggerInterface;
 
 class SagaRunner
@@ -79,7 +79,7 @@ class SagaRunner
                         call_user_func([$saga, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
                         $this->sagaRepository->endProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
                     }
-                } catch (ConcurentModificationException $exception) {
+                } catch (ConcurentEventProcessingException $exception) {
                     continue;
                 }
             }

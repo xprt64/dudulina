@@ -6,7 +6,7 @@
 namespace Gica\Cqrs\Saga;
 
 
-use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentModificationException;
+use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
 
 interface SagaEventTrackerRepository
 {
@@ -16,7 +16,7 @@ interface SagaEventTrackerRepository
      * @param string $sagaId
      * @param int $sequence
      * @param int $index
-     * @throws ConcurentModificationException
+     * @throws ConcurentEventProcessingException
      */
     public function beginProcessingEventBySaga(string $sagaId, int $sequence, int $index);
     public function endProcessingEventBySaga(string $sagaId, int $sequence, int $index);

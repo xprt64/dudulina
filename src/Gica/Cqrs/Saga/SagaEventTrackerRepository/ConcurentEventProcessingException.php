@@ -6,7 +6,7 @@
 namespace Gica\Cqrs\Saga\SagaEventTrackerRepository;
 
 
-class ConcurentModificationException extends \Exception
+class ConcurentEventProcessingException extends \Exception
 {
 
 }
