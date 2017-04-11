@@ -42,4 +42,9 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
 
         return $reflection->getParameters()[0]->getClass()->name;
     }
+
+    public function clearAllStates()
+    {
+        $this->states = [];
+    }
 }

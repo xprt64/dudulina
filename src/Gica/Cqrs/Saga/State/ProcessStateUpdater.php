@@ -9,4 +9,5 @@ namespace Gica\Cqrs\Saga\State;
 interface ProcessStateUpdater
 {
     public function updateState($stateId, callable $updater);
+    public function clearAllStates();
 }
