@@ -48,6 +48,7 @@ class InMemoryStateManagerTest extends \PHPUnit_Framework_TestCase
             return $state;
         });
 
+        $sut->createStorage();
         $sut->clearAllStates();
 
         $this->assertObjectNotHasAttribute('someValue', $sut->loadState(\stdClass::class, self::STATE_ID));

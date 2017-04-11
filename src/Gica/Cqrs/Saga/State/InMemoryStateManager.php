@@ -47,4 +47,9 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
     {
         $this->states = [];
     }
+
+    public function createStorage()
+    {
+        $this->states = [];
+    }
 }
