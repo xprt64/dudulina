@@ -18,21 +18,35 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
             return $this->states[$key];
         }
 
-        return new $stateClass;
+        return null;
+    }
+
+    public function hasState(string $stateClass, $stateId)
+    {
+        $key = $stateClass . $stateId;
+
+        return isset($this->states[$key]);
     }
 
     public function updateState($stateId, callable $updater)
     {
-        $stateClass = $this->getStateClass($updater);
+        list($stateClass, $isOptional) = $this->getStateClass($updater);
 
-        $state = call_user_func($updater, $this->loadState($stateClass, $stateId));
+        $oldState = $this->loadState($stateClass, $stateId);
+        if (!$this->hasState($stateClass, $stateId)) {
+            if (!$isOptional) {
+                $oldState = new $stateClass;
+            }
+        }
+
+        $newState = call_user_func($updater, $oldState);
 
         $key = $stateClass . $stateId;
 
-        $this->states[$key] = $state;
+        $this->states[$key] = $newState;
     }
 
-    private function getStateClass(callable $update): string
+    private function getStateClass(callable $update)
     {
         $reflection = new \ReflectionFunction($update);
 
@@ -40,7 +54,9 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
             throw new \Exception("Updater callback must have one type-hinted parameter");
         }
 
-        return $reflection->getParameters()[0]->getClass()->name;
+        $parameter = $reflection->getParameters()[0];
+
+        return [$parameter->getClass()->name, $parameter->isOptional()];
     }
 
     public function clearAllStates()

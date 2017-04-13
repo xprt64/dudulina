@@ -16,9 +16,28 @@ class InMemoryStateManagerTest extends \PHPUnit_Framework_TestCase
     {
         $sut = new InMemoryStateManager();
 
-        $this->assertInstanceOf(\stdClass::class, $sut->loadState(\stdClass::class, self::STATE_ID));
+        $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID));
+        $this->assertNull($sut->loadState(\stdClass::class, self::STATE_ID));
 
         $sut->updateState(self::STATE_ID, function (\stdClass $state) {
+            $state->someValue = 345;
+
+            return $state;
+        });
+
+        $this->assertSame(345, $sut->loadState(\stdClass::class, self::STATE_ID)->someValue);
+    }
+
+    public function test_defaultState()
+    {
+        $sut = new InMemoryStateManager();
+
+        $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID));
+        $this->assertNull($sut->loadState(\stdClass::class, self::STATE_ID));
+
+        $sut->updateState(self::STATE_ID, function (\stdClass $state = null) {
+
+            $state  = new \stdClass();
             $state->someValue = 345;
 
             return $state;
@@ -42,7 +61,12 @@ class InMemoryStateManagerTest extends \PHPUnit_Framework_TestCase
     {
         $sut = new InMemoryStateManager();
 
-        $sut->updateState(self::STATE_ID, function (\stdClass $state) {
+        $sut->updateState(self::STATE_ID, function (?\stdClass $state) {
+
+            if (!$state) {
+                $state = new \stdClass();
+            }
+
             $state->someValue = 345;
 
             return $state;
@@ -51,6 +75,6 @@ class InMemoryStateManagerTest extends \PHPUnit_Framework_TestCase
         $sut->createStorage();
         $sut->clearAllStates();
 
-        $this->assertObjectNotHasAttribute('someValue', $sut->loadState(\stdClass::class, self::STATE_ID));
+        $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID));
     }
 }
