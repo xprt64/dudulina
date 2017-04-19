@@ -10,6 +10,7 @@ use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\EventStore;
 use Gica\Cqrs\EventStore\EventStreamGroupedByCommit;
+use Gica\Cqrs\Saga\EventOrder;
 use Gica\Cqrs\Saga\SagaEventTrackerRepository;
 use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
 use Gica\Cqrs\Saga\SagaRunner;
@@ -52,14 +53,14 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
         $repository->method('isEventProcessingAlreadyStarted')
             ->with(get_class($saga))
-            ->willReturnCallback(function (string $sagaId, int $sequence, int $index) {
-                return $sequence == 3;
+            ->willReturnCallback(function (string $sagaId, EventOrder $eventOrder) {
+                return $eventOrder->getSequence() == 3 && $eventOrder->getIndex() == 33;
             });
 
         $repository->method('isEventProcessingAlreadyEnded')
             ->with(get_class($saga))
-            ->willReturnCallback(function (string $sagaId, int $sequence, int $index) {
-                return $sequence == 3;
+            ->willReturnCallback(function (string $sagaId, EventOrder $eventOrder) {
+                return $eventOrder->getSequence() == 3 && $eventOrder->getIndex() == 33;
             });
 
         $repository->expects($this->once())

@@ -51,14 +51,11 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $repository->method('isEventProcessingAlreadyStarted')
-            ->with(get_class($saga))
             ->willReturn(false);
 
-        $repository->method('startProcessingEventBySaga')
-            ->with(get_class($saga), 1, 2);
+        $repository->method('startProcessingEventBySaga');
 
-        $repository->method('endProcessingEventBySaga')
-            ->with(get_class($saga), 1, 2);
+        $repository->method('endProcessingEventBySaga');
 
 
         /** @var SagaEventTrackerRepository $repository */
@@ -106,13 +103,11 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->willReturn(false);
 
         $repository->method('startProcessingEventBySaga')
-            ->with(get_class($saga), 1, 2)
             ->willThrowException(new ConcurentEventProcessingException());
 
         $repository
             ->expects($this->never())
-            ->method('endProcessingEventBySaga')
-            ->with(get_class($saga), 1, 2);
+            ->method('endProcessingEventBySaga');
 
 
         /** @var SagaEventTrackerRepository $repository */

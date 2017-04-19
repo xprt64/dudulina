@@ -36,14 +36,16 @@ class SagasOnlyOnceEventDispatcher implements \Gica\Cqrs\Event\EventDispatcher
         foreach ($listeners as $listener) {
             $metaData = $eventWithMetadata->getMetaData();
 
+            $eventOrder = new EventOrder($metaData->getSequence(), $metaData->getIndex());
+
             if (is_array($listener)) {
                 $saga = $listener[0];
 
-                if (!$this->trackerRepository->isEventProcessingAlreadyStarted(get_class($saga), $metaData->getSequence(), $metaData->getIndex())) {
+                if (!$this->trackerRepository->isEventProcessingAlreadyStarted(get_class($saga), $eventOrder)) {
                     try {
-                        $this->trackerRepository->startProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
+                        $this->trackerRepository->startProcessingEventBySaga(get_class($saga), $eventOrder);
                         call_user_func($listener, $eventWithMetadata->getEvent(), $metaData);
-                        $this->trackerRepository->endProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
+                        $this->trackerRepository->endProcessingEventBySaga(get_class($saga), $eventOrder);
                     } catch (ConcurentEventProcessingException $exception) {
                         continue;
                     }
