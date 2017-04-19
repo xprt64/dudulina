@@ -10,6 +10,7 @@ use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\Saga\SagaEventTrackerRepository;
 use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
+use Gica\Cqrs\Saga\SagaRunner\EventProcessingHasStalled;
 use Gica\Cqrs\Saga\SagasOnlyOnceEventDispatcher;
 
 class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
@@ -17,7 +18,7 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
 
     const SAGA_ID = 'sagaId';
 
-    public function test_dispatchEvent_not_isEventAlreadyDispatched()
+    public function test_dispatchEvent_not_isEventProcessingAlreadyStarted()
     {
         $metadata = $this->getMockBuilder(MetaData::class)
             ->disableOriginalConstructor()
@@ -49,11 +50,11 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $repository->method('isEventAlreadyDispatched')
+        $repository->method('isEventProcessingAlreadyStarted')
             ->with(get_class($saga))
             ->willReturn(false);
 
-        $repository->method('beginProcessingEventBySaga')
+        $repository->method('startProcessingEventBySaga')
             ->with(get_class($saga), 1, 2);
 
         $repository->method('endProcessingEventBySaga')
@@ -100,11 +101,11 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $repository->method('isEventAlreadyDispatched')
+        $repository->method('isEventProcessingAlreadyStarted')
             ->with(get_class($saga))
             ->willReturn(false);
 
-        $repository->method('beginProcessingEventBySaga')
+        $repository->method('startProcessingEventBySaga')
             ->with(get_class($saga), 1, 2)
             ->willThrowException(new ConcurentEventProcessingException());
 
@@ -154,12 +155,16 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $repository->method('isEventAlreadyDispatched')
+        $repository->method('isEventProcessingAlreadyStarted')
+            ->with(get_class($saga))
+            ->willReturn(true);
+
+        $repository->method('isEventProcessingAlreadyEnded')
             ->with(get_class($saga))
             ->willReturn(true);
 
         $repository->expects($this->never())
-            ->method('beginProcessingEventBySaga');
+            ->method('startProcessingEventBySaga');
 
         $repository->expects($this->never())
             ->method('endProcessingEventBySaga');

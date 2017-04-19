@@ -29,20 +29,20 @@ class SagasOnlyOnceEventDispatcher implements \Gica\Cqrs\Event\EventDispatcher
         $this->trackerRepository = $trackerRepository;
     }
 
-    public function dispatchEvent(EventWithMetaData $eventWithMetaData)
+    public function dispatchEvent(EventWithMetaData $eventWithMetadata)
     {
-        $listeners = $this->eventSubscriber->getListenersForEvent($eventWithMetaData->getEvent());
+        $listeners = $this->eventSubscriber->getListenersForEvent($eventWithMetadata->getEvent());
 
         foreach ($listeners as $listener) {
-            $metaData = $eventWithMetaData->getMetaData();
+            $metaData = $eventWithMetadata->getMetaData();
 
             if (is_array($listener)) {
                 $saga = $listener[0];
 
-                if (!$this->trackerRepository->isEventAlreadyDispatched(get_class($saga), $metaData->getSequence(), $metaData->getIndex())) {
+                if (!$this->trackerRepository->isEventProcessingAlreadyStarted(get_class($saga), $metaData->getSequence(), $metaData->getIndex())) {
                     try {
-                        $this->trackerRepository->beginProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
-                        call_user_func($listener, $eventWithMetaData->getEvent(), $metaData);
+                        $this->trackerRepository->startProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
+                        call_user_func($listener, $eventWithMetadata->getEvent(), $metaData);
                         $this->trackerRepository->endProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
                     } catch (ConcurentEventProcessingException $exception) {
                         continue;

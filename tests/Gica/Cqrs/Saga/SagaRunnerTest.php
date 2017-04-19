@@ -9,9 +9,11 @@ use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\EventStore;
+use Gica\Cqrs\EventStore\EventStreamGroupedByCommit;
 use Gica\Cqrs\Saga\SagaEventTrackerRepository;
 use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
 use Gica\Cqrs\Saga\SagaRunner;
+use Gica\Cqrs\Saga\SagaRunner\EventProcessingHasStalled;
 use Psr\Log\LoggerInterface;
 
 class SagaRunnerTest extends \PHPUnit_Framework_TestCase
@@ -30,7 +32,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->getMock();
 
-        $eventStream = $this->getMockBuilder(\Gica\Cqrs\EventStore\EventStreamGroupedByCommit::class)->getMock();
+        $eventStream = $this->getMockBuilder(EventStreamGroupedByCommit::class)->getMock();
 
         $eventStream->method('getIterator')
             ->willReturn(new \ArrayIterator([
@@ -48,14 +50,20 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $repository->method('isEventAlreadyDispatched')
+        $repository->method('isEventProcessingAlreadyStarted')
+            ->with(get_class($saga))
+            ->willReturnCallback(function (string $sagaId, int $sequence, int $index) {
+                return $sequence == 3;
+            });
+
+        $repository->method('isEventProcessingAlreadyEnded')
             ->with(get_class($saga))
             ->willReturnCallback(function (string $sagaId, int $sequence, int $index) {
                 return $sequence == 3;
             });
 
         $repository->expects($this->once())
-            ->method('beginProcessingEventBySaga');
+            ->method('startProcessingEventBySaga');
 
         $repository->expects($this->once())
             ->method('endProcessingEventBySaga');
@@ -85,7 +93,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->getMock();
 
-        $eventStream = $this->getMockBuilder(\Gica\Cqrs\EventStore\EventStreamGroupedByCommit::class)->getMock();
+        $eventStream = $this->getMockBuilder(EventStreamGroupedByCommit::class)->getMock();
 
         $eventStream->method('getIterator')
             ->willReturn(new \ArrayIterator([
@@ -103,12 +111,12 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $repository->method('isEventAlreadyDispatched')
+        $repository->method('isEventProcessingAlreadyStarted')
             ->with(get_class($saga))
             ->willReturn(false);
 
 
-        $repository->method('beginProcessingEventBySaga')
+        $repository->method('startProcessingEventBySaga')
             ->willThrowException(new ConcurentEventProcessingException());
 
         $repository->expects($this->never())
@@ -131,6 +139,65 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function test_EventProcessingHasStalled()
+    {
+        $eventStore = $this->getMockBuilder(EventStore::class)
+            //->setMethods(['loadEventsByClassNames'])
+            ->getMock();
+
+        $logger = $this->getMockBuilder(LoggerInterface::class)
+            ->getMock();
+
+        $eventStream = $this->getMockBuilder(EventStreamGroupedByCommit::class)->getMock();
+
+        $eventStream->method('getIterator')
+            ->willReturn(new \ArrayIterator([
+                new EventWithMetaData(new Event1(), $this->factoryMetadata(3, 33)),
+            ]));
+
+        $eventStore->expects($this->once())
+            ->method('loadEventsByClassNames')
+            ->willReturn($eventStream);
+
+        $saga = new MySaga();
+
+        $repository = $this->getMockBuilder(SagaEventTrackerRepository::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $repository->method('isEventProcessingAlreadyStarted')
+            ->with(get_class($saga))
+            ->willReturn(true);
+
+        $repository->method('isEventProcessingAlreadyEnded')
+            ->with(get_class($saga))
+            ->willReturn(false);
+
+        $this->expectException(EventProcessingHasStalled::class);
+
+        $repository
+            ->expects($this->never())
+            ->method('startProcessingEventBySaga');
+
+        $repository
+            ->expects($this->never())
+            ->method('endProcessingEventBySaga');
+
+        /** @var SagaEventTrackerRepository $repository */
+        /** @var LoggerInterface $logger */
+        /** @var EventStore $eventStore */
+
+        $sut = new SagaRunner(
+            $eventStore,
+            $logger,
+            $repository
+        );
+
+        $sut->feedSagaWithEvents($saga);
+
+        $this->assertSame(0, $saga->event1Called);
+    }
+
     public function test_afterSequence()
     {
         $eventStore = $this->getMockBuilder(EventStore::class)
@@ -140,7 +207,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->getMock();
 
-        $eventStream = $this->getMockBuilder(\Gica\Cqrs\EventStore\EventStreamGroupedByCommit::class)->getMock();
+        $eventStream = $this->getMockBuilder(EventStreamGroupedByCommit::class)->getMock();
 
         $eventStream
             ->expects($this->once())
@@ -166,7 +233,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
         $repository
             ->expects($this->never())
-            ->method('isEventAlreadyDispatched');
+            ->method('isEventProcessingAlreadyStarted');
 
         /** @var SagaEventTrackerRepository $repository */
         /** @var LoggerInterface $logger */

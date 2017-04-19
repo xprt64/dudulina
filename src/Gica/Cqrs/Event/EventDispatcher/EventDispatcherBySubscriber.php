@@ -22,12 +22,12 @@ class EventDispatcherBySubscriber implements EventDispatcher
         $this->eventSubscriber = $eventSubscriber;
     }
 
-    public function dispatchEvent(EventWithMetaData $eventWithMetaData)
+    public function dispatchEvent(EventWithMetaData $eventWithMetadata)
     {
-        $listeners = $this->eventSubscriber->getListenersForEvent($eventWithMetaData->getEvent());
+        $listeners = $this->eventSubscriber->getListenersForEvent($eventWithMetadata->getEvent());
 
         foreach ($listeners as $listener) {
-            call_user_func($listener, $eventWithMetaData->getEvent(), $eventWithMetaData->getMetaData());
+            call_user_func($listener, $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
         }
     }
 }

@@ -23,10 +23,10 @@ class CompositeEventDispatcher implements EventDispatcher
         $this->eventDispatchers = $eventDispatchers;
     }
 
-    public function dispatchEvent(EventWithMetaData $eventWithMetaData)
+    public function dispatchEvent(EventWithMetaData $eventWithMetadata)
     {
         foreach ($this->eventDispatchers as $eventDispatcher) {
-            $eventDispatcher->dispatchEvent($eventWithMetaData);
+            $eventDispatcher->dispatchEvent($eventWithMetadata);
         }
     }
 }

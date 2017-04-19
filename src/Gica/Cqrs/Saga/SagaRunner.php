@@ -14,6 +14,7 @@ use Gica\Cqrs\Command\CodeAnalysis\WriteSideEventHandlerDetector;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\EventStore;
 use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
+use Gica\Cqrs\Saga\SagaRunner\EventProcessingHasStalled;
 use Psr\Log\LoggerInterface;
 
 class SagaRunner
@@ -74,12 +75,17 @@ class SagaRunner
             foreach ($methods as $method) {
 
                 try {
-                    if (!$this->sagaRepository->isEventAlreadyDispatched(get_class($saga), $metaData->getSequence(), $metaData->getIndex())) {
-                        $this->sagaRepository->beginProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
+                    if ($this->sagaRepository->isEventProcessingAlreadyStarted(get_class($saga), $metaData->getSequence(), $metaData->getIndex())) {
+                        if (!$this->sagaRepository->isEventProcessingAlreadyEnded(get_class($saga), $metaData->getSequence(), $metaData->getIndex())) {
+                            throw new EventProcessingHasStalled($eventWithMetadata);
+                        }
+                    } else {
+                        $this->sagaRepository->startProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
                         call_user_func([$saga, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
                         $this->sagaRepository->endProcessingEventBySaga(get_class($saga), $metaData->getSequence(), $metaData->getIndex());
                     }
                 } catch (ConcurentEventProcessingException $exception) {
+                    $this->logger->info("concurent event processing exception, skipping...");
                     continue;
                 }
             }
