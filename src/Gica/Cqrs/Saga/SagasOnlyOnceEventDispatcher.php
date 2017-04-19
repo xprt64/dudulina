@@ -6,11 +6,13 @@
 namespace Gica\Cqrs\Saga;
 
 
+use Gica\Cqrs\Event\EventDispatcher;
 use Gica\Cqrs\Event\EventSubscriber;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
+use Psr\Log\LoggerInterface;
 
-class SagasOnlyOnceEventDispatcher implements \Gica\Cqrs\Event\EventDispatcher
+class SagasOnlyOnceEventDispatcher implements EventDispatcher
 {
 
     /** @var EventSubscriber */
@@ -19,14 +21,20 @@ class SagasOnlyOnceEventDispatcher implements \Gica\Cqrs\Event\EventDispatcher
      * @var SagaEventTrackerRepository
      */
     private $trackerRepository;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     public function __construct(
         SagaEventTrackerRepository $trackerRepository,
-        EventSubscriber $eventSubscriber
+        EventSubscriber $eventSubscriber,
+        LoggerInterface $logger
     )
     {
         $this->eventSubscriber = $eventSubscriber;
         $this->trackerRepository = $trackerRepository;
+        $this->logger = $logger;
     }
 
     public function dispatchEvent(EventWithMetaData $eventWithMetadata)
@@ -41,13 +49,17 @@ class SagasOnlyOnceEventDispatcher implements \Gica\Cqrs\Event\EventDispatcher
             if (is_array($listener)) {
                 $saga = $listener[0];
 
-                if (!$this->trackerRepository->isEventProcessingAlreadyStarted(get_class($saga), $eventOrder)) {
+                $sagaId = get_class($saga) . $metaData->getAggregateId();
+
+                if (!$this->trackerRepository->isEventProcessingAlreadyStarted($sagaId, $eventOrder)) {
                     try {
-                        $this->trackerRepository->startProcessingEventBySaga(get_class($saga), $eventOrder);
+                        $this->trackerRepository->startProcessingEventBySaga($sagaId, $eventOrder);
                         call_user_func($listener, $eventWithMetadata->getEvent(), $metaData);
-                        $this->trackerRepository->endProcessingEventBySaga(get_class($saga), $eventOrder);
+                        $this->trackerRepository->endProcessingEventBySaga($sagaId, $eventOrder);
                     } catch (ConcurentEventProcessingException $exception) {
                         continue;
+                    } catch (\Throwable $exception) {
+                        $this->logger->error(sprintf("Saga %s event %d/%d processing error:%s", $sagaId, $metaData->getSequence(), $metaData->getIndex(), $exception->getMessage()), $exception->getTrace());
                     }
                 }
             }

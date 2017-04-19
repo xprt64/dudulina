@@ -17,6 +17,9 @@ use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
 use Gica\Cqrs\Saga\SagaRunner\EventProcessingHasStalled;
 use Psr\Log\LoggerInterface;
 
+/**
+ * This class can be run in background to feed a saga with events
+ */
 class SagaRunner
 {
 
@@ -73,18 +76,20 @@ class SagaRunner
             $metaData = $eventWithMetadata->getMetaData();
 
             $eventOrder = new EventOrder($metaData->getSequence(), $metaData->getIndex());
-            
+
+            $sagaId = get_class($saga) . $metaData->getAggregateId();
+
             foreach ($methods as $method) {
 
                 try {
-                    if ($this->sagaRepository->isEventProcessingAlreadyStarted(get_class($saga), $eventOrder)) {
-                        if (!$this->sagaRepository->isEventProcessingAlreadyEnded(get_class($saga), $eventOrder)) {
+                    if ($this->sagaRepository->isEventProcessingAlreadyStarted($sagaId, $eventOrder)) {
+                        if (!$this->sagaRepository->isEventProcessingAlreadyEnded($sagaId, $eventOrder)) {
                             throw new EventProcessingHasStalled($eventWithMetadata);
                         }
                     } else {
-                        $this->sagaRepository->startProcessingEventBySaga(get_class($saga), $eventOrder);
+                        $this->sagaRepository->startProcessingEventBySaga($sagaId, $eventOrder);
                         call_user_func([$saga, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
-                        $this->sagaRepository->endProcessingEventBySaga(get_class($saga), $eventOrder);
+                        $this->sagaRepository->endProcessingEventBySaga($sagaId, $eventOrder);
                     }
                 } catch (ConcurentEventProcessingException $exception) {
                     $this->logger->info("concurent event processing exception, skipping...");
