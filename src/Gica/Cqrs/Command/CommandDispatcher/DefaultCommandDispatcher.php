@@ -22,6 +22,7 @@ use Gica\Cqrs\Event\ScheduledEvent;
 use Gica\Cqrs\FutureEventsStore;
 use Gica\Cqrs\Scheduling\CommandScheduler;
 use Gica\Cqrs\Scheduling\ScheduledCommand;
+use Gica\Types\Guid;
 
 class DefaultCommandDispatcher implements CommandDispatcher
 {
@@ -152,7 +153,7 @@ class DefaultCommandDispatcher implements CommandDispatcher
 
     private function decorateEventWithMetaData($event, MetaData $metaData): EventWithMetaData
     {
-        return new EventWithMetaData($event, $metaData);
+        return new EventWithMetaData($event, $metaData->withEventId(Guid::generate()));
     }
 
     /**

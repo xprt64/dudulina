@@ -1,0 +1,1 @@
+git tag -a 0.0.0 -m "$(git log -1 --format=%B)" && git push --tags
