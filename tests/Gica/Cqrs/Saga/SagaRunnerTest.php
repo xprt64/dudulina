@@ -21,7 +21,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 {
     private function factoryMetadata(string $eventId)
     {
-        return (new MetaData('', '', $eventId, new \DateTimeImmutable('2017-01-01 00:00:00')));
+        return (new MetaData('', '', new \DateTimeImmutable('2017-01-01 00:00:00')))->withEventId($eventId);
     }
 
     public function test()

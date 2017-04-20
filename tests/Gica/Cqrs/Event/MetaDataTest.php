@@ -18,7 +18,6 @@ class MetaDataTest extends \PHPUnit_Framework_TestCase
         $metaData = new MetaData(
             123,
             'aggregateclass',
-            Guid::generate(),
             $dateCreated,
             345,
             'commandMetadata'
@@ -29,5 +28,8 @@ class MetaDataTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($dateCreated, $metaData->getDateCreated());
         $this->assertSame(345, $metaData->getAuthenticatedUserId());
         $this->assertSame('commandMetadata', $metaData->getCommandMetadata());
+
+        $metaData2 = $metaData->withEventId('234');
+        $this->assertSame('234', $metaData2->getEventId());
     }
 }

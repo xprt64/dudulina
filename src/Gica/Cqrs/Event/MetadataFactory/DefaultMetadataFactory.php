@@ -32,7 +32,6 @@ class DefaultMetadataFactory implements MetadataFactory
         return new MetaData(
             $command->getCommand()->getAggregateId(),
             get_class($aggregate),
-            Guid::generate(),
             new \DateTimeImmutable(),
             $this->identityReaderService ? $this->identityReaderService->getAuthenticatedIdentityId() : null,
             $command->getMetadata()

@@ -24,11 +24,8 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $metadata->method('getSequence')
-            ->willReturn(1);
-
-        $metadata->method('getIndex')
-            ->willReturn(2);
+        $metadata->method('getEventId')
+            ->willReturn("1");
 
         /** @var MetaData $metadata */
         $eventWithMetadata = new EventWithMetaData('event', $metadata);
@@ -72,11 +69,8 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $metadata->method('getSequence')
-            ->willReturn(1);
-
-        $metadata->method('getIndex')
-            ->willReturn(2);
+        $metadata->method('getEventId')
+            ->willReturn("1");
 
         /** @var MetaData $metadata */
         $eventWithMetadata = new EventWithMetaData('event', $metadata);
@@ -124,11 +118,8 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $metadata->method('getSequence')
-            ->willReturn(1);
-
-        $metadata->method('getIndex')
-            ->willReturn(1);
+        $metadata->method('getEventId')
+            ->willReturn("1");
 
         /** @var MetaData $metadata */
         $eventWithMetadata = new EventWithMetaData('event', $metadata);
@@ -178,11 +169,8 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $metadata->method('getSequence')
-            ->willReturn(1);
-
-        $metadata->method('getIndex')
-            ->willReturn(1);
+        $metadata->method('getEventId')
+            ->willReturn("1");
 
         /** @var MetaData $metadata */
         $eventWithMetadata = new EventWithMetaData('event', $metadata);

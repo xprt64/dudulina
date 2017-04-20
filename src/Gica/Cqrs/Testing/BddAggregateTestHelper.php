@@ -224,7 +224,7 @@ class BddAggregateTestHelper
     private function factoryMetaData(): MetaData
     {
         return new MetaData(
-            $this->aggregateId, get_class($this->aggregate), Guid::generate(), new \DateTimeImmutable(), mt_rand()
+            $this->aggregateId, get_class($this->aggregate), new \DateTimeImmutable(), mt_rand()
         );
     }
 

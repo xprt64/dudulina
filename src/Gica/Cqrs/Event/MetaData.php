@@ -27,14 +27,13 @@ class MetaData
     /** @var int */
     private $index = null;
     /**
-     * @var string
+     * @var string|null
      */
     private $eventId;
 
     public function __construct(
         $aggregateId,
         string $aggregateClass,
-        string $eventId,
         \DateTimeImmutable $dateCreated,
         $authenticatedUserId = null,
         $commandMetadata = null
@@ -45,7 +44,6 @@ class MetaData
         $this->authenticatedUserId = $authenticatedUserId;
         $this->aggregateClass = $aggregateClass;
         $this->commandMetadata = $commandMetadata;
-        $this->eventId = $eventId;
     }
 
     public function getDateCreated(): \DateTimeImmutable
@@ -87,6 +85,13 @@ class MetaData
         return $other;
     }
 
+    public function withEventId(string $eventId): self
+    {
+        $other = clone $this;
+        $other->eventId = $eventId;
+        return $other;
+    }
+
     public function getSequence(): ?int
     {
         return $this->sequence;
@@ -97,7 +102,7 @@ class MetaData
         return $this->index;
     }
 
-    public function getEventId(): string
+    public function getEventId(): ?string
     {
         return $this->eventId;
     }

@@ -114,7 +114,10 @@ class InMemoryEventStore implements EventStore
             }
 
             return new EventWithMetaData($event, new MetaData(
-                $aggregateId, $aggregateClass, Guid::generate(), new \DateTimeImmutable(), null
+                $aggregateId,
+                    $aggregateClass,
+                    new \DateTimeImmutable(),
+                    null
             ));
         }, $priorEvents);
     }

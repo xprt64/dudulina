@@ -33,7 +33,6 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
                 new MetaData(
                     $aggregateId,
                     $aggregateClass,
-                    Guid::generate(),
                     new \DateTimeImmutable(),
                     null
                 )
@@ -51,7 +50,6 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
                 new MetaData(
                     $aggregateId,
                     $aggregateClass,
-                    Guid::generate(),
                     new \DateTimeImmutable(),
                     null
                 )
@@ -61,7 +59,6 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
                 new MetaData(
                     $aggregateId,
                     $aggregateClass,
-                    Guid::generate(),
                     new \DateTimeImmutable(),
                     null
                 )
@@ -100,7 +97,6 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
                 new MetaData(
                     $aggregateId,
                     $aggregateClass,
-                    Guid::generate(),
                     new \DateTimeImmutable(),
                     null
                 )
