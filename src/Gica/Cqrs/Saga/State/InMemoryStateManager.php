@@ -10,30 +10,30 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
 {
     private $states = [];
 
-    public function loadState(string $stateClass, $stateId)
+    public function loadState(string $stateClass, $stateId, string $namespace = 'global_namespace')
     {
         $key = $stateClass . $stateId;
 
-        if (isset($this->states[$key])) {
-            return $this->states[$key];
+        if (isset($this->states[$namespace][$key])) {
+            return $this->states[$namespace][$key];
         }
 
         return null;
     }
 
-    public function hasState(string $stateClass, $stateId)
+    public function hasState(string $stateClass, $stateId, string $namespace)
     {
         $key = $stateClass . $stateId;
 
-        return isset($this->states[$key]);
+        return isset($this->states[$namespace][$key]);
     }
 
-    public function updateState($stateId, callable $updater)
+    public function updateState($stateId, callable $updater, string $namespace = 'global_namespace')
     {
         list($stateClass, $isOptional) = $this->getStateClass($updater);
 
-        $oldState = $this->loadState($stateClass, $stateId);
-        if (!$this->hasState($stateClass, $stateId)) {
+        $oldState = $this->loadState($stateClass, $stateId, $namespace);
+        if (!$this->hasState($stateClass, $stateId, $namespace)) {
             if (!$isOptional) {
                 $oldState = new $stateClass;
             }
@@ -43,7 +43,7 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
 
         $key = $stateClass . $stateId;
 
-        $this->states[$key] = $newState;
+        $this->states[$namespace][$key] = $newState;
     }
 
     private function getStateClass(callable $update)
@@ -59,9 +59,9 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
         return [$parameter->getClass()->name, $parameter->isOptional()];
     }
 
-    public function clearAllStates()
+    public function clearAllStates(string $namespace = 'global_namespace')
     {
-        $this->states = [];
+        $this->states[$namespace] = [];
     }
 
     public function createStorage()
