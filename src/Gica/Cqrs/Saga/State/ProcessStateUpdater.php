@@ -8,7 +8,7 @@ namespace Gica\Cqrs\Saga\State;
 
 interface ProcessStateUpdater
 {
-    public function createStorage();
+    public function createStorage(string $namespace = 'global_namespace');
     public function updateState($stateId, callable $updater, string $namespace = 'global_namespace');
     public function clearAllStates(string $namespace = 'global_namespace');
 }

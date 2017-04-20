@@ -64,8 +64,8 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
         $this->states[$namespace] = [];
     }
 
-    public function createStorage()
+    public function createStorage(string $namespace = 'global_namespace')
     {
-        $this->states = [];
+        $this->states[$namespace] = [];
     }
 }
