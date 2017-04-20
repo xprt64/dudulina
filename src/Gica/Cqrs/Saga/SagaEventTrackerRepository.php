@@ -23,4 +23,6 @@ interface SagaEventTrackerRepository
     public function startProcessingEventBySaga(string $sagaId, string $eventId);
 
     public function endProcessingEventBySaga(string $sagaId, string $eventId);
+
+    public function clearProcessingEventBySaga(string $sagaId, string $eventId);
 }
