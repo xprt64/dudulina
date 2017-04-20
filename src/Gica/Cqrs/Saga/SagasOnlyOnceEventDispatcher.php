@@ -47,7 +47,7 @@ class SagasOnlyOnceEventDispatcher implements EventDispatcher
             if (is_array($listener)) {
                 $saga = $listener[0];
 
-                $sagaId = get_class($saga) . $metaData->getAggregateId();
+                $sagaId = get_class($saga);
 
                 if (!$this->trackerRepository->isEventProcessingAlreadyStarted($sagaId, $metaData->getEventId())) {
                     try {

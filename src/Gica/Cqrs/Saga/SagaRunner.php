@@ -75,7 +75,7 @@ class SagaRunner
             $methods = $this->findMethodsByEventClass(get_class($eventWithMetadata->getEvent()), $allMethods);
             $metaData = $eventWithMetadata->getMetaData();
 
-            $sagaId = get_class($saga) . $metaData->getAggregateId();
+            $sagaId = get_class($saga);
 
             foreach ($methods as $method) {
 
