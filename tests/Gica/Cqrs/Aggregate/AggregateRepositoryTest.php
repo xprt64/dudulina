@@ -13,6 +13,7 @@ use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\EventStore;
 use Gica\Cqrs\EventStore\AggregateEventStream;
+use Gica\Types\Guid;
 
 
 class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
@@ -33,8 +34,8 @@ class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->firstEventWithMetadata = new EventWithMetaData(1, new MetaData('', '', new \DateTimeImmutable()));
-        $this->secondEventWithMetadata = new EventWithMetaData(2, new MetaData('', '', new \DateTimeImmutable()));
+        $this->firstEventWithMetadata = new EventWithMetaData(1, new MetaData('', '', Guid::generate(), new \DateTimeImmutable()));
+        $this->secondEventWithMetadata = new EventWithMetaData(2, new MetaData('', '', Guid::generate(), new \DateTimeImmutable()));
     }
 
     public function testLoadAndSaveAggregate()

@@ -12,6 +12,7 @@ use Gica\Cqrs\EventStore\EventsCommit;
 use Gica\Cqrs\EventStore\EventStreamGroupedByCommit;
 use Gica\Cqrs\EventStore\Exception\ConcurrentModificationException;
 use Gica\Iterator\IteratorTransformer\IteratorExpander;
+use Gica\Types\Guid;
 
 class InMemoryEventStore implements EventStore
 {
@@ -113,7 +114,7 @@ class InMemoryEventStore implements EventStore
             }
 
             return new EventWithMetaData($event, new MetaData(
-                $aggregateId, $aggregateClass, new \DateTimeImmutable(), null
+                $aggregateId, $aggregateClass, Guid::generate(), new \DateTimeImmutable(), null
             ));
         }, $priorEvents);
     }

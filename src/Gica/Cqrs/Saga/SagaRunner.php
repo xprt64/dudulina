@@ -75,21 +75,19 @@ class SagaRunner
             $methods = $this->findMethodsByEventClass(get_class($eventWithMetadata->getEvent()), $allMethods);
             $metaData = $eventWithMetadata->getMetaData();
 
-            $eventOrder = new EventOrder($metaData->getSequence(), $metaData->getIndex());
-
             $sagaId = get_class($saga) . $metaData->getAggregateId();
 
             foreach ($methods as $method) {
 
                 try {
-                    if ($this->sagaRepository->isEventProcessingAlreadyStarted($sagaId, $eventOrder)) {
-                        if (!$this->sagaRepository->isEventProcessingAlreadyEnded($sagaId, $eventOrder)) {
+                    if ($this->sagaRepository->isEventProcessingAlreadyStarted($sagaId, $metaData->getEventId())) {
+                        if (!$this->sagaRepository->isEventProcessingAlreadyEnded($sagaId, $metaData->getEventId())) {
                             throw new EventProcessingHasStalled($eventWithMetadata);
                         }
                     } else {
-                        $this->sagaRepository->startProcessingEventBySaga($sagaId, $eventOrder);
+                        $this->sagaRepository->startProcessingEventBySaga($sagaId, $metaData->getEventId());
                         call_user_func([$saga, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
-                        $this->sagaRepository->endProcessingEventBySaga($sagaId, $eventOrder);
+                        $this->sagaRepository->endProcessingEventBySaga($sagaId, $metaData->getEventId());
                     }
                 } catch (ConcurentEventProcessingException $exception) {
                     $this->logger->info("concurent event processing exception, skipping...");

@@ -11,6 +11,7 @@ use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\EventStore\InMemory\InMemoryEventStore;
 use Gica\Cqrs\FutureEventsStore;
 use Gica\Cqrs\Scheduling\ScheduledEventWithMetadata;
+use Gica\Types\Guid;
 
 
 class ScheduledEventsPlayerTest extends \PHPUnit_Framework_TestCase
@@ -31,6 +32,7 @@ class ScheduledEventsPlayerTest extends \PHPUnit_Framework_TestCase
             new Event\MetaData(
                 123,
                 'aggregateClass',
+                Guid::generate(),
                 new \DateTimeImmutable(),
                 null
             )

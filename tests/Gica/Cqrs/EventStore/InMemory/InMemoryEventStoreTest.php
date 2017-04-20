@@ -11,6 +11,7 @@ use Gica\Cqrs\EventStore\AggregateEventStream;
 use Gica\Cqrs\EventStore\EventStream;
 use Gica\Cqrs\EventStore\Exception\ConcurrentModificationException;
 use Gica\Cqrs\EventStore\InMemory\InMemoryEventStore;
+use Gica\Types\Guid;
 
 
 class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
@@ -32,6 +33,7 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
                 new MetaData(
                     $aggregateId,
                     $aggregateClass,
+                    Guid::generate(),
                     new \DateTimeImmutable(),
                     null
                 )
@@ -49,6 +51,7 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
                 new MetaData(
                     $aggregateId,
                     $aggregateClass,
+                    Guid::generate(),
                     new \DateTimeImmutable(),
                     null
                 )
@@ -58,6 +61,7 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
                 new MetaData(
                     $aggregateId,
                     $aggregateClass,
+                    Guid::generate(),
                     new \DateTimeImmutable(),
                     null
                 )
@@ -96,6 +100,7 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
                 new MetaData(
                     $aggregateId,
                     $aggregateClass,
+                    Guid::generate(),
                     new \DateTimeImmutable(),
                     null
                 )

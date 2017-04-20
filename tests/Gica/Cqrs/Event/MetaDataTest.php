@@ -5,6 +5,7 @@ namespace tests\Gica\Cqrs\Event;
 
 
 use Gica\Cqrs\Event\MetaData;
+use Gica\Types\Guid;
 
 
 class MetaDataTest extends \PHPUnit_Framework_TestCase
@@ -17,6 +18,7 @@ class MetaDataTest extends \PHPUnit_Framework_TestCase
         $metaData = new MetaData(
             123,
             'aggregateclass',
+            Guid::generate(),
             $dateCreated,
             345,
             'commandMetadata'

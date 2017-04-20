@@ -44,18 +44,16 @@ class SagasOnlyOnceEventDispatcher implements EventDispatcher
         foreach ($listeners as $listener) {
             $metaData = $eventWithMetadata->getMetaData();
 
-            $eventOrder = new EventOrder($metaData->getSequence(), $metaData->getIndex());
-
             if (is_array($listener)) {
                 $saga = $listener[0];
 
                 $sagaId = get_class($saga) . $metaData->getAggregateId();
 
-                if (!$this->trackerRepository->isEventProcessingAlreadyStarted($sagaId, $eventOrder)) {
+                if (!$this->trackerRepository->isEventProcessingAlreadyStarted($sagaId, $metaData->getEventId())) {
                     try {
-                        $this->trackerRepository->startProcessingEventBySaga($sagaId, $eventOrder);
+                        $this->trackerRepository->startProcessingEventBySaga($sagaId, $metaData->getEventId());
                         call_user_func($listener, $eventWithMetadata->getEvent(), $metaData);
-                        $this->trackerRepository->endProcessingEventBySaga($sagaId, $eventOrder);
+                        $this->trackerRepository->endProcessingEventBySaga($sagaId, $metaData->getEventId());
                     } catch (ConcurentEventProcessingException $exception) {
                         continue;
                     } catch (\Throwable $exception) {

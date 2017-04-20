@@ -26,10 +26,15 @@ class MetaData
 
     /** @var int */
     private $index = null;
+    /**
+     * @var string
+     */
+    private $eventId;
 
     public function __construct(
         $aggregateId,
         string $aggregateClass,
+        string $eventId,
         \DateTimeImmutable $dateCreated,
         $authenticatedUserId = null,
         $commandMetadata = null
@@ -40,6 +45,7 @@ class MetaData
         $this->authenticatedUserId = $authenticatedUserId;
         $this->aggregateClass = $aggregateClass;
         $this->commandMetadata = $commandMetadata;
+        $this->eventId = $eventId;
     }
 
     public function getDateCreated(): \DateTimeImmutable
@@ -73,7 +79,7 @@ class MetaData
             ($dateCreated->setTimezone(new \DateTimeZone('Europe/Bucharest')) ?: $dateCreated);
     }
 
-    public function withSequenceAndIndex(int $sequence, int $index):self
+    public function withSequenceAndIndex(int $sequence, int $index): self
     {
         $other = clone $this;
         $other->sequence = $sequence;
@@ -89,5 +95,10 @@ class MetaData
     public function getIndex(): ?int
     {
         return $this->index;
+    }
+
+    public function getEventId(): string
+    {
+        return $this->eventId;
     }
 }

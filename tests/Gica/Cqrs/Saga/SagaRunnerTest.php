@@ -10,18 +10,18 @@ use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\EventStore;
 use Gica\Cqrs\EventStore\EventStreamGroupedByCommit;
-use Gica\Cqrs\Saga\EventOrder;
 use Gica\Cqrs\Saga\SagaEventTrackerRepository;
 use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
 use Gica\Cqrs\Saga\SagaRunner;
 use Gica\Cqrs\Saga\SagaRunner\EventProcessingHasStalled;
+use Gica\Types\Guid;
 use Psr\Log\LoggerInterface;
 
 class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 {
-    private function factoryMetadata(int $sequence, int $index)
+    private function factoryMetadata(string $eventId)
     {
-        return (new MetaData('', '', new \DateTimeImmutable('2017-01-01 00:00:00')))->withSequenceAndIndex($sequence, $index);
+        return (new MetaData('', '', $eventId, new \DateTimeImmutable('2017-01-01 00:00:00')));
     }
 
     public function test()
@@ -35,10 +35,13 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
         $eventStream = $this->getMockBuilder(EventStreamGroupedByCommit::class)->getMock();
 
+        $eventId1 = Guid::generate();
+        $eventId2 = Guid::generate();
+
         $eventStream->method('getIterator')
             ->willReturn(new \ArrayIterator([
-                new EventWithMetaData(new Event1(), $this->factoryMetadata(3, 33)),
-                new EventWithMetaData(new Event2(), $this->factoryMetadata(4, 44)),
+                new EventWithMetaData(new Event1(), $this->factoryMetadata($eventId1)),
+                new EventWithMetaData(new Event2(), $this->factoryMetadata($eventId2)),
             ]));
 
         $eventStore->expects($this->once())
@@ -53,14 +56,14 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
         $repository->method('isEventProcessingAlreadyStarted')
             ->with(get_class($saga))
-            ->willReturnCallback(function (string $sagaId, EventOrder $eventOrder) {
-                return $eventOrder->getSequence() == 3 && $eventOrder->getIndex() == 33;
+            ->willReturnCallback(function (string $sagaId, string $eventId) use ($eventId1) {
+                return $eventId == $eventId1;
             });
 
         $repository->method('isEventProcessingAlreadyEnded')
             ->with(get_class($saga))
-            ->willReturnCallback(function (string $sagaId, EventOrder $eventOrder) {
-                return $eventOrder->getSequence() == 3 && $eventOrder->getIndex() == 33;
+            ->willReturnCallback(function (string $sagaId, string $eventId) use ($eventId1) {
+                return $eventId == $eventId1;
             });
 
         $repository->expects($this->once())
@@ -87,6 +90,9 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
     public function test_ConcurentModificationException()
     {
+        $eventId1 = "1";
+        $eventId2 = "2";
+
         $eventStore = $this->getMockBuilder(EventStore::class)
             //->setMethods(['loadEventsByClassNames'])
             ->getMock();
@@ -98,8 +104,8 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
         $eventStream->method('getIterator')
             ->willReturn(new \ArrayIterator([
-                new EventWithMetaData(new Event1(), $this->factoryMetadata(3, 33)),
-                new EventWithMetaData(new Event2(), $this->factoryMetadata(4, 44)),
+                new EventWithMetaData(new Event1(), $this->factoryMetadata($eventId1)),
+                new EventWithMetaData(new Event2(), $this->factoryMetadata($eventId2)),
             ]));
 
         $eventStore->expects($this->once())
@@ -153,7 +159,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
         $eventStream->method('getIterator')
             ->willReturn(new \ArrayIterator([
-                new EventWithMetaData(new Event1(), $this->factoryMetadata(3, 33)),
+                new EventWithMetaData(new Event1(), $this->factoryMetadata("1")),
             ]));
 
         $eventStore->expects($this->once())
@@ -219,8 +225,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
         $eventStream
             ->expects($this->once())
             ->method('afterSequence')
-            ->with(4)
-            ;
+            ->with(4);
 
         $eventStore->expects($this->once())
             ->method('loadEventsByClassNames')

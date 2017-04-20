@@ -10,19 +10,21 @@ use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
 
 interface SagaEventTrackerRepository
 {
-    public function isEventProcessingAlreadyStarted(string $sagaId, EventOrder $eventOrder): bool;
+    public function isEventProcessingAlreadyStarted(string $sagaId, string $eventId): bool;
 
-    public function isEventProcessingAlreadyEnded(string $sagaId, EventOrder $eventOrder): bool;
+    public function isEventProcessingAlreadyEnded(string $sagaId, string $eventId): bool;
 
     /**
      * @param string $sagaId
-     * @param EventOrder $eventOrder
+     * @param string $eventId
      * @return void
      * @throws ConcurentEventProcessingException
      */
-    public function startProcessingEventBySaga(string $sagaId, EventOrder $eventOrder);
+    public function startProcessingEventBySaga(string $sagaId, string $eventId);
 
-    public function endProcessingEventBySaga(string $sagaId, EventOrder $eventOrder);
+    public function endProcessingEventBySaga(string $sagaId, string $eventId);
 
-    public function getLastStartedEventSequenceAndIndex(string $sagaId):?EventOrder;
+    public function getLastStartedEventId(string $sagaId):?string;
+
+    public function getLastEndedEventId(string $sagaId):?string;
 }
