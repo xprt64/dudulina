@@ -44,7 +44,7 @@ class CommandValidatorsMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $sut->generate(
             CommandValidatorSubscriberTemplate::class,
-            __DIR__ . '/CommandValidatorsMapCodeGeneratorData',
+            new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . '/CommandValidatorsMapCodeGeneratorData')),
             __DIR__ . '/CommandValidatorsMapCodeGeneratorData/CommandValidatorSubscriber.php',
             'CommandValidatorSubscriber'
         );

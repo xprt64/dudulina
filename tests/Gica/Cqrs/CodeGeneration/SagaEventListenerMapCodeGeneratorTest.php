@@ -43,7 +43,7 @@ class SagaEventListenerMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $sut->generate(
             SagaEventProcessorsMapTemplate::class,
-            __DIR__ . '/SagaEventListenerMapCodeGeneratorData',
+            new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . '/SagaEventListenerMapCodeGeneratorData')),
             __DIR__ . '/SagaEventListenerMapCodeGeneratorData/SagaEventProcessorsMap.php',
             'SagaEventProcessorsMap'
         );

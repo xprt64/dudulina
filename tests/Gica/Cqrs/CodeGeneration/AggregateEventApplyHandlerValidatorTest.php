@@ -20,6 +20,6 @@ class AggregateEventApplyHandlerValidatorTest extends \PHPUnit_Framework_TestCas
             $logger
         );
 
-        $sut->validate(__DIR__ . '/AggregateEventApplyHandlerValidatorData/Valid');
+        $sut->validate(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . '/AggregateEventApplyHandlerValidatorData/Valid')));
     }
 }

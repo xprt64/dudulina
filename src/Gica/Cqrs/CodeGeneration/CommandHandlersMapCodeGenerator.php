@@ -16,9 +16,9 @@ class CommandHandlersMapCodeGenerator
 {
     use GroupedByEventTrait;
 
-    protected function log($outputFilePath, $searchDirectory)
+    protected function log($outputFilePath)
     {
-        $this->logger->info("Commands map wrote to: $outputFilePath (searched in $searchDirectory)");
+        $this->logger->info("Commands map wrote to: $outputFilePath");
     }
 
     private function validateMap(array $map)
@@ -31,14 +31,14 @@ class CommandHandlersMapCodeGenerator
         }
     }
 
-    protected function discover(string $searchDirectory)
+    protected function discover(\Iterator $files)
     {
         $discoverer = new MethodListenerDiscovery(
             new AggregateCommandHandlerDetector(),
             new AnyPhpClassIsAccepted,
             new ByConstructorDependencySorter());
 
-        $map = $discoverer->discoverListeners($searchDirectory);
+        $map = $discoverer->discoverListeners($files);
 
         $this->validateMap($this->groupMap($map));
 

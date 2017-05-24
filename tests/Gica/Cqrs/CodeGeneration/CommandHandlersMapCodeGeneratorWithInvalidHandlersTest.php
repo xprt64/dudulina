@@ -27,7 +27,7 @@ class CommandHandlersMapCodeGeneratorWithInvalidHandlersTest extends \PHPUnit_Fr
 
         $sut->generate(
             CommandHandlersMapTemplate::class,
-            __DIR__ . '/CommandHandlersMapCodeGeneratorWithInvalidHandlersData',
+            new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . '/CommandHandlersMapCodeGeneratorWithInvalidHandlersData')),
             __DIR__ . '/CommandHandlersMapCodeGeneratorWithInvalidHandlersData/CommandHandlersMap.php',
             'CommandHandlersMap'
         );

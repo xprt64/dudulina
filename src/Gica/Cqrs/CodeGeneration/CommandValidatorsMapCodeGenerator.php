@@ -16,18 +16,18 @@ class CommandValidatorsMapCodeGenerator
 {
     use GroupedByEventTrait;
 
-    protected function discover(string $searchDirectory)
+    protected function discover(\Iterator $files)
     {
         $discoverer = new MethodListenerDiscovery(
             new AggregateCommandValidatorDetector(),
             new AnyPhpClassIsAccepted,
             new ByConstructorDependencySorter());
 
-        return $discoverer->discoverListeners($searchDirectory);
+        return $discoverer->discoverListeners($files);
     }
 
-    protected function log($outputFilePath, $searchDirectory)
+    protected function log($outputFilePath)
     {
-        $this->logger->info("Commands validators wrote to: $outputFilePath (searched in $searchDirectory)");
+        $this->logger->info("Commands validators wrote to: $outputFilePath");
     }
 }

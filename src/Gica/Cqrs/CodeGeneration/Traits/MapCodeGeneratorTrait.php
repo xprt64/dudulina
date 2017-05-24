@@ -30,23 +30,23 @@ trait MapCodeGeneratorTrait
 
     public function generate(
         string $templateClassName,
-        string $searchDirectory,
+        \Iterator $files,
         string $outputFilePath,
         string $outputShortClassName
     )
     {
         $this->getGenerator()
             ->discoverAndPutContents(
-                $this->discover($searchDirectory),
+                $this->discover($files),
                 $templateClassName,
                 $outputFilePath,
                 $outputShortClassName
             );
 
-        $this->log($outputFilePath, $searchDirectory);
+        $this->log($outputFilePath, $files);
     }
 
-    abstract protected function log($outputFilePath, $searchDirectory);
+    abstract protected function log($outputFilePath);
 
     abstract protected function discover(string $searchDirectory): array;
 

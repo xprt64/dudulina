@@ -24,16 +24,16 @@ class AggregateEventApplyHandlerValidator
     }
 
     public function validate(
-        string $searchDirectory
+        \Iterator $files
     )
     {
         $validator = new AggregateEventHandlersValidator(
             new OnlyAggregateByName());
 
-        $validator->validateEventHandlers($searchDirectory);
+        $validator->validateEventHandlers($files);
 
         if ($this->logger) {
-            $this->logger->info("Aggregate event handlers are valid in $searchDirectory");
+            $this->logger->info("Aggregate event handlers are valid");
         }
     }
 }

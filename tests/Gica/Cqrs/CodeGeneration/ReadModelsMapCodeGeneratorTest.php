@@ -35,7 +35,7 @@ class ReadModelsMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $sut->generate(
             ReadModelsMapTemplate::class,
-            __DIR__ . '/ReadModelsMapCodeGeneratorData',
+            new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . '/ReadModelsMapCodeGeneratorData')),
             __DIR__ . '/ReadModelsMapCodeGeneratorData/ReadModelsMap.php',
             'ReadModelsMap'
         );

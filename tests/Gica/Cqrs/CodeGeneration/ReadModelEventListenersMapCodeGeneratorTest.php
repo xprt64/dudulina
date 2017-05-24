@@ -44,7 +44,7 @@ class ReadModelEventListenersMapCodeGeneratorTest extends \PHPUnit_Framework_Tes
 
         $sut->generate(
             ReadModelMapTemplate::class,
-            __DIR__ . '/ReadModelEventListenersMapCodeGeneratorData',
+            new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . '/ReadModelEventListenersMapCodeGeneratorData')),
             __DIR__ . '/ReadModelEventListenersMapCodeGeneratorData/ReadModelMap.php',
             'ReadModelMap'
         );

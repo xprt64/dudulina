@@ -16,7 +16,7 @@ class ReadModelEventListenersMapCodeGenerator
 {
     use GroupedByEventTrait;
 
-    protected function discover(string $searchDirectory)
+    protected function discover(\Iterator $files)
     {
         $discoverer = new MethodListenerDiscovery(
             new ReadModelEventHandlerDetector(),
@@ -24,11 +24,11 @@ class ReadModelEventListenersMapCodeGenerator
             new ByConstructorDependencySorter()
         );
 
-        return $discoverer->discoverListeners($searchDirectory);
+        return $discoverer->discoverListeners($files);
     }
 
-    protected function log($outputFilePath, $searchDirectory)
+    protected function log($outputFilePath)
     {
-        $this->logger->info("Read models events handlers map wrote to: $outputFilePath (searched in $searchDirectory)");
+        $this->logger->info("Read models events handlers map wrote to: $outputFilePath");
     }
 }

@@ -54,7 +54,7 @@ class CommandHandlersMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $sut->generate(
             CommandHandlersMapTemplate::class,
-            __DIR__ . '/CommandHandlersMapCodeGeneratorData',
+            new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . '/CommandHandlersMapCodeGeneratorData')),
             __DIR__ . '/CommandHandlersMapCodeGeneratorData/CommandHandlersMap.php',
             'CommandHandlersMap'
         );
