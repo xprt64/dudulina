@@ -57,7 +57,16 @@ class SagasOnlyOnceEventDispatcher implements EventDispatcher
                     } catch (ConcurentEventProcessingException $exception) {
                         continue;
                     } catch (\Throwable $exception) {
-                        $this->logger->error(sprintf("Saga %s event %d/%d processing error:%s", $sagaId, $metaData->getSequence(), $metaData->getIndex(), $exception->getMessage()), $exception->getTrace());
+                        $this->logger->error($exception->getMessage(), [
+                            'saga'  => get_class($saga),
+                            'event' => [
+                                'class'    => get_class($eventWithMetadata->getEvent()),
+                                'sequence' => $metaData->getSequence(),
+                                'index'    => $metaData->getIndex(),
+                            ],
+                            'file'  => $exception->getFile(),
+                            'line'  => $exception->getLine(),
+                        ]);
                     }
                 }
             }
