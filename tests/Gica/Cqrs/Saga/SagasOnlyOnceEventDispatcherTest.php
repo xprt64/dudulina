@@ -173,7 +173,7 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->willReturn("1");
 
         /** @var MetaData $metadata */
-        $eventWithMetadata = new EventWithMetaData('event', $metadata);
+        $eventWithMetadata = new EventWithMetaData(new \stdClass(), $metadata);
 
         $saga = $this->getMockBuilder(\stdClass::class)
             ->setMethods(['someListenerMethod'])
