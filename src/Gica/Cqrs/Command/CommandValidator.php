@@ -44,7 +44,7 @@ class CommandValidator
 
             $generator = call_user_func([$handler, $handlerDescriptor->getMethodName()], $command);
 
-            $ownErrors = iterator_to_array($generator);
+            $ownErrors = iterator_to_array($generator, false);
 
             $errors = array_merge($errors, $ownErrors);
         }
