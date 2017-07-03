@@ -68,7 +68,7 @@ the repository, call a method on it, it collects the changes and then it persist
 
 We would add a new method, named `canWithdrawMoneyFromAccount`, like this:
 
-```
+``` php
 class AccountService
 {
     private $repository;
@@ -123,7 +123,7 @@ class AccountService
 
 You could even detect if a particular method on an Aggregate would have any side effect, you can detect if idempotency is used:
 
-```
+``` php
 class AccountService
 {
     private $repository;
@@ -152,7 +152,7 @@ class AccountService
 
 Then, in the UI, we can use this like this:
 
-```
+``` php
 class SomeControllerOrWhateverUIComponent
 {
     public function someAction()
