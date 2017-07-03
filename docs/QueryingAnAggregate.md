@@ -29,38 +29,38 @@ One more thing: it really is forbidden to interogate an Aggregate's state. But w
 
 So, considering that we have the following PHP code, in an event sourced application:
 
-```
-    class AccountAggregate
+``` php
+class AccountAggregate
+{
+    /** @var Money */
+    private $balance = 0;
+
+    private $accounId;
+
+    public function withdrawMoney(Money $howMuch)
     {
-        /** @var Money */
-        private $balance = 0;
-
-        private $accounId;
-
-        public function withdrawMoney(Money $howMuch)
-        {
-            if($this->balance->greaterThan($howMuch)){ //and possibly more complicated business logic
-                yield new MoneyWithdrawn($this->accountId, $howMuch);
-            }
-            else {
-                throw new DomainException('Not enough money');
-            }
+        if($this->balance->greaterThan($howMuch)){ //and possibly more complicated business logic
+            yield new MoneyWithdrawn($this->accountId, $howMuch);
+        }
+        else {
+            throw new DomainException('Not enough money');
         }
     }
+}
 
-    class AccountService
+class AccountService
+{
+    private $repository;
+
+    public function handleWithdrawMoneyFromAccount(WithdrawMoneyFromAccount $command)
     {
-        private $repository;
+        $account = $this->repository->loadAccount($command->getAccountId());
 
-        public function handleWithdrawMoneyFromAccount(WithdrawMoneyFromAccount $command)
-        {
-            $account = $this->repository->loadAccount($command->getAccountId());
+        $events = iterator_to_array($account->withdrawMoney($command->getHowMuch()));
 
-            $events = iterator_to_array($account->withdrawMoney($command->getHowMuch()));
-
-            $this->repository->persistChanges($command->getAccountId(), $events);
-        }
+        $this->repository->persistChanges($command->getAccountId(), $events);
     }
+}
 ```
 
 Your actual implementation may vary but the idea is that the `AccountService` from the Application layer load and `AccountAggregate` from
@@ -69,101 +69,101 @@ the repository, call a method on it, it collects the changes and then it persist
 We would add a new method, named `canWithdrawMoneyFromAccount`, like this:
 
 ```
-    class AccountService
+class AccountService
+{
+    private $repository;
+
+    public function handleWithdrawMoneyFromAccount(WithdrawMoneyFromAccount $command)
     {
-        private $repository;
+        $account = $this->repository->loadAccount($command->getAccountId());
 
-        public function handleWithdrawMoneyFromAccount(WithdrawMoneyFromAccount $command)
+        $events = iterator_to_array($account->withdrawMoney($command->getHowMuch()));
+
+        $this->repository->persistChanges($command->getAccountId(), $events);
+    }
+
+    public function canWithdrawMoneyFromAccount(WithdrawMoneyFromAccount $command):bool
+    {
+        $account = $this->repository->loadAccount($command->getAccountId());
+
+        try
         {
-            $account = $this->repository->loadAccount($command->getAccountId());
+            iterator_to_array($account->withdrawMoney($command->getHowMuch()));
 
-            $events = iterator_to_array($account->withdrawMoney($command->getHowMuch()));
-
-            $this->repository->persistChanges($command->getAccountId(), $events);
+            return true;
+        }
+        catch(DomainException $exception)
+        {
+            return false;
         }
 
-        public function canWithdrawMoneyFromAccount(WithdrawMoneyFromAccount $command):bool
+        //please note that we don't persist the changes in case the method is successful
+     }
+
+     //or you could have this method, depending on your style
+    public function canWithdrawMoneyFromAccount(AccountId $accountId, Money $howMuch):bool
+    {
+        $account = $this->repository->loadAccount($accountId);
+
+        try
         {
-            $account = $this->repository->loadAccount($command->getAccountId());
+            iterator_to_array($account->withdrawMoney($howMuch)); //we collect the changes (events) but we discard them
 
-            try
-            {
-                iterator_to_array($account->withdrawMoney($command->getHowMuch()));
-
-                return true;
-            }
-            catch(DomainException $exception)
-            {
-                return false;
-            }
-
-            //please note that we don't persist the changes in case the method is successful
-         }
-
-         //or you could have this method, depending on your style
-        public function canWithdrawMoneyFromAccount(AccountId $accountId, Money $howMuch):bool
+            return true;
+        }
+        catch(DomainException $exception)
         {
-            $account = $this->repository->loadAccount($accountId);
+            return false;
+        }
 
-            try
-            {
-                iterator_to_array($account->withdrawMoney($howMuch)); //we collect the changes (events) but we discard them
-
-                return true;
-            }
-            catch(DomainException $exception)
-            {
-                return false;
-            }
-
-            //please note that we don't persist the changes in case the method is successful
-         }
-    }
+        //please note that we don't persist the changes in case the method is successful
+     }
+}
 ```
 
 You could even detect if a particular method on an Aggregate would have any side effect, you can detect if idempotency is used:
 
 ```
-    class AccountService
+class AccountService
+{
+    private $repository;
+
+    // ... some more code
+
+    public function canWithdrawMoneyFromAccount(AccountId $accountId, Money $howMuch):bool
     {
-        private $repository;
+        $account = $this->repository->loadAccount($accountId);
 
-        // ... some more code
-
-        public function canWithdrawMoneyFromAccount(AccountId $accountId, Money $howMuch):bool
+        try
         {
-            $account = $this->repository->loadAccount($accountId);
+            $events  = iterator_to_array($account->withdrawMoney($howMuch)); //we collect the changes (events) but we discard them
 
-            try
-            {
-                $events  = iterator_to_array($account->withdrawMoney($howMuch)); //we collect the changes (events) but we discard them
-
-                 return !empty($events); //we treat no side effect like an exception - if this is what we want
-             }
-            catch(DomainException $exception)
-            {
-                return false;
-            }
-
-            //please note that we don't persist the changes in case the method is successful
+             return !empty($events); //we treat no side effect like an exception - if this is what we want
          }
-    }
+        catch(DomainException $exception)
+        {
+            return false;
+        }
+
+        //please note that we don't persist the changes in case the method is successful
+     }
+}
 ```
 
 Then, in the UI, we can use this like this:
 
 ```
-    class SomeControllerOrWhateverUIComponent
+class SomeControllerOrWhateverUIComponent
+{
+    public function someAction()
     {
-        public function someAction()
-        {
-            //...
+        //...
 
-            $withdrawButtonIsEnabled = $this->accountService->canWithdrawMoneyFromAccount($accountId, $howMuch);
+        $withdrawButtonIsEnabled = $this->accountService->canWithdrawMoneyFromAccount($accountId, $howMuch);
 
-            //...
-        }
+        //...
     }
+}
 ```
 
 ## Advantages
