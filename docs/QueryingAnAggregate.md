@@ -166,6 +166,28 @@ class SomeControllerOrWhateverUIComponent
 }
 ```
 
+## Optimization
+
+One could combine the fastness of the ReadModels and the encapsulation of the Aggregates to create a super-fast, super-scalable ReadModel that contains
+the command classes and future command execution statuses as booleans! This works only for simple commands, i.e. commands that don't contains any context dependent parameters,
+but in general that's the information that we need. For example:
+
+```php
+class AccountFutureCommandStatus
+{
+    /** @var AccountId */
+    private $accountId;
+
+    /** @var bool */
+    private $canBeActivated;
+
+    /** @var bool */
+    private $canBeDeActivated;
+}
+```
+
+This ReadModel is updated every time a relevant event is generated.
+
 ## Advantages
 
 - Aggregate's encapsulation is protected
