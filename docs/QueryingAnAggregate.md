@@ -5,11 +5,11 @@
 We all like to have our domain code well structured by the bounded context and with clear aggregates boundaries.
 But, there is a application component that forces us to cross those boundaries: the  UI.
 The UI wants to show to the user in a single page (i.e. the home page of our web based application) all kinds of informations,
-from multiple bounded contexts and multiple readmodels. We don't like that, it makes us feel like we haven't identified correctly the boundaries which is the nightmare of the DDD side of me :)
+from multiple bounded contexts and multiple ReadModels. We don't like that, it makes us feel like we haven't identified correctly the boundaries which is the nightmare of the DDD side of me :)
 
 There is another feature that the UI wants that seem to force us break one golden rules of DDD: **do not interogate the Aggregate!**.
 Where do we need this? Well, the UI wants to show to the user that a particular command would not succed in the current system state.
-One example is to disable a button if an aggregate is in a state that won't permit a particular command.
+One example is to disable a button if an Aggregate is in a state that won't permit a particular command.
 
 ## How
 We can do this in two ways:
@@ -17,7 +17,7 @@ We can do this in two ways:
 - by extracting the Aggregate's internal algorithm into a Domain service (my fingers hurt when I write this)
 - or by creating a new Aggregate query method that resembles the corresponding command method would return a boolean, true if the command would succed and false otherwise
 
-But neither of these methods do not conform to the DDD rules and I agree with those rules. Still, we *must* provide this feature to the UI, the client *really wants it*.
+But neither of these methods does conform to the DDD rules and I agree with those rules. Still, we *must* provide this feature to the UI, the client *really wants it*.
 
 We remember one particular characteristic of an Aggregate: it is a side-effect free class. No matter what method I call on an Aggregate, unless I persist the changes in an Application service, no harm is done.
 I can call an Aggregate's method 1000 times and nothing will change. After I load an Aggregate, every time I call a method it will give me the same result (it is pure).
