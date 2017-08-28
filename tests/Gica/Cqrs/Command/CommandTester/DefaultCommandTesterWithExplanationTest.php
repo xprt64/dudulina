@@ -1,28 +1,22 @@
 <?php
-/******************************************************************************
- * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
- ******************************************************************************/
+/**
+ * Copyright (c) 2017 Constantin Galbenu <xprt64@gmail.com>
+ */
 
-namespace tests\Gica\Cqrs\Command\CommandDispatcher\CommandDispatcherCanExecuteCommandCommandNotAcceptedTest;
+namespace tests\Gica\Cqrs\Command\CommandTesterWithExplanation\CommandDispatcherCanExecuteCommandCommandNotAcceptedTest;
 
 
 use Gica\Cqrs\Aggregate\AggregateRepository;
 use Gica\Cqrs\Command;
 use Gica\Cqrs\Command\CommandApplier;
-use Gica\Cqrs\Command\CommandDispatcher;
-use Gica\Cqrs\Command\CommandDispatcher\AuthenticatedIdentityReaderService;
-use Gica\Cqrs\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
-use Gica\Cqrs\Command\CommandDispatcher\DefaultCommandDispatcher;
 use Gica\Cqrs\Command\CommandSubscriber;
-use Gica\Cqrs\Command\CommandValidator;
+use Gica\Cqrs\Command\CommandTester\DefaultCommandTesterWithExplanation;
 use Gica\Cqrs\Command\MetadataFactory\DefaultMetadataWrapper;
-use Gica\Cqrs\Event\EventDispatcher\EventDispatcherBySubscriber;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
 use Gica\Cqrs\Event\MetadataFactory\DefaultMetadataFactory;
 use Gica\Cqrs\EventStore\InMemory\InMemoryEventStore;
-use Gica\Cqrs\FutureEventsStore;
 
-class CommandDispatcherCanExecuteCommandCommandNotAcceptedTest extends \PHPUnit_Framework_TestCase
+class DefaultCommandTesterWithExplanationTest extends \PHPUnit_Framework_TestCase
 {
 
     const AGGREGATE_ID = 123;
@@ -47,8 +41,6 @@ class CommandDispatcherCanExecuteCommandCommandNotAcceptedTest extends \PHPUnit_
 
         $commandSubscriber = $this->mockCommandSubscriber();
 
-        $eventDispatcher = $this->mockEventDispatcher();
-
         $eventStore = new InMemoryEventStore($aggregateClass, $aggregateId);
 
         $eventsApplierOnAggregate = new EventsApplierOnAggregate();
@@ -57,22 +49,23 @@ class CommandDispatcherCanExecuteCommandCommandNotAcceptedTest extends \PHPUnit_
 
         $aggregateRepository = new AggregateRepository($eventStore, $eventsApplierOnAggregate);
 
-        $concurrentProofFunctionCaller = new ConcurrentProofFunctionCaller;
-
         Aggregate1::$expectedCommand = $this->command;
+        Aggregate1::$throwedException = new \Exception("Command not accepted");
 
-        $commandDispatcher = new DefaultCommandDispatcher(
+        $commandDispatcher = new DefaultCommandTesterWithExplanation(
             $commandSubscriber,
-            $eventDispatcher,
             $commandApplier,
             $aggregateRepository,
-            $concurrentProofFunctionCaller,
             $eventsApplierOnAggregate,
             new DefaultMetadataFactory(),
             new DefaultMetadataWrapper()
         );
 
-        $this->assertFalse($commandDispatcher->canExecuteCommand($this->command));
+        $errors = $commandDispatcher->whyCantExecuteCommand($this->command);
+
+        $this->assertCount(1, $errors);
+
+        $this->assertSame(Aggregate1::$throwedException, $errors[0]);
     }
 
     private function mockCommandSubscriber(): CommandSubscriber
@@ -90,19 +83,6 @@ class CommandDispatcherCanExecuteCommandCommandNotAcceptedTest extends \PHPUnit_
 
         /** @var CommandSubscriber $commandSubscriber */
         return $commandSubscriber;
-    }
-
-    private function mockEventDispatcher(): EventDispatcherBySubscriber
-    {
-        $eventDispatcher = $this->getMockBuilder(EventDispatcherBySubscriber::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $eventDispatcher->expects($this->never())
-            ->method('dispatchEvent');
-
-        /** @var EventDispatcherBySubscriber $eventDispatcher */
-        return $eventDispatcher;
     }
 }
 
@@ -134,13 +114,14 @@ class Aggregate1
      */
     public static $expectedCommand;
 
+    /**
+     * @var \Exception
+     */
+    public static $throwedException;
+
     public function handleCommand1($command1)
     {
-        if ($command1 != self::$expectedCommand) {
-            throw new \Exception("Command not expected");
-        }
-
-        throw new \Exception("Command not accepted");
+        throw self::$throwedException;
 
         /** @noinspection PhpUnreachableStatementInspection */
         yield "event";

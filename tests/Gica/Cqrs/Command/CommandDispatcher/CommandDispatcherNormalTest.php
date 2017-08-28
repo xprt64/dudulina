@@ -9,11 +9,9 @@ namespace tests\Gica\Cqrs\Command\CommandDispatcher;
 use Gica\Cqrs\Aggregate\AggregateRepository;
 use Gica\Cqrs\Command;
 use Gica\Cqrs\Command\CommandApplier;
-use Gica\Cqrs\Command\CommandDispatcher\AuthenticatedIdentityReaderService;
 use Gica\Cqrs\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
 use Gica\Cqrs\Command\CommandDispatcher\DefaultCommandDispatcher;
 use Gica\Cqrs\Command\CommandSubscriber;
-use Gica\Cqrs\Command\CommandValidator;
 use Gica\Cqrs\Command\MetadataFactory\DefaultMetadataWrapper;
 use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventDispatcher\EventDispatcherBySubscriber;
@@ -21,7 +19,6 @@ use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetadataFactory\DefaultMetadataFactory;
 use Gica\Cqrs\EventStore\InMemory\InMemoryEventStore;
-use Gica\Cqrs\FutureEventsStore;
 
 class CommandDispatcherNormalTest extends \PHPUnit_Framework_TestCase
 {
@@ -77,7 +74,6 @@ class CommandDispatcherNormalTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, Aggregate1::$state);
         $this->assertCount(2, $eventStore->loadEventsForAggregate($aggregateClass, $aggregateId));
 
-        $this->assertTrue($commandDispatcher->canExecuteCommand($command));
         $this->assertCount(2, $eventStore->loadEventsForAggregate($aggregateClass, $aggregateId));
     }
 

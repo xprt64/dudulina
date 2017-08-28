@@ -131,17 +131,6 @@ class DefaultCommandDispatcher implements CommandDispatcher
         return [$eventsForNow, $eventsForTheFuture, $scheduledCommands, $handlerAndAggregate->getCommandHandler()->getHandlerClass()];
     }
 
-    public function canExecuteCommand(Command $command): bool
-    {
-        try {
-            $command = $this->commandMetadataFactory->wrapCommandWithMetadata($command, null);
-            $this->applyCommandAndReturnMessages($command, $this->loadCommandHandlerAndAggregate($command));
-            return true;
-        } catch (\Exception $exception) {
-            return false;
-        }
-    }
-
     private function loadCommandHandlerAndAggregate(CommandWithMetadata $command): CommandHandlerAndAggregate
     {
         $handler = $this->commandSubscriber->getHandlerForCommand($command->getCommand());

@@ -53,7 +53,6 @@ class CommandDispatcherInvalidCommandTest extends \PHPUnit_Framework_TestCase
             $commandDispatcher, $commandValidator);
 
         try {
-            $this->assertFalse($commandDispatcherWithValidator->canExecuteCommand($this->command));
             $commandDispatcherWithValidator->dispatchCommand($this->command);
             $this->fail("Should throw exception");
 
@@ -63,8 +62,6 @@ class CommandDispatcherInvalidCommandTest extends \PHPUnit_Framework_TestCase
             }
             $this->assertEquals(['some error'], $exception->getErrors());
         }
-
-        $this->assertFalse($commandDispatcherWithValidator->canExecuteCommand($this->command));
     }
 
 
@@ -84,16 +81,11 @@ class CommandDispatcherInvalidCommandTest extends \PHPUnit_Framework_TestCase
         $commandDispatcher
             ->method('dispatchCommand');
 
-        $commandDispatcher
-            ->method('canExecuteCommand')
-            ->willReturn(true);
-
         /** @var CommandValidator $commandValidator */
         /** @var CommandDispatcher $commandDispatcher */
         $commandDispatcherWithValidator = new CommandDispatcherWithValidator(
             $commandDispatcher, $commandValidator);
 
         $commandDispatcherWithValidator->dispatchCommand($this->command);
-        $this->assertTrue($commandDispatcherWithValidator->canExecuteCommand($this->command));
     }
 }

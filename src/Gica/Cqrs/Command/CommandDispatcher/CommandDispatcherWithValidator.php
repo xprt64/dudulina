@@ -41,15 +41,4 @@ class CommandDispatcherWithValidator implements CommandDispatcher
 
         $this->commandDispatcher->dispatchCommand($command);
     }
-
-    public function canExecuteCommand(Command $command): bool
-    {
-        $errors = $this->commandValidator->validateCommand($command);
-
-        if (!empty($errors)) {
-            return false;
-        }
-
-        return $this->commandDispatcher->canExecuteCommand($command);
-    }
 }
