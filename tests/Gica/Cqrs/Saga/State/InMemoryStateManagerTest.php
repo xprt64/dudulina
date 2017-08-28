@@ -61,7 +61,7 @@ class InMemoryStateManagerTest extends \PHPUnit_Framework_TestCase
     {
         $sut = new InMemoryStateManager();
 
-        $sut->updateState(self::STATE_ID, function (?\stdClass $state) {
+        $sut->updateState(self::STATE_ID, function (\stdClass $state = null) {
 
             if (!$state) {
                 $state = new \stdClass();
