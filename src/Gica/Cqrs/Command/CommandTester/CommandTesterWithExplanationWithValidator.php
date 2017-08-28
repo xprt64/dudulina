@@ -10,7 +10,7 @@ use Gica\Cqrs\Command;
 use Gica\Cqrs\Command\CommandTesterWithExplanation;
 use Gica\Cqrs\Command\CommandValidator;
 
-class CommandTesterWithValidatorWithExplanation implements CommandTesterWithExplanation
+class CommandTesterWithExplanationWithValidator implements CommandTesterWithExplanation
 {
 
     /**

@@ -84,7 +84,7 @@ class CommandTesterWithValidatorWithExplanationTest extends \PHPUnit_Framework_T
 
         /** @var CommandValidator $commandValidator */
         /** @var CommandTesterWithExplanation $commandTester */
-        $commandTesterWithValidator = new CommandTester\CommandTesterWithValidatorWithExplanation(
+        $commandTesterWithValidator = new CommandTester\CommandTesterWithExplanationWithValidator(
             $commandTester, $commandValidator);
 
         $errors = $commandTesterWithValidator->whyCantExecuteCommand($this->command);
