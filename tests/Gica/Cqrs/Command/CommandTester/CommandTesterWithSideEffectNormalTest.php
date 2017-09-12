@@ -3,21 +3,21 @@
  * Copyright (c) 2017 Constantin Galbenu <xprt64@gmail.com>
  */
 
-namespace tests\Gica\Cqrs\Command\CommandTester;
+namespace tests\Gica\Cqrs\Command\CommandTester\CommandTesterWithSideEffectNormalTest;
 
 
 use Gica\Cqrs\Aggregate\AggregateRepository;
 use Gica\Cqrs\Command;
 use Gica\Cqrs\Command\CommandApplier;
 use Gica\Cqrs\Command\CommandSubscriber;
-use Gica\Cqrs\Command\CommandTester\DefaultCommandTester;
+use Gica\Cqrs\Command\CommandTester\DefaultCommandTesterWithSideEffect;
 use Gica\Cqrs\Command\MetadataFactory\DefaultMetadataWrapper;
 use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventsApplier\EventsApplierOnAggregate;
 use Gica\Cqrs\Event\MetadataFactory\DefaultMetadataFactory;
 use Gica\Cqrs\EventStore\InMemory\InMemoryEventStore;
 
-class CommandTesterNormalTest extends \PHPUnit_Framework_TestCase
+class CommandTesterWithSideEffectNormalTest extends \PHPUnit_Framework_TestCase
 {
 
     const AGGREGATE_ID = 123;
@@ -28,10 +28,11 @@ class CommandTesterNormalTest extends \PHPUnit_Framework_TestCase
         $aggregateClass = Aggregate1::class;
 
         $command = $this->mockCommand();
+        $command2 = new Command2($aggregateId);
 
         $commandSubscriber = $this->mockCommandSubscriber();
 
-        $eventStore = new InMemoryEventStore($aggregateClass, $aggregateId);
+        $eventStore = new InMemoryEventStore();
 
         $eventStore->appendEventsForAggregate(
             $aggregateId,
@@ -51,7 +52,7 @@ class CommandTesterNormalTest extends \PHPUnit_Framework_TestCase
 
         Aggregate1::$state = 0;
 
-        $commandTester = new DefaultCommandTester(
+        $commandTester = new DefaultCommandTesterWithSideEffect(
             $commandSubscriber,
             $commandApplier,
             $aggregateRepository,
@@ -63,9 +64,11 @@ class CommandTesterNormalTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, Aggregate1::$state);
         $this->assertCount(1, $eventStore->loadEventsForAggregate($aggregateClass, $aggregateId));
 
-        $this->assertTrue($commandTester->canExecuteCommand($command));
+        $this->assertTrue($commandTester->shouldExecuteCommand($command));
         $this->assertCount(1, $eventStore->loadEventsForAggregate($aggregateClass, $aggregateId));
         $this->assertEquals(2, Aggregate1::$state);//state is modified but none is persisted
+
+        $this->assertFalse($commandTester->shouldExecuteCommand($command2));
     }
 
     private function mockCommand(): Command
@@ -86,13 +89,25 @@ class CommandTesterNormalTest extends \PHPUnit_Framework_TestCase
         $commandSubscriber = $this->getMockBuilder(CommandSubscriber::class)
             ->getMock();
 
+
         $commandSubscriber->expects($this->any())
             ->method('getHandlerForCommand')
-            ->with($this->isInstanceOf(Command1::class))
-            ->willReturn(new Command\ValueObject\CommandHandlerDescriptor(
-                Aggregate1::class,
-                'handleCommand1'
-            ));
+            ->willReturnCallback(function ($command) {
+                if ($command instanceof Command1) {
+                    return new Command\ValueObject\CommandHandlerDescriptor(
+                        Aggregate1::class,
+                        'handleCommand1'
+                    );
+                }
+                if ($command instanceof Command2) {
+                    return new Command\ValueObject\CommandHandlerDescriptor(
+                        Aggregate1::class,
+                        'handleCommand2'
+                    );
+                }
+                $this->fail("Unknown command class " . get_class($command));
+                return '';
+            });
 
         /** @var CommandSubscriber $commandSubscriber */
         return $commandSubscriber;
@@ -100,6 +115,26 @@ class CommandTesterNormalTest extends \PHPUnit_Framework_TestCase
 }
 
 class Command1 implements \Gica\Cqrs\Command
+{
+    /**
+     * @var
+     */
+    private $aggregateId;
+
+    public function __construct(
+        $aggregateId
+    )
+    {
+        $this->aggregateId = $aggregateId;
+    }
+
+    public function getAggregateId()
+    {
+        return $this->aggregateId;
+    }
+}
+
+class Command2 implements \Gica\Cqrs\Command
 {
     /**
      * @var
@@ -128,6 +163,14 @@ class Aggregate1
         yield new Event1($command1->getAggregateId());
     }
 
+    public function handleCommand2(Command2 $command1)
+    {
+        return;
+
+        //intentionally yielding something
+        yield "something";
+    }
+
     public function applyEvent0(Event0 $event)
     {
         self::$state++;
@@ -154,9 +197,6 @@ class Event1 implements Event
         $this->aggregateId = $aggregateId;
     }
 
-    /**
-     * @return mixed
-     */
     public function getAggregateId()
     {
         return $this->aggregateId;

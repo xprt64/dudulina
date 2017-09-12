@@ -52,7 +52,7 @@ class CommandTesterCanExecuteCommandCommandNotAcceptedTest extends \PHPUnit_Fram
 
         Aggregate1::$expectedCommand = $this->command;
 
-        $commandDispatcher = new DefaultCommandTester(
+        $commandTester = new DefaultCommandTester(
             $commandSubscriber,
             $commandApplier,
             $aggregateRepository,
@@ -61,7 +61,7 @@ class CommandTesterCanExecuteCommandCommandNotAcceptedTest extends \PHPUnit_Fram
             new DefaultMetadataWrapper()
         );
 
-        $this->assertFalse($commandDispatcher->canExecuteCommand($this->command));
+        $this->assertFalse($commandTester->canExecuteCommand($this->command));
     }
 
     private function mockCommandSubscriber(): CommandSubscriber
