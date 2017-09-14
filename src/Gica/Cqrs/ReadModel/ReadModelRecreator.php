@@ -13,6 +13,8 @@ use Gica\CodeAnalysis\Shared\ClassSorter\ByConstructorDependencySorter;
 use Gica\Cqrs\Command\CodeAnalysis\ReadModelEventHandlerDetector;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\EventStore;
+use Gica\Cqrs\ReadModel\ReadModelRecreator\TaskProgressCalculator;
+use Gica\Cqrs\ReadModel\ReadModelRecreator\TaskProgressReporter;
 use Psr\Log\LoggerInterface;
 
 class ReadModelRecreator
@@ -26,6 +28,10 @@ class ReadModelRecreator
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var TaskProgressReporter|null
+     */
+    private $taskProgressReporter;
 
     public function __construct(
         EventStore $eventStore,
@@ -34,6 +40,11 @@ class ReadModelRecreator
     {
         $this->eventStore = $eventStore;
         $this->logger = $logger;
+    }
+
+    public function setTaskProgressReporter(?TaskProgressReporter $taskProgressReporter)
+    {
+        $this->taskProgressReporter = $taskProgressReporter;
     }
 
     public function recreateRead(ReadModelInterface $readModel)
@@ -55,13 +66,28 @@ class ReadModelRecreator
 
         $this->logger->info("applying events...");
 
-        foreach ($allEvents as $eventWithMetadata) {
-            /** @var EventWithMetaData $eventWithMetadata */
-            $methods = $this->findMethodsByEventClass(get_class($eventWithMetadata->getEvent()), $allMethods);
+        $taskProgress = null;
 
-            foreach ($methods as $method) {
+        if ($this->taskProgressReporter) {
+            $taskProgress = new TaskProgressCalculator($allEvents->countCommits());
+        }
 
-                call_user_func([$readModel, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
+        foreach ($allEvents->fetchCommits() as $eventsCommit) {
+
+            $eventsCommit = $eventsCommit->filterEventsByClass($eventClasses);
+
+            foreach ($eventsCommit->getEventsWithMetadata() as $eventWithMetadata) {
+                /** @var EventWithMetaData $eventWithMetadata */
+                $methods = $this->findMethodsByEventClass(get_class($eventWithMetadata->getEvent()), $allMethods);
+
+                foreach ($methods as $method) {
+                    call_user_func([$readModel, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
+                }
+            }
+
+            if ($this->taskProgressReporter) {
+                $taskProgress->increment();
+                $this->taskProgressReporter->reportProgressUpdate($taskProgress->getStep(), $taskProgress->getTotalSteps(), $taskProgress->calculateSpeed(), $taskProgress->calculateEta());
             }
         }
     }
