@@ -8,10 +8,10 @@ namespace tests\Gica\Cqrs\Saga;
 use Gica\Cqrs\Event;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
+use Gica\Cqrs\EventProcessing\ConcurentEventProcessingException;
 use Gica\Cqrs\EventStore;
 use Gica\Cqrs\EventStore\EventStreamGroupedByCommit;
 use Gica\Cqrs\Saga\SagaEventTrackerRepository;
-use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
 use Gica\Cqrs\Saga\SagaRunner;
 use Gica\Cqrs\Saga\SagaRunner\EventProcessingHasStalled;
 use Gica\Types\Guid;
@@ -67,10 +67,10 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
             });
 
         $repository->expects($this->once())
-            ->method('startProcessingEventBySaga');
+            ->method('startProcessingEvent');
 
         $repository->expects($this->once())
-            ->method('endProcessingEventBySaga');
+            ->method('endProcessingEvent');
 
         /** @var SagaEventTrackerRepository $repository */
         /** @var LoggerInterface $logger */
@@ -123,11 +123,11 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
             ->willReturn(false);
 
 
-        $repository->method('startProcessingEventBySaga')
+        $repository->method('startProcessingEvent')
             ->willThrowException(new ConcurentEventProcessingException());
 
         $repository->expects($this->never())
-            ->method('endProcessingEventBySaga');
+            ->method('endProcessingEvent');
 
         /** @var SagaEventTrackerRepository $repository */
         /** @var LoggerInterface $logger */
@@ -184,11 +184,11 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
         $repository
             ->expects($this->never())
-            ->method('startProcessingEventBySaga');
+            ->method('startProcessingEvent');
 
         $repository
             ->expects($this->never())
-            ->method('endProcessingEventBySaga');
+            ->method('endProcessingEvent');
 
         /** @var SagaEventTrackerRepository $repository */
         /** @var LoggerInterface $logger */

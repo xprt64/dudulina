@@ -6,23 +6,6 @@
 namespace Gica\Cqrs\Saga;
 
 
-use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
-
-interface SagaEventTrackerRepository
+interface SagaEventTrackerRepository extends \Gica\Cqrs\EventProcessing\EventProcessingTracker
 {
-    public function isEventProcessingAlreadyStarted(string $sagaId, string $eventId): bool;
-
-    public function isEventProcessingAlreadyEnded(string $sagaId, string $eventId): bool;
-
-    /**
-     * @param string $sagaId
-     * @param string $eventId
-     * @return void
-     * @throws ConcurentEventProcessingException
-     */
-    public function startProcessingEventBySaga(string $sagaId, string $eventId);
-
-    public function endProcessingEventBySaga(string $sagaId, string $eventId);
-
-    public function clearProcessingEventBySaga(string $sagaId, string $eventId);
 }

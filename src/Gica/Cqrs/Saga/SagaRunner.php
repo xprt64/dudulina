@@ -12,8 +12,8 @@ use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerMethod;
 use Gica\CodeAnalysis\Shared\ClassSorter\ByConstructorDependencySorter;
 use Gica\Cqrs\Command\CodeAnalysis\WriteSideEventHandlerDetector;
 use Gica\Cqrs\Event\EventWithMetaData;
+use Gica\Cqrs\EventProcessing\ConcurentEventProcessingException;
 use Gica\Cqrs\EventStore;
-use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
 use Gica\Cqrs\Saga\SagaRunner\EventProcessingHasStalled;
 use Psr\Log\LoggerInterface;
 
@@ -85,9 +85,9 @@ class SagaRunner
                             throw new EventProcessingHasStalled($eventWithMetadata);
                         }
                     } else {
-                        $this->sagaRepository->startProcessingEventBySaga($sagaId, $metaData->getEventId());
+                        $this->sagaRepository->startProcessingEvent($sagaId, $metaData->getEventId());
                         call_user_func([$saga, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
-                        $this->sagaRepository->endProcessingEventBySaga($sagaId, $metaData->getEventId());
+                        $this->sagaRepository->endProcessingEvent($sagaId, $metaData->getEventId());
                     }
                 } catch (ConcurentEventProcessingException $exception) {
                     $this->logger->info("concurent event processing exception, skipping...");

@@ -9,7 +9,7 @@ namespace Gica\Cqrs\Saga;
 use Gica\Cqrs\Event\EventDispatcher;
 use Gica\Cqrs\Event\EventSubscriber;
 use Gica\Cqrs\Event\EventWithMetaData;
-use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
+use Gica\Cqrs\EventProcessing\ConcurentEventProcessingException;
 use Psr\Log\LoggerInterface;
 
 class SagasOnlyOnceEventDispatcher implements EventDispatcher
@@ -51,9 +51,9 @@ class SagasOnlyOnceEventDispatcher implements EventDispatcher
 
                 if (!$this->trackerRepository->isEventProcessingAlreadyStarted($sagaId, $metaData->getEventId())) {
                     try {
-                        $this->trackerRepository->startProcessingEventBySaga($sagaId, $metaData->getEventId());
+                        $this->trackerRepository->startProcessingEvent($sagaId, $metaData->getEventId());
                         call_user_func($listener, $eventWithMetadata->getEvent(), $metaData);
-                        $this->trackerRepository->endProcessingEventBySaga($sagaId, $metaData->getEventId());
+                        $this->trackerRepository->endProcessingEvent($sagaId, $metaData->getEventId());
                     } catch (ConcurentEventProcessingException $exception) {
                         continue;
                     } catch (\Throwable $exception) {

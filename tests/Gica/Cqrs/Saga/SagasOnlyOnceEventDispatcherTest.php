@@ -8,8 +8,8 @@ namespace tests\Gica\Cqrs\Saga;
 use Gica\Cqrs\Event\EventSubscriber;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\Event\MetaData;
+use Gica\Cqrs\EventProcessing\ConcurentEventProcessingException;
 use Gica\Cqrs\Saga\SagaEventTrackerRepository;
-use Gica\Cqrs\Saga\SagaEventTrackerRepository\ConcurentEventProcessingException;
 use Gica\Cqrs\Saga\SagasOnlyOnceEventDispatcher;
 use Psr\Log\LoggerInterface;
 
@@ -50,9 +50,9 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
         $repository->method('isEventProcessingAlreadyStarted')
             ->willReturn(false);
 
-        $repository->method('startProcessingEventBySaga');
+        $repository->method('startProcessingEvent');
 
-        $repository->method('endProcessingEventBySaga');
+        $repository->method('endProcessingEvent');
 
 
         /** @var SagaEventTrackerRepository $repository */
@@ -96,12 +96,12 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->with(get_class($saga))
             ->willReturn(false);
 
-        $repository->method('startProcessingEventBySaga')
+        $repository->method('startProcessingEvent')
             ->willThrowException(new ConcurentEventProcessingException());
 
         $repository
             ->expects($this->never())
-            ->method('endProcessingEventBySaga');
+            ->method('endProcessingEvent');
 
 
         /** @var SagaEventTrackerRepository $repository */
@@ -150,10 +150,10 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->willReturn(true);
 
         $repository->expects($this->never())
-            ->method('startProcessingEventBySaga');
+            ->method('startProcessingEvent');
 
         $repository->expects($this->never())
-            ->method('endProcessingEventBySaga');
+            ->method('endProcessingEvent');
 
         /** @var SagaEventTrackerRepository $repository */
         /** @var EventSubscriber $subscriber */
@@ -202,10 +202,10 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->willReturn(false);
 
         $repository->expects($this->once())
-            ->method('startProcessingEventBySaga');
+            ->method('startProcessingEvent');
 
         $repository->expects($this->never())
-            ->method('endProcessingEventBySaga');
+            ->method('endProcessingEvent');
 
         $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
 
