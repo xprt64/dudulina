@@ -29,4 +29,6 @@ interface EventStore
     public function getAggregateVersion(string $aggregateClass, $aggregateId);
 
     public function fetchLatestSequence(): int;
+
+    public function findEventById(string $eventId): ?EventWithMetaData;
 }

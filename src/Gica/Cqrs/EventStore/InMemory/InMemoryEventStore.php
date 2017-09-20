@@ -131,4 +131,26 @@ class InMemoryEventStore implements EventStore
     {
         return $aggregateClass . '_' . (string)$aggregateId;
     }
+
+    public function findEventById(string $eventId): ?EventWithMetaData
+    {
+        foreach($this->commitsByAggregate as $commits)
+        {
+            foreach($commits as $commit)
+            {
+                /** @var \Gica\Cqrs\EventStore\EventsCommit $commit */
+
+                foreach($commit->getEventsWithMetadata() as $eventWithMetadata)
+                {
+                    if($eventWithMetadata->getMetaData()->getEventId() === $eventId)
+                    {
+                        return $eventWithMetadata;
+                    }
+                }
+            }
+
+        }
+
+        return null;
+    }
 }

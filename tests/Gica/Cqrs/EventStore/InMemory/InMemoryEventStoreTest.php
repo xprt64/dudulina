@@ -11,7 +11,6 @@ use Gica\Cqrs\EventStore\AggregateEventStream;
 use Gica\Cqrs\EventStore\EventStream;
 use Gica\Cqrs\EventStore\Exception\ConcurrentModificationException;
 use Gica\Cqrs\EventStore\InMemory\InMemoryEventStore;
-use Gica\Types\Guid;
 
 
 class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
@@ -130,6 +129,46 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(2, $store->getAggregateVersion($aggregateClass, $aggregateId));
         $this->assertEquals(2, $store->fetchLatestSequence());
+    }
+
+    public function test_findEventById()
+    {
+        $store = new InMemoryEventStore();
+
+        $event1 = new Event1();
+
+        $event2 = new Event2();
+
+        $aggregateClass = \stdClass::class;
+        $aggregateId = 123;
+
+        $eventWithMetaData1 = new EventWithMetaData(
+            $event1,
+            (new MetaData(
+                $aggregateId,
+                $aggregateClass,
+                new \DateTimeImmutable(),
+                null
+            ))->withEventId('eventId1')
+        );
+
+        $eventsWithMetaData = [
+            $eventWithMetaData1,
+            new EventWithMetaData(
+                $event2,
+                new MetaData(
+                    $aggregateId,
+                    $aggregateClass,
+                    new \DateTimeImmutable(),
+                    null
+                )
+            ),
+        ];
+
+        $store->appendEventsForAggregate($aggregateId, $aggregateClass, $eventsWithMetaData, 0, 0);
+
+        $this->assertNull($store->findEventById('nonExistentId'));
+        $this->assertSame($eventWithMetaData1, $store->findEventById('eventId1'));
     }
 }
 
