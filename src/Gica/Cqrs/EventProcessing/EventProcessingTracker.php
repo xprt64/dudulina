@@ -6,6 +6,8 @@
 namespace Gica\Cqrs\EventProcessing;
 
 
+use Gica\Selector\Selectable;
+
 interface EventProcessingTracker
 {
     public function isEventProcessingAlreadyStarted(string $processId, string $eventId): bool;
@@ -14,7 +16,7 @@ interface EventProcessingTracker
 
     /**
      * @param string $processId
-     * @return InProgressProcessingEvent[]
+     * @return InProgressProcessingEvent[]|Selectable
      */
     public function getAllInProgressProcessingEvents(string $processId);
 
