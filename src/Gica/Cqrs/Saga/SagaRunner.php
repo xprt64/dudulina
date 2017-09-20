@@ -14,6 +14,8 @@ use Gica\Cqrs\Command\CodeAnalysis\WriteSideEventHandlerDetector;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\EventProcessing\ConcurentEventProcessingException;
 use Gica\Cqrs\EventStore;
+use Gica\Cqrs\ProgressReporting\TaskProgressCalculator;
+use Gica\Cqrs\ProgressReporting\TaskProgressReporter;
 use Gica\Cqrs\Saga\SagaRunner\EventProcessingHasStalled;
 use Psr\Log\LoggerInterface;
 
@@ -35,6 +37,10 @@ class SagaRunner
      * @var SagaEventTrackerRepository
      */
     private $sagaRepository;
+    /**
+     * @var TaskProgressReporter|null
+     */
+    private $taskProgressReporter;
 
     public function __construct(
         EventStore $eventStore,
@@ -45,6 +51,11 @@ class SagaRunner
         $this->eventStore = $eventStore;
         $this->logger = $logger;
         $this->sagaRepository = $sagaRepository;
+    }
+
+    public function setTaskProgressReporter(?TaskProgressReporter $taskProgressReporter)
+    {
+        $this->taskProgressReporter = $taskProgressReporter;
     }
 
     public function feedSagaWithEvents($saga, ?int $afterSequence = null)
@@ -70,29 +81,23 @@ class SagaRunner
 
         $this->logger->info("processing events...");
 
-        foreach ($allEvents as $eventWithMetadata) {
-            /** @var EventWithMetaData $eventWithMetadata */
-            $methods = $this->findMethodsByEventClass(get_class($eventWithMetadata->getEvent()), $allMethods);
-            $metaData = $eventWithMetadata->getMetaData();
+        $taskProgress = null;
 
-            $sagaId = get_class($saga);
+        if ($this->taskProgressReporter) {
+            $taskProgress = new TaskProgressCalculator($allEvents->countCommits());
+        }
 
-            foreach ($methods as $method) {
+        foreach ($allEvents->fetchCommits() as $eventsCommit) {
 
-                try {
-                    if ($this->sagaRepository->isEventProcessingAlreadyStarted($sagaId, $metaData->getEventId())) {
-                        if (!$this->sagaRepository->isEventProcessingAlreadyEnded($sagaId, $metaData->getEventId())) {
-                            throw new EventProcessingHasStalled($eventWithMetadata);
-                        }
-                    } else {
-                        $this->sagaRepository->startProcessingEvent($sagaId, $metaData->getEventId());
-                        call_user_func([$saga, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
-                        $this->sagaRepository->endProcessingEvent($sagaId, $metaData->getEventId());
-                    }
-                } catch (ConcurentEventProcessingException $exception) {
-                    $this->logger->info("concurent event processing exception, skipping...");
-                    continue;
-                }
+            $eventsCommit = $eventsCommit->filterEventsByClass($eventClasses);
+
+            foreach ($eventsCommit->getEventsWithMetadata() as $eventWithMetadata) {
+                $this->processEvent($saga, $eventWithMetadata, $allMethods);
+            }
+
+            if ($this->taskProgressReporter) {
+                $taskProgress->increment();
+                $this->taskProgressReporter->reportProgressUpdate($taskProgress->getStep(), $taskProgress->getTotalSteps(), $taskProgress->calculateSpeed(), $taskProgress->calculateEta());
             }
         }
     }
@@ -127,5 +132,32 @@ class SagaRunner
         }
 
         return $result;
+    }
+
+    private function processEvent($saga, EventWithMetaData $eventWithMetadata, $allMethods): void
+    {
+        /** @var EventWithMetaData $eventWithMetadata */
+        $methods = $this->findMethodsByEventClass(get_class($eventWithMetadata->getEvent()), $allMethods);
+        $metaData = $eventWithMetadata->getMetaData();
+
+        $sagaId = get_class($saga);
+
+        foreach ($methods as $method) {
+
+            try {
+                if ($this->sagaRepository->isEventProcessingAlreadyStarted($sagaId, $metaData->getEventId())) {
+                    if (!$this->sagaRepository->isEventProcessingAlreadyEnded($sagaId, $metaData->getEventId())) {
+                        throw new EventProcessingHasStalled($eventWithMetadata);
+                    }
+                } else {
+                    $this->sagaRepository->startProcessingEvent($sagaId, $metaData->getEventId());
+                    call_user_func([$saga, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
+                    $this->sagaRepository->endProcessingEvent($sagaId, $metaData->getEventId());
+                }
+            } catch (ConcurentEventProcessingException $exception) {
+                $this->logger->info("concurent event processing exception, skipping...");
+                continue;
+            }
+        }
     }
 }

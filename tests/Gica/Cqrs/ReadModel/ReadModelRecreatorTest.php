@@ -10,9 +10,9 @@ use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\EventStore;
 use Gica\Cqrs\EventStore\EventsCommit;
 use Gica\Cqrs\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
+use Gica\Cqrs\ProgressReporting\TaskProgressReporter;
 use Gica\Cqrs\ReadModel\ReadModelInterface;
 use Gica\Cqrs\ReadModel\ReadModelRecreator;
-use Gica\Cqrs\ReadModel\ReadModelRecreator\TaskProgressReporter;
 use Psr\Log\LoggerInterface;
 
 
@@ -38,7 +38,7 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
 
         $eventStream = new FilteredRawEventStreamGroupedByCommit([new EventsCommit(1, 1, $events)]);
 
-        /** @var TaskProgressReporter $taskProgressReporter */
+        /** @var \Gica\Cqrs\ProgressReporting\TaskProgressReporter $taskProgressReporter */
         $taskProgressReporter = $this->getMockBuilder(TaskProgressReporter::class)
             ->getMock();
 

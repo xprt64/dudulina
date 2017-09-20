@@ -13,8 +13,8 @@ use Gica\CodeAnalysis\Shared\ClassSorter\ByConstructorDependencySorter;
 use Gica\Cqrs\Command\CodeAnalysis\ReadModelEventHandlerDetector;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\EventStore;
-use Gica\Cqrs\ReadModel\ReadModelRecreator\TaskProgressCalculator;
-use Gica\Cqrs\ReadModel\ReadModelRecreator\TaskProgressReporter;
+use Gica\Cqrs\ProgressReporting\TaskProgressCalculator;
+use Gica\Cqrs\ProgressReporting\TaskProgressReporter;
 use Psr\Log\LoggerInterface;
 
 class ReadModelRecreator
@@ -29,7 +29,7 @@ class ReadModelRecreator
      */
     private $logger;
     /**
-     * @var TaskProgressReporter|null
+     * @var \Gica\Cqrs\ProgressReporting\TaskProgressReporter|null
      */
     private $taskProgressReporter;
 

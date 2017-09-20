@@ -3,7 +3,7 @@
  * Copyright (c) 2017 Constantin Galbenu <xprt64@gmail.com>
  */
 
-namespace Gica\Cqrs\ReadModel\ReadModelRecreator;
+namespace Gica\Cqrs\ProgressReporting;
 
 
 interface TaskProgressReporter
