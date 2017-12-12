@@ -35,8 +35,7 @@ class CommandHandlersMapCodeGenerator
     {
         $discoverer = new MethodListenerDiscovery(
             new AggregateCommandHandlerDetector(),
-            new AnyPhpClassIsAccepted,
-            new ByConstructorDependencySorter());
+            new AnyPhpClassIsAccepted);
 
         $map = $discoverer->discoverListeners($files);
 

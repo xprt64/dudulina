@@ -62,8 +62,7 @@ class SagaRunner
     {
         $discoverer = new MethodListenerDiscovery(
             new WriteSideEventHandlerDetector(),
-            new AnyPhpClassIsAccepted(),
-            new ByConstructorDependencySorter()
+            new AnyPhpClassIsAccepted()
         );
 
         $allMethods = $discoverer->findListenerMethodsInClass(get_class($saga));

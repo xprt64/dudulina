@@ -20,8 +20,7 @@ class CommandValidatorsMapCodeGenerator
     {
         $discoverer = new MethodListenerDiscovery(
             new AggregateCommandValidatorDetector(),
-            new AnyPhpClassIsAccepted,
-            new ByConstructorDependencySorter());
+            new AnyPhpClassIsAccepted);
 
         return $discoverer->discoverListeners($files);
     }

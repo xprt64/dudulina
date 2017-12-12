@@ -20,8 +20,7 @@ class ReadModelEventListenersMapCodeGenerator
     {
         $discoverer = new MethodListenerDiscovery(
             new ReadModelEventHandlerDetector(),
-            new AnyPhpClassIsAccepted,
-            new ByConstructorDependencySorter()
+            new AnyPhpClassIsAccepted
         );
 
         return $discoverer->discoverListeners($files);

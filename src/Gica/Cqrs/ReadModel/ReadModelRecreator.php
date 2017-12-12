@@ -51,8 +51,7 @@ class ReadModelRecreator
     {
         $discoverer = new MethodListenerDiscovery(
             new ReadModelEventHandlerDetector(),
-            new AnyPhpClassIsAccepted(),
-            new ByConstructorDependencySorter()
+            new AnyPhpClassIsAccepted()
         );
 
         $allMethods = $discoverer->findListenerMethodsInClass(get_class($readModel));

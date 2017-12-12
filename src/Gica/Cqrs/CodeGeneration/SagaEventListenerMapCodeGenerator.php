@@ -20,8 +20,7 @@ class SagaEventListenerMapCodeGenerator
     {
         $discoverer = new MethodListenerDiscovery(
             new WriteSideEventHandlerDetector(),
-            new AnyPhpClassIsAccepted,
-            new ByConstructorDependencySorter());
+            new AnyPhpClassIsAccepted);
 
         return $discoverer->discoverListeners($files);
     }
