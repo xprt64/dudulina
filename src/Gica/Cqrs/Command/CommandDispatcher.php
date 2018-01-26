@@ -10,5 +10,5 @@ use Gica\Cqrs\Command;
 
 interface CommandDispatcher
 {
-    public function dispatchCommand(Command $command, $metadata = null);
+    public function dispatchCommand(Command $command, CommandMetadata $metadata = null);
 }

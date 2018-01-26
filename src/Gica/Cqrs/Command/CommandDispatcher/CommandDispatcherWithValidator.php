@@ -6,6 +6,7 @@ namespace Gica\Cqrs\Command\CommandDispatcher;
 
 use Gica\Cqrs\Command;
 use Gica\Cqrs\Command\CommandDispatcher;
+use Gica\Cqrs\Command\CommandMetadata;
 use Gica\Cqrs\Command\CommandValidator;
 use Gica\Cqrs\Command\Exception\CommandValidationFailed;
 
@@ -31,7 +32,7 @@ class CommandDispatcherWithValidator implements CommandDispatcher
         $this->commandValidator = $commandValidator;
     }
 
-    public function dispatchCommand(Command $command, $commandMetadata = null)
+    public function dispatchCommand(Command $command, CommandMetadata $metadata = null)
     {
         $errors = $this->commandValidator->validateCommand($command);
 
@@ -39,6 +40,6 @@ class CommandDispatcherWithValidator implements CommandDispatcher
             throw new CommandValidationFailed($errors);
         }
 
-        $this->commandDispatcher->dispatchCommand($command);
+        $this->commandDispatcher->dispatchCommand($command, $metadata);
     }
 }

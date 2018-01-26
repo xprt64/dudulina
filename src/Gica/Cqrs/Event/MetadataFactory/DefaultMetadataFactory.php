@@ -10,7 +10,6 @@ use Gica\Cqrs\Command\CommandDispatcher\AuthenticatedIdentityReaderService;
 use Gica\Cqrs\Command\CommandWithMetadata;
 use Gica\Cqrs\Event\MetaData;
 use Gica\Cqrs\Event\MetadataFactory;
-use Gica\Types\Guid;
 
 class DefaultMetadataFactory implements MetadataFactory
 {

@@ -6,6 +6,8 @@
 namespace Gica\Cqrs\Event;
 
 
+use Gica\Cqrs\Command\CommandMetadata;
+
 class MetaData
 {
 
@@ -19,6 +21,8 @@ class MetaData
 
     /* @var string */
     private $aggregateClass;
+
+    /** @var CommandMetadata|null */
     private $commandMetadata;
 
     /** @var int */
@@ -36,7 +40,7 @@ class MetaData
         string $aggregateClass,
         \DateTimeImmutable $dateCreated,
         $authenticatedUserId = null,
-        $commandMetadata = null
+        CommandMetadata $commandMetadata = null
     )
     {
         $this->dateCreated = $this->addTimeZone($dateCreated);
@@ -66,7 +70,7 @@ class MetaData
         return $this->authenticatedUserId;
     }
 
-    public function getCommandMetadata()
+    public function getCommandMetadata():?CommandMetadata
     {
         return $this->commandMetadata;
     }

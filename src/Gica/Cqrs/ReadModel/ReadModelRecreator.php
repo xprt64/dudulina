@@ -9,7 +9,6 @@ namespace Gica\Cqrs\ReadModel;
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerMethod;
-use Gica\CodeAnalysis\Shared\ClassSorter\ByConstructorDependencySorter;
 use Gica\Cqrs\Command\CodeAnalysis\ReadModelEventHandlerDetector;
 use Gica\Cqrs\Event\EventWithMetaData;
 use Gica\Cqrs\EventStore;

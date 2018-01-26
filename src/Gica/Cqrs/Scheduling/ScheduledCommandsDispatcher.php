@@ -31,9 +31,7 @@ class ScheduledCommandsDispatcher
     public function run()
     {
         $this->store->loadAndProcessScheduledCommands(function (ScheduledCommand $scheduledCommand) {
-
             $this->dispatcher->dispatchCommand($scheduledCommand);
-
         });
     }
 }

@@ -11,6 +11,7 @@ use Gica\Cqrs\Command;
 use Gica\Cqrs\Command\CommandApplier;
 use Gica\Cqrs\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
 use Gica\Cqrs\Command\CommandDispatcher\DefaultCommandDispatcher;
+use Gica\Cqrs\Command\CommandMetadata;
 use Gica\Cqrs\Command\CommandSubscriber;
 use Gica\Cqrs\Command\MetadataFactory\DefaultMetadataWrapper;
 use Gica\Cqrs\Event;
@@ -127,7 +128,7 @@ class StubScheduledCommandStore implements \Gica\Cqrs\Scheduling\CommandSchedule
         return $this->commands;
     }
 
-    public function scheduleCommand(ScheduledCommand $scheduledCommand, string $aggregateClass, $aggregateId, $commandMetadata)
+    public function scheduleCommand(ScheduledCommand $scheduledCommand, string $aggregateClass, $aggregateId, CommandMetadata $commandMetadata = null)
     {
         $this->commands[] = $scheduledCommand;
     }

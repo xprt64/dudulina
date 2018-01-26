@@ -23,7 +23,6 @@ use Gica\Cqrs\Testing\Exceptions\TooManyEventsFired;
 use Gica\Cqrs\Testing\Exceptions\WrongEventClassYielded;
 use Gica\Cqrs\Testing\Exceptions\WrongExceptionClassThrown;
 use Gica\Cqrs\Testing\Exceptions\WrongExceptionMessageWasThrown;
-use Gica\Types\Guid;
 
 class BddAggregateTestHelper
 {

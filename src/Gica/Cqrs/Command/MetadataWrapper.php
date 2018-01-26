@@ -10,5 +10,5 @@ use Gica\Cqrs\Command;
 
 interface MetadataWrapper
 {
-    public function wrapCommandWithMetadata(Command $command, $metadata): CommandWithMetadata;
+    public function wrapCommandWithMetadata(Command $command, CommandMetadata $metadata = null): CommandWithMetadata;
 }

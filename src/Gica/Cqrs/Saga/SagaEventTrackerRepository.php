@@ -6,6 +6,8 @@
 namespace Gica\Cqrs\Saga;
 
 
-interface SagaEventTrackerRepository extends \Gica\Cqrs\EventProcessing\EventProcessingTracker
+use Gica\Cqrs\EventProcessing\EventProcessingTracker;
+
+interface SagaEventTrackerRepository extends EventProcessingTracker
 {
 }

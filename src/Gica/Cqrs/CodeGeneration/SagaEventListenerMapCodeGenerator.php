@@ -8,7 +8,6 @@ namespace Gica\Cqrs\CodeGeneration;
 
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
-use Gica\CodeAnalysis\Shared\ClassSorter\ByConstructorDependencySorter;
 use Gica\Cqrs\CodeGeneration\Traits\GroupedByEventTrait;
 use Gica\Cqrs\Command\CodeAnalysis\WriteSideEventHandlerDetector;
 

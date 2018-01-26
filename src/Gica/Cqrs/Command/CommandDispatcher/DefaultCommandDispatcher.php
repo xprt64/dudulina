@@ -9,6 +9,7 @@ use Gica\Cqrs\Aggregate\AggregateRepository;
 use Gica\Cqrs\Command;
 use Gica\Cqrs\Command\CommandApplier;
 use Gica\Cqrs\Command\CommandDispatcher;
+use Gica\Cqrs\Command\CommandMetadata;
 use Gica\Cqrs\Command\CommandSubscriber;
 use Gica\Cqrs\Command\CommandWithMetadata;
 use Gica\Cqrs\Command\MetadataWrapper as CommandMetadataFactory;
@@ -94,7 +95,7 @@ class DefaultCommandDispatcher implements CommandDispatcher
         $this->commandMetadataFactory = $commandMetadataFactory;
     }
 
-    public function dispatchCommand(Command $command, $metadata = null)
+    public function dispatchCommand(Command $command, CommandMetadata $metadata = null)
     {
         $command = $this->commandMetadataFactory->wrapCommandWithMetadata($command, $metadata);
 

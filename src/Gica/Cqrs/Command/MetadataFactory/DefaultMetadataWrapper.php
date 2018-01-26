@@ -7,13 +7,14 @@ namespace Gica\Cqrs\Command\MetadataFactory;
 
 
 use Gica\Cqrs\Command;
+use Gica\Cqrs\Command\CommandMetadata;
 use Gica\Cqrs\Command\CommandWithMetadata;
 use Gica\Cqrs\Command\MetadataWrapper;
 
 class DefaultMetadataWrapper implements MetadataWrapper
 {
 
-    public function wrapCommandWithMetadata(Command $command, $metadata): CommandWithMetadata
+    public function wrapCommandWithMetadata(Command $command, CommandMetadata $metadata = null): CommandWithMetadata
     {
         return new CommandWithMetadata($command, $metadata);
     }

@@ -19,7 +19,7 @@ class CommandWithMetadata
 
     public function __construct(
         Command $command,
-        $metadata
+        CommandMetadata $metadata = null
     )
     {
         $this->command = $command;
@@ -31,10 +31,7 @@ class CommandWithMetadata
         return $this->command;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getMetadata()
+    public function getMetadata():?CommandMetadata
     {
         return $this->metadata;
     }

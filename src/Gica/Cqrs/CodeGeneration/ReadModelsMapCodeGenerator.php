@@ -7,7 +7,6 @@ namespace Gica\Cqrs\CodeGeneration;
 
 
 use Gica\CodeAnalysis\MethodListenerDiscovery;
-use Gica\CodeAnalysis\Shared\ClassSorter\ByConstructorDependencySorter;
 use Gica\Cqrs\CodeGeneration\Traits\GroupedByListenerTrait;
 use Gica\Cqrs\Command\CodeAnalysis\ReadModelEventHandlerDetector;
 use Gica\Cqrs\ReadModel\ListenerClassValidator\OnlyReadModels;
