@@ -1,5 +1,5 @@
 {
-  "name": "xprt64/cqrs-es",
+  "name": "xprt64/dudulina",
   "description": "CQRS with Event Sourcing mini framework for PHP",
   "minimum-stability": "stable",
   "license": "proprietary",
@@ -34,12 +34,12 @@
   },
   "autoload": {
     "psr-4": {
-      "Gica\\Cqrs\\": "src/Gica/Cqrs/"
+      "Dudulina\\": "src/Dudulina/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "tests\\Gica\\": "tests/Gica/"
+      "tests\\Dudulina\\": "tests/Dudulina/"
     }
   }
 }

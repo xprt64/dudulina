@@ -14,11 +14,11 @@ This is a non-obtrusive CQRS + Event Sourcing library that helps building comple
 
 No inheritance! Your domain code remains clean and infrastructure/framework agnostic as should be.
 
-- `\Gica\Cqrs\Event` for each domain event; no methods, it is just a marker interface; the domain events need to be detected by the automated code generation tools;
+- `\Dudulina\Event` for each domain event; no methods, it is just a marker interface; the domain events need to be detected by the automated code generation tools;
 
-- `\Gica\Cqrs\Command` for each domain command; only one method, `getAggregateId()`; it is needed by the command dispatcher to know that Aggregate instance to load from Repository
+- `\Dudulina\Command` for each domain command; only one method, `getAggregateId()`; it is needed by the command dispatcher to know that Aggregate instance to load from Repository
 
-- `\Gica\Cqrs\ReadModel\ReadModelInterface` for each read model; this is required only if you use the `ReadModelRecreator` to rebuild your read-models (projections)
+- `\Dudulina\ReadModel\ReadModelInterface` for each read model; this is required only if you use the `ReadModelRecreator` to rebuild your read-models (projections)
 
 Even if only a few interfaces need to be implemented, you could loose the coupling to the library even more.
 You could define and use your own domain interfaces and only that interfaces would inherit from the library interfaces.

@@ -1,0 +1,47 @@
+<?php
+/******************************************************************************
+ * Copyright (c) 2016 Constantin Galbenu <gica.galbenu@gmail.com>             *
+ ******************************************************************************/
+
+namespace Dudulina\Event\EventSubscriber;
+
+
+use Dudulina\Event\EventSubscriber;
+
+class ManualEventSubscriber implements EventSubscriber
+{
+    private $eventListeners = [];
+
+    public function subscribeToEvent($listener)
+    {
+        $this->eventListeners[] = $listener;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getListenersForEvent($event)
+    {
+        $result = [];
+
+        foreach ($this->eventListeners as $eventListener) {
+            $methodName = $this->getMethodName($event);
+
+            $method = [$eventListener, $methodName];
+
+            if (is_callable($method)) {
+                $result[] = $method;
+            }
+        }
+
+        return $result;
+    }
+
+    private function getMethodName($event)
+    {
+        $parts = explode('\\', get_class($event));
+
+        return 'handle' . end($parts);
+    }
+
+}

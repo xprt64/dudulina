@@ -11,11 +11,11 @@ Those events are used to rehydrate the write models and to update the read model
 ##  The Commands ##
 The instructions to update application's state are encapsulated in commands, plain PHP objects or Value Objects in DDD.
 Commands are sent to Aggregates, the write models. The command must contain at least the Aggregate's ID so that the library can identify the right Aggregate instance.
-All commands must implement the `\Gica\Cqrs\Command` interface. This interface has only one method: `getAggregateId()`; This is required for the automated tools to discover command handlers.
+All commands must implement the `\Dudulina\Command` interface. This interface has only one method: `getAggregateId()`; This is required for the automated tools to discover command handlers.
 An example of a command is this:
 ```php
 
-use \Gica\Cqrs\Command;
+use \Dudulina\Command;
 
 class ImportantCommand implements Command
 {
@@ -88,7 +88,7 @@ The `Metadata` is optional and contains the Aggregate's ID, Aggregate's class na
 ## The Read Models = The Projections ##
 After the Aggregate generates events, these events are sent to the subscribed Read Models.
 The Read Models are classes that listen on the events and update themselves accordingly. They have one or more event handler methods.
-If you want a Read Model to be recreated by a library tool (`\Gica\Cqrs\ReadModel\ReadModelRecreator`), then the Read Model must implement the `\Gica\Cqrs\ReadModel\ReadModelInterface` interface.
+If you want a Read Model to be recreated by a library tool (`\Dudulina\ReadModel\ReadModelRecreator`), then the Read Model must implement the `\Dudulina\ReadModel\ReadModelInterface` interface.
 ### Order of event delivery ###
 When an event is generated, all Read Models are notified, in the order of their dependencies.
 That is, if ReadModel2 depends of ReadModel1, the ReadModel2 receives the event after ReadModel1 processes it.
@@ -220,7 +220,7 @@ class CommandHandlerSubscriber extends CommandSubscriberByMap
 }
 ```
 The map has the key as the Event class and the value as command handler (Aggregate class + method name).
-This map (the file that contain the `CommandHandlerSubscriber` class) is constructed automatically by a tool, `\Gica\Cqrs\CodeGeneration\CommandHandlersMapCodeGenerator`, that scans all the files in the `Write` folder in the Domain layer and finds all the command handlers.
+This map (the file that contain the `CommandHandlerSubscriber` class) is constructed automatically by a tool, `\Dudulina\CodeGeneration\CommandHandlersMapCodeGenerator`, that scans all the files in the `Write` folder in the Domain layer and finds all the command handlers.
 Every time you add a new Command and a new command handler, you must run this tool to update the mapping between Commands and command handlers.
 There is possibility that more than one command handler exists for a Command. The tool can and will detect this.
 
@@ -306,7 +306,7 @@ The tool must be run after any event processor is created.
 ### Event scheduling ###
 
 There is the possibility that the an `Aggregate` wants to postpone an event. This can be done if the `Aggregate` `yields`
-an `Event` that implements `\Gica\Cqrs\Event\ScheduledEvent`. The event class must implement two methods:
+an `Event` that implements `\Dudulina\Event\ScheduledEvent`. The event class must implement two methods:
 
 ```
 public function getFireDate():\DateTimeImmutable //returns the date that the event will be fired
@@ -319,13 +319,13 @@ public function getMessageId(); //returns the unique ID of the event
 ```
 
 Scheduled events could be processed in a [cron job](https://github.com/xprt64/todosample-cqrs-es/blob/master/deploy/cron).
-See [\Gica\Cqrs\Scheduling\ScheduledEventsPlayer](https://github.com/xprt64/cqrs-es/blob/master/src/Gica/Cqrs/Scheduling/ScheduledEventsPlayer.php) for more informations.
+See [\Dudulina\Scheduling\ScheduledEventsPlayer](https://github.com/xprt64/cqrs-es/blob/master/src/Gica/Cqrs/Scheduling/ScheduledEventsPlayer.php) for more informations.
 See a [demo here](https://github.com/xprt64/todosample-cqrs-es/blob/master/bin/cron/play_scheduled_events.php).
 
 ### Command scheduling ###
 
-The `Aggregate` can schedule commands. If the `yielded` message is an instance of `\Gica\Cqrs\Scheduling\ScheduledCommand` ([see interface here](https://github.com/xprt64/cqrs-es/blob/master/src/Gica/Cqrs/Scheduling/ScheduledMessage.php)) then
-that command will be scheduled to be dispatched at the specified date by [\Gica\Cqrs\Scheduling\ScheduledMessage::getFireDate](https://github.com/xprt64/cqrs-es/blob/master/src/Gica/Cqrs/Scheduling/ScheduledMessage.php).
+The `Aggregate` can schedule commands. If the `yielded` message is an instance of `\Dudulina\Scheduling\ScheduledCommand` ([see interface here](https://github.com/xprt64/cqrs-es/blob/master/src/Gica/Cqrs/Scheduling/ScheduledMessage.php)) then
+that command will be scheduled to be dispatched at the specified date by [\Dudulina\Scheduling\ScheduledMessage::getFireDate](https://github.com/xprt64/cqrs-es/blob/master/src/Gica/Cqrs/Scheduling/ScheduledMessage.php).
 
-Scheduled commands could be processed in a [cron job](https://github.com/xprt64/todosample-cqrs-es/blob/master/deploy/cron). See [\Gica\Cqrs\Scheduling\ScheduledCommandsDispatcher](https://github.com/xprt64/cqrs-es/blob/master/src/Gica/Cqrs/Scheduling/ScheduledCommandsDispatcher.php) for more informations.
+Scheduled commands could be processed in a [cron job](https://github.com/xprt64/todosample-cqrs-es/blob/master/deploy/cron). See [\Dudulina\Scheduling\ScheduledCommandsDispatcher](https://github.com/xprt64/cqrs-es/blob/master/src/Gica/Cqrs/Scheduling/ScheduledCommandsDispatcher.php) for more informations.
 See a [demo here](https://github.com/xprt64/todosample-cqrs-es/blob/master/bin/cron/play_scheduled_commands.php).
