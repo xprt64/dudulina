@@ -5,6 +5,7 @@
 
 namespace Dudulina\Command\CommandDispatcher;
 
+use Dudulina\Aggregate\AggregateDescriptor;
 use Dudulina\Aggregate\AggregateRepository;
 use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
@@ -116,7 +117,7 @@ class DefaultCommandDispatcher implements CommandDispatcher
 
         if ($this->commandScheduler && !empty($scheduledCommands)) {
             foreach ($scheduledCommands as $scheduledCommand) {
-                $this->commandScheduler->scheduleCommand($scheduledCommand, $aggregateClass, $command->getAggregateId(), $metadata);
+                $this->commandScheduler->scheduleCommand($scheduledCommand, new AggregateDescriptor($command->getAggregateId(), $aggregateClass), $metadata);
             }
         }
     }
@@ -127,7 +128,8 @@ class DefaultCommandDispatcher implements CommandDispatcher
 
         list($eventsForNow, $eventsForTheFuture, $scheduledCommands) = $this->applyCommandAndReturnMessages($command, $handlerAndAggregate);
 
-        $eventsForNow = $this->aggregateRepository->saveAggregate($command->getAggregateId(), $handlerAndAggregate->getAggregate(), $eventsForNow);
+        $eventsForNow = $this->aggregateRepository->saveAggregate(
+            $command->getAggregateId(), $handlerAndAggregate->getAggregate(), $eventsForNow);
 
         return [$eventsForNow, $eventsForTheFuture, $scheduledCommands, $handlerAndAggregate->getCommandHandler()->getHandlerClass()];
     }
@@ -136,7 +138,9 @@ class DefaultCommandDispatcher implements CommandDispatcher
     {
         $handler = $this->commandSubscriber->getHandlerForCommand($command->getCommand());
 
-        $aggregate = $this->aggregateRepository->loadAggregate($handler->getHandlerClass(), $command->getAggregateId());
+        $aggregate = $this->aggregateRepository->loadAggregate(
+            new AggregateDescriptor($command->getAggregateId(), $handler->getHandlerClass())
+        );
 
         return new CommandHandlerAndAggregate($handler, $aggregate);
     }

@@ -64,7 +64,7 @@ class SagaRunner
             new AnyPhpClassIsAccepted()
         );
 
-        $allMethods = $discoverer->findListenerMethodsInClass(get_class($saga));
+        $allMethods = $discoverer->findListenerMethodsInClass(\get_class($saga));
 
         $eventClasses = $this->getEventClassesFromMethods($allMethods);
 
@@ -124,7 +124,7 @@ class SagaRunner
         $result = [];
 
         foreach ($allMethods as $listenerMethod) {
-            if ($listenerMethod->getEventClassName() == $eventClass) {
+            if ($listenerMethod->getEventClassName() === $eventClass) {
                 $result[] = $listenerMethod;
             }
         }
@@ -135,10 +135,10 @@ class SagaRunner
     private function processEvent($saga, EventWithMetaData $eventWithMetadata, $allMethods): void
     {
         /** @var EventWithMetaData $eventWithMetadata */
-        $methods = $this->findMethodsByEventClass(get_class($eventWithMetadata->getEvent()), $allMethods);
+        $methods = $this->findMethodsByEventClass(\get_class($eventWithMetadata->getEvent()), $allMethods);
         $metaData = $eventWithMetadata->getMetaData();
 
-        $sagaId = get_class($saga);
+        $sagaId = \get_class($saga);
 
         foreach ($methods as $method) {
 
@@ -149,7 +149,7 @@ class SagaRunner
                     }
                 } else {
                     $this->sagaRepository->startProcessingEvent($sagaId, $metaData->getEventId());
-                    call_user_func([$saga, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
+                    \call_user_func([$saga, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
                     $this->sagaRepository->endProcessingEvent($sagaId, $metaData->getEventId());
                 }
             } catch (ConcurentEventProcessingException $exception) {

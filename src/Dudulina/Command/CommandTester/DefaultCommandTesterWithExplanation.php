@@ -5,6 +5,7 @@
 
 namespace Dudulina\Command\CommandTester;
 
+use Dudulina\Aggregate\AggregateDescriptor;
 use Dudulina\Aggregate\AggregateRepository;
 use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
@@ -79,7 +80,12 @@ class DefaultCommandTesterWithExplanation implements Command\CommandTesterWithEx
     {
         return new CommandHandlerAndAggregate(
             $this->commandSubscriber->getHandlerForCommand($command->getCommand()),
-            $this->aggregateRepository->loadAggregate($this->commandSubscriber->getHandlerForCommand($command->getCommand())->getHandlerClass(), $command->getAggregateId())
+            $this->aggregateRepository->loadAggregate(
+                new AggregateDescriptor(
+                    $command->getAggregateId(),
+                    $this->commandSubscriber->getHandlerForCommand($command->getCommand())->getHandlerClass()
+                )
+            )
         );
     }
 

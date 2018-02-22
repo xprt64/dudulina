@@ -6,9 +6,10 @@
 namespace Dudulina\Scheduling;
 
 
+use Dudulina\Aggregate\AggregateDescriptor;
+use Dudulina\Aggregate\AggregateRepository;
 use Dudulina\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
 use Dudulina\Event\EventDispatcher;
-use Dudulina\EventStore;
 use Dudulina\FutureEventsStore;
 
 class ScheduledEventsPlayer
@@ -23,53 +24,53 @@ class ScheduledEventsPlayer
      */
     private $eventDispatcher;
     /**
-     * @var EventStore
-     */
-    private $eventStore;
-    /**
      * @var ConcurrentProofFunctionCaller
      */
     private $concurrentProofFunctionCaller;
+    /**
+     * @var AggregateRepository
+     */
+    private $aggregateRepository;
 
     public function __construct(
         FutureEventsStore $futureEventsStore,
         EventDispatcher $eventDispatcher,
-        EventStore $eventStore,
-        ConcurrentProofFunctionCaller $functionCaller
+        ConcurrentProofFunctionCaller $functionCaller,
+        AggregateRepository $aggregateRepository
     )
     {
         $this->futureEventsStore = $futureEventsStore;
         $this->eventDispatcher = $eventDispatcher;
-        $this->eventStore = $eventStore;
         $this->concurrentProofFunctionCaller = $functionCaller;
+        $this->aggregateRepository = $aggregateRepository;
     }
 
     public function run()
     {
         $this->futureEventsStore->loadAndProcessScheduledEvents(function (ScheduledEventWithMetadata $scheduledEvent) {
-
             $this->saveEventToStore($scheduledEvent);
             $this->eventDispatcher->dispatchEvent($scheduledEvent->getEventWithMetaData());
-
         });
     }
 
     private function saveEventToStore(ScheduledEventWithMetadata $scheduledEvent)
     {
         $this->concurrentProofFunctionCaller->executeFunction(function () use ($scheduledEvent) {
-            $metaData = $scheduledEvent->getEventWithMetaData()->getMetaData();
-            $aggregateVersion = $this->eventStore->getAggregateVersion($metaData->getAggregateClass(), $metaData->getAggregateId());
-            $this->trySaveEventToStore($scheduledEvent, $aggregateVersion);
+            $this->trySaveEventToStore($scheduledEvent);
         }, 9999);
     }
 
-    private function trySaveEventToStore(ScheduledEventWithMetadata $scheduledEvent, $version)
+    private function trySaveEventToStore(ScheduledEventWithMetadata $scheduledEvent)
     {
         $eventWithMetaData = $scheduledEvent->getEventWithMetaData();
         $metaData = $eventWithMetaData->getMetaData();
 
-        $expectedSequence = $this->eventStore->fetchLatestSequence();
-
-        $this->eventStore->appendEventsForAggregate($metaData->getAggregateId(), $metaData->getAggregateClass(), [$eventWithMetaData], $version, $expectedSequence);
+        $this->aggregateRepository->saveAggregate(
+            $metaData->getAggregateId(),
+            $this->aggregateRepository->loadAggregate(
+                new AggregateDescriptor($metaData->getAggregateId(), $metaData->getAggregateClass())
+            ),
+            [$eventWithMetaData]
+        );
     }
 }

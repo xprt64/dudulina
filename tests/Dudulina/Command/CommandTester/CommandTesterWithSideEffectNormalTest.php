@@ -6,6 +6,7 @@
 namespace tests\Dudulina\Command\CommandTester\CommandTesterWithSideEffectNormalTest;
 
 
+use Dudulina\Aggregate\AggregateDescriptor;
 use Dudulina\Aggregate\AggregateRepository;
 use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
@@ -22,6 +23,11 @@ class CommandTesterWithSideEffectNormalTest extends \PHPUnit_Framework_TestCase
 
     const AGGREGATE_ID = 123;
 
+    private function factoryAggregateDescriptor()
+    {
+        return new AggregateDescriptor(self::AGGREGATE_ID, Aggregate1::class);
+    }
+
     public function test_dispatchCommand()
     {
         $aggregateId = self::AGGREGATE_ID;
@@ -35,13 +41,11 @@ class CommandTesterWithSideEffectNormalTest extends \PHPUnit_Framework_TestCase
         $eventStore = new InMemoryEventStore();
 
         $eventStore->appendEventsForAggregate(
-            $aggregateId,
-            $aggregateClass,
+            $this->factoryAggregateDescriptor(),
             $eventStore->decorateEventsWithMetadata(
-                $aggregateClass, $aggregateId, [new Event0($aggregateId)]
+                $this->factoryAggregateDescriptor(), [new Event0($aggregateId)]
             ),
-            0,
-            0
+            $eventStore->factoryAggregateEventStream($this->factoryAggregateDescriptor())
         );
 
         $eventsApplierOnAggregate = new EventsApplierOnAggregate();
@@ -62,10 +66,10 @@ class CommandTesterWithSideEffectNormalTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals(0, Aggregate1::$state);
-        $this->assertCount(1, $eventStore->loadEventsForAggregate($aggregateClass, $aggregateId));
+        $this->assertCount(1, $eventStore->loadEventsForAggregate($this->factoryAggregateDescriptor()));
 
         $this->assertTrue($commandTester->shouldExecuteCommand($command));
-        $this->assertCount(1, $eventStore->loadEventsForAggregate($aggregateClass, $aggregateId));
+        $this->assertCount(1, $eventStore->loadEventsForAggregate($this->factoryAggregateDescriptor()));
         $this->assertEquals(2, Aggregate1::$state);//state is modified but none is persisted
 
         $this->assertFalse($commandTester->shouldExecuteCommand($command2));

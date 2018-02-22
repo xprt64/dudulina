@@ -6,6 +6,7 @@
 namespace tests\Dudulina\Command\CommandDispatcher\CommandDispatcherScheduledCommandsTest;
 
 
+use Dudulina\Aggregate\AggregateDescriptor;
 use Dudulina\Aggregate\AggregateRepository;
 use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
@@ -38,7 +39,7 @@ class CommandDispatcherScheduledCommandsTest extends \PHPUnit_Framework_TestCase
 
         $eventDispatcher = $this->mockEventDispatcher();
 
-        $eventStore = new InMemoryEventStore($aggregateClass, $aggregateId);
+        $eventStore = new InMemoryEventStore();
 
         $eventsApplierOnAggregate = new EventsApplierOnAggregate();
 
@@ -128,7 +129,7 @@ class StubScheduledCommandStore implements \Dudulina\Scheduling\CommandScheduler
         return $this->commands;
     }
 
-    public function scheduleCommand(ScheduledCommand $scheduledCommand, string $aggregateClass, $aggregateId, CommandMetadata $commandMetadata = null)
+    public function scheduleCommand(ScheduledCommand $scheduledCommand, AggregateDescriptor $aggregateDescriptor, CommandMetadata $commandMetadata = null)
     {
         $this->commands[] = $scheduledCommand;
     }
@@ -136,7 +137,7 @@ class StubScheduledCommandStore implements \Dudulina\Scheduling\CommandScheduler
     public function cancelCommand($commandId)
     {
         foreach ($this->commands as $i => $scheduledCommand) {
-            if ((string)$scheduledCommand->getMessageId() == (string)$commandId) {
+            if ((string)$scheduledCommand->getMessageId() === (string)$commandId) {
                 unset($this->commands[$i]);
             }
         }

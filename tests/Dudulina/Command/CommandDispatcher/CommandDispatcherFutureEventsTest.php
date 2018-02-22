@@ -6,6 +6,7 @@
 namespace tests\Dudulina\Command\CommandDispatcher\CommandDispatcherFutureEventsTest;
 
 
+use Dudulina\Aggregate\AggregateDescriptor;
 use Dudulina\Aggregate\AggregateRepository;
 use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
@@ -27,6 +28,11 @@ class CommandDispatcherFutureEventsTest extends \PHPUnit_Framework_TestCase
 
     const AGGREGATE_ID = 123;
 
+    private function factoryAggregateDescriptor(): AggregateDescriptor
+    {
+        return new AggregateDescriptor(self::AGGREGATE_ID, Aggregate1::class);
+    }
+
     public function test_dispatchCommand()
     {
         $aggregateId = self::AGGREGATE_ID;
@@ -38,7 +44,7 @@ class CommandDispatcherFutureEventsTest extends \PHPUnit_Framework_TestCase
 
         $eventDispatcher = $this->mockEventDispatcher();
 
-        $eventStore = new InMemoryEventStore($aggregateClass, $aggregateId);
+        $eventStore = new InMemoryEventStore();
 
         $eventsApplierOnAggregate = new EventsApplierOnAggregate();
 
@@ -64,7 +70,7 @@ class CommandDispatcherFutureEventsTest extends \PHPUnit_Framework_TestCase
 
         $commandDispatcher->dispatchCommand($command);
 
-        $this->assertCount(1, $eventStore->loadEventsForAggregate($aggregateClass, $aggregateId));
+        $this->assertCount(1, $eventStore->loadEventsForAggregate($this->factoryAggregateDescriptor()));
 
         $this->assertCount(1, $futureEventsStore->scheduledEvents);
 
@@ -73,7 +79,7 @@ class CommandDispatcherFutureEventsTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(EventInTheFuture::class, $eventWithMetadata->getEvent());
 
-        $this->assertCount(1, $eventStore->loadEventsForAggregate($aggregateClass, $aggregateId));
+        $this->assertCount(1, $eventStore->loadEventsForAggregate($this->factoryAggregateDescriptor()));
     }
 
     private function mockCommand(): Command

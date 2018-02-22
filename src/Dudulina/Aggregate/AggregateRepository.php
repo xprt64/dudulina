@@ -38,11 +38,13 @@ class AggregateRepository
         $this->aggregateToEventStreamMap = new \SplObjectStorage();
     }
 
-    public function loadAggregate(string $aggregateClass, $aggregateId)
+    public function loadAggregate(AggregateDescriptor $aggregateDescriptor)
     {
+        $aggregateClass = $aggregateDescriptor->getAggregateClass();
+
         $aggregate = new $aggregateClass;
 
-        $priorEvents = $this->eventStore->loadEventsForAggregate($aggregateClass, $aggregateId);
+        $priorEvents = $this->eventStore->loadEventsForAggregate($aggregateDescriptor);
 
         $this->aggregateToEventStreamMap[$aggregate] = $priorEvents;
 
@@ -64,7 +66,7 @@ class AggregateRepository
         $priorEvents = $this->aggregateToEventStreamMap[$aggregate];
 
         $this->eventStore->appendEventsForAggregate(
-            $aggregateId, get_class($aggregate), $newEventsWithMeta, $priorEvents->getVersion(), $priorEvents->getSequence());
+            new AggregateDescriptor($aggregateId, get_class($aggregate)), $newEventsWithMeta, $priorEvents);
 
         $decoratedEvents = [];
 

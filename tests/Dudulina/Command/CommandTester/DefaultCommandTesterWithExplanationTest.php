@@ -41,7 +41,7 @@ class DefaultCommandTesterWithExplanationTest extends \PHPUnit_Framework_TestCas
 
         $commandSubscriber = $this->mockCommandSubscriber();
 
-        $eventStore = new InMemoryEventStore($aggregateClass, $aggregateId);
+        $eventStore = new InMemoryEventStore();
 
         $eventsApplierOnAggregate = new EventsApplierOnAggregate();
 

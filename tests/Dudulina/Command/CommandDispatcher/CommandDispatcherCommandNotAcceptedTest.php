@@ -49,7 +49,7 @@ class CommandDispatcherCommandNotAcceptedTest extends \PHPUnit_Framework_TestCas
 
         $eventDispatcher = $this->mockEventDispatcher();
 
-        $eventStore = new InMemoryEventStore($aggregateClass, $aggregateId);
+        $eventStore = new InMemoryEventStore();
 
         $eventsApplierOnAggregate = new EventsApplierOnAggregate();
 

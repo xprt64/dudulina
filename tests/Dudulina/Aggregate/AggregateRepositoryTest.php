@@ -7,13 +7,13 @@
 namespace tests\Dudulina\Aggregate;
 
 
+use Dudulina\Aggregate\AggregateDescriptor;
 use Dudulina\Aggregate\AggregateRepository;
 use Dudulina\Event\EventsApplier\EventsApplierOnAggregate;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
 use Dudulina\EventStore\AggregateEventStream;
-use Gica\Types\Guid;
 
 
 class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
@@ -34,7 +34,7 @@ class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->firstEventWithMetadata = new EventWithMetaData(1, new MetaData('', '',  new \DateTimeImmutable()));
+        $this->firstEventWithMetadata = new EventWithMetaData(1, new MetaData('', '', new \DateTimeImmutable()));
         $this->secondEventWithMetadata = new EventWithMetaData(2, new MetaData('', '', new \DateTimeImmutable()));
     }
 
@@ -48,7 +48,7 @@ class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
             $eventsApplier
         );
 
-        $aggregate = $aggregateRepository->loadAggregate(Aggregate::class, self::AGGREGATE_ID);
+        $aggregate = $aggregateRepository->loadAggregate($this->factoryAggregateDescriptor());
 
         $this->assertInstanceOf(Aggregate::class, $aggregate);
 
@@ -66,7 +66,7 @@ class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $eventStore->expects($this->once())
             ->method('loadEventsForAggregate')
-            ->with($this->equalTo(Aggregate::class), $this->equalTo(self::AGGREGATE_ID))
+            ->with($this->equalTo($this->factoryAggregateDescriptor()))
             ->willReturn($this->mockEventStream());
 
 
@@ -74,11 +74,9 @@ class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('appendEventsForAggregate')
             ->with(
-                $this->equalTo(self::AGGREGATE_ID),
-                $this->equalTo(Aggregate::class),
+                $this->equalTo($this->factoryAggregateDescriptor()),
                 $this->equalTo($this->getNewEvents()),
-                $this->equalTo(self::AGGREGATE_VERSION),
-                $this->equalTo(self::EVENTS_SEQUENCE));
+                $this->equalTo($this->mockEventStream()));
 
         /** @var EventStore $eventStore */
         return $eventStore;
@@ -103,8 +101,6 @@ class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
     private function mockEventStream(): AggregateEventStream
     {
         if (!$this->aggregateEventStream) {
-
-
             $this->aggregateEventStream = $this->getMockBuilder(AggregateEventStream::class)
                 ->getMock();
 
@@ -129,6 +125,15 @@ class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
             $this->firstEventWithMetadata,
             $this->secondEventWithMetadata,
         ];
+    }
+
+    private function factoryAggregateDescriptor(): AggregateDescriptor
+    {
+        static $cache = null;
+        if (!$cache) {
+            $cache = new AggregateDescriptor(self::AGGREGATE_ID, Aggregate::class);
+        }
+        return $cache;
     }
 }
 

@@ -4,6 +4,7 @@
 namespace tests;
 
 
+use Dudulina\Aggregate\AggregateDescriptor;
 use Dudulina\Event;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
@@ -26,6 +27,9 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
 
         $aggregateClass = \stdClass::class;
         $aggregateId = 123;
+        
+        $descriptor = $this->factoryAggregateDescriptor();
+        
         $eventsWithMetaData1 = [
             new EventWithMetaData(
                 $event1,
@@ -38,9 +42,11 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
             ),
         ];
 
-        $store->appendEventsForAggregate($aggregateId, $aggregateClass, $eventsWithMetaData1, 0, 0);
+        $expectedStream = $store->factoryAggregateEventStream($descriptor);
+        
+        $store->appendEventsForAggregate($this->factoryAggregateDescriptor(), $eventsWithMetaData1, $expectedStream);
 
-        $this->assertEquals(1, $store->getAggregateVersion($aggregateClass, $aggregateId));
+        $this->assertEquals(1, $store->getAggregateVersion($descriptor));
         $this->assertEquals(1, $store->fetchLatestSequence());
 
         $eventsWithMetaData2 = [
@@ -64,9 +70,9 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
             ),
         ];
 
-        $store->appendEventsForAggregate($aggregateId, $aggregateClass, $eventsWithMetaData2, 1, 1);
+        $store->appendEventsForAggregate($descriptor, $eventsWithMetaData2, $expectedStream->withIncrementedVersion()->withIncrementedSequence());
 
-        $this->assertEquals(2, $store->getAggregateVersion($aggregateClass, $aggregateId));
+        $this->assertEquals(2, $store->getAggregateVersion($descriptor));
         $this->assertEquals(2, $store->fetchLatestSequence());
 
         $events = $store->loadEventsByClassNames([get_class($event2)]);
@@ -74,7 +80,7 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(EventStream::class, $events);
         $this->assertCount(2, iterator_to_array($events));
 
-        $eventsforAggregate = $store->loadEventsForAggregate($aggregateClass, $aggregateId);
+        $eventsforAggregate = $store->loadEventsForAggregate($descriptor);
 
         $this->assertInstanceOf(AggregateEventStream::class, $eventsforAggregate);
         $this->assertCount(3, iterator_to_array($eventsforAggregate));
@@ -103,15 +109,19 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
         ];
 
         $this->expectException(ConcurrentModificationException::class);
+       
+        $expectedStream = $store->factoryAggregateEventStream($this->factoryAggregateDescriptor());
 
-        $store->appendEventsForAggregate($aggregateId, $aggregateClass, $eventsWithMetaData, 0, 0);
+        $store->appendEventsForAggregate($this->factoryAggregateDescriptor(), $eventsWithMetaData, $expectedStream);
 
-        $store->appendEventsForAggregate($aggregateId, $aggregateClass, $eventsWithMetaData, 0, 0);
+        $store->appendEventsForAggregate($this->factoryAggregateDescriptor(), $eventsWithMetaData, $expectedStream);
     }
 
     public function test_appendEventsForAggregateWithoutChecking()
     {
         $store = new InMemoryEventStore();
+
+        $expectedStream = $store->factoryAggregateEventStream($this->factoryAggregateDescriptor());
 
         $event1 = new Event1();
 
@@ -120,20 +130,22 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
         $aggregateClass = \stdClass::class;
         $aggregateId = 123;
 
-        $store->appendEventsForAggregateWithoutChecking($aggregateId, $aggregateClass, [$event1, $event2], 0, 0);
+        $store->appendEventsForAggregateWithoutChecking($this->factoryAggregateDescriptor(), [$event1, $event2], $expectedStream);
 
-        $this->assertEquals(1, $store->getAggregateVersion($aggregateClass, $aggregateId));
+        $this->assertEquals(1, $store->getAggregateVersion($this->factoryAggregateDescriptor()));
         $this->assertEquals(1, $store->fetchLatestSequence());
 
-        $store->appendEventsForAggregateWithoutChecking($aggregateId, $aggregateClass, [$event1, $event2], 1, 1);
+        $store->appendEventsForAggregateWithoutChecking($this->factoryAggregateDescriptor(), [$event1, $event2], $expectedStream->withIncrementedVersion()->withIncrementedSequence());
 
-        $this->assertEquals(2, $store->getAggregateVersion($aggregateClass, $aggregateId));
+        $this->assertEquals(2, $store->getAggregateVersion($this->factoryAggregateDescriptor()));
         $this->assertEquals(2, $store->fetchLatestSequence());
     }
 
     public function test_findEventById()
     {
         $store = new InMemoryEventStore();
+
+        $expectedStream = $store->factoryAggregateEventStream($this->factoryAggregateDescriptor());
 
         $event1 = new Event1();
 
@@ -165,10 +177,15 @@ class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
             ),
         ];
 
-        $store->appendEventsForAggregate($aggregateId, $aggregateClass, $eventsWithMetaData, 0, 0);
+        $store->appendEventsForAggregate($this->factoryAggregateDescriptor(), $eventsWithMetaData, $expectedStream);
 
         $this->assertNull($store->findEventById('nonExistentId'));
         $this->assertSame($eventWithMetaData1, $store->findEventById('eventId1'));
+    }
+
+    private function factoryAggregateDescriptor(): AggregateDescriptor
+    {
+        return new AggregateDescriptor(123, \stdClass::class);
     }
 }
 

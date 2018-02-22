@@ -10,7 +10,7 @@ use Dudulina\Command;
 
 class CommandApplier
 {
-    public function applyCommand($aggregate, Command $command, $methodName)
+    public function applyCommand($aggregate, Command $command, string $methodName)
     {
         $generator = call_user_func([$aggregate, $methodName], $command);
 

@@ -4,6 +4,7 @@
 namespace Dudulina\EventStore\InMemory;
 
 
+use Dudulina\Aggregate\AggregateDescriptor;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
@@ -20,35 +21,33 @@ class InMemoryEventStore implements EventStore
     private $versions = [];
     private $latestSequence = 0;
 
-    public function loadEventsForAggregate(string $aggregateClass, $aggregateId): AggregateEventStream
+    public function loadEventsForAggregate(AggregateDescriptor $aggregateDescriptor): AggregateEventStream
     {
         return new InMemoryAggregateEventStream(
-            $this->getEventsArrayForAggregate($aggregateClass, $aggregateId), $aggregateClass, $aggregateId, $this->latestSequence);
+            $this->getEventsArrayForAggregate($aggregateDescriptor), $aggregateDescriptor->getAggregateClass(), $aggregateDescriptor->getAggregateId(), $this->latestSequence);
     }
 
     /**
      * @inheritdoc
      */
-    public function appendEventsForAggregate($aggregateId, string $aggregateClass, $eventsWithMetaData, int $expectedVersion, int $expectedSequence)
+    public function appendEventsForAggregate(AggregateDescriptor $aggregateDescriptor, $eventsWithMetaData, AggregateEventStream $expectedEventStream):void
     {
-        if ($this->getAggregateVersion($aggregateClass, $aggregateId) != $expectedVersion) {
+        if ($this->getAggregateVersion($aggregateDescriptor) != $expectedEventStream->getVersion()) {
             throw new ConcurrentModificationException();
         }
 
-        $this->appendEventsForAggregateWithoutChecking($aggregateId, $aggregateClass, $eventsWithMetaData, $expectedVersion, $expectedSequence);
+        $this->appendEventsForAggregateWithoutChecking($aggregateDescriptor, $eventsWithMetaData, $expectedEventStream);
     }
 
-    public function appendEventsForAggregateWithoutChecking($aggregateId, $aggregateClass, $newEvents, int $expectedVersion, int $expectedSequence)
+    public function appendEventsForAggregateWithoutChecking(AggregateDescriptor $aggregateDescriptor, $newEvents, AggregateEventStream $expectedEventStream)
     {
         $this->addEventsToArrayForAggregate(
-            $aggregateId,
-            $aggregateClass,
-            $this->decorateEventsWithMetadata($aggregateClass, $aggregateId, $newEvents),
-            $expectedVersion,
-            $expectedSequence
+            $aggregateDescriptor,
+            $this->decorateEventsWithMetadata($aggregateDescriptor, $newEvents),
+            $expectedEventStream
         );
 
-        $constructKey = $this->constructKey($aggregateClass, $aggregateId);
+        $constructKey = $this->constructKey($aggregateDescriptor);
 
         if (!isset($this->versions[$constructKey])) {
             $this->versions[$constructKey] = 0;
@@ -58,19 +57,19 @@ class InMemoryEventStore implements EventStore
         $this->latestSequence++;
     }
 
-    private function getEventsArrayForAggregate(string $aggregateClass, $aggregateId)
+    private function getEventsArrayForAggregate(AggregateDescriptor $aggregateDescriptor)
     {
-        $aggregateKey = $this->constructKey($aggregateClass, $aggregateId);
+        $aggregateKey = $this->constructKey($aggregateDescriptor);
 
         return isset($this->commitsByAggregate[$aggregateKey])
             ? $this->extractEventsFromCommits($this->commitsByAggregate[$aggregateKey])
             : [];
     }
 
-    private function addEventsToArrayForAggregate($aggregateId, $aggregateClass, $newEvents, int $expectedVersion, int $expectedSequence)
+    private function addEventsToArrayForAggregate(AggregateDescriptor $aggregateDescriptor, $newEvents, AggregateEventStream $expectedEventStream)
     {
-        $this->commitsByAggregate[$this->constructKey($aggregateClass, $aggregateId)][] = new EventsCommit(
-            $expectedSequence, $expectedVersion, $newEvents
+        $this->commitsByAggregate[$this->constructKey($aggregateDescriptor)][] = new EventsCommit(
+            $expectedEventStream->getSequence(), $expectedEventStream->getVersion(), $newEvents
         );
     }
 
@@ -92,29 +91,28 @@ class InMemoryEventStore implements EventStore
         return iterator_to_array($eventsExtracter($commits));
     }
 
-    public function getAggregateVersion(string $aggregateClass, $aggregateId)
+    public function getAggregateVersion(AggregateDescriptor $aggregateDescriptor)
     {
-        $key = $this->constructKey($aggregateClass, $aggregateId);
+        $key = $this->constructKey($aggregateDescriptor);
 
         return isset($this->versions[$key]) ? $this->versions[$key] : 0;
     }
 
     /**
-     * @param $aggregateClass
-     * @param $aggregateId
-     * @param $priorEvents
+     * @param AggregateDescriptor $aggregateDescriptor
+     * @param array $priorEvents
      * @return EventWithMetaData[]
      */
-    public function decorateEventsWithMetadata($aggregateClass, $aggregateId, array $priorEvents)
+    public function decorateEventsWithMetadata(AggregateDescriptor $aggregateDescriptor, array $priorEvents)
     {
-        return array_map(function ($event) use ($aggregateClass, $aggregateId) {
+        return array_map(function ($event) use ($aggregateDescriptor) {
             if ($event instanceof EventWithMetaData) {
                 return $event;
             }
 
             return new EventWithMetaData($event, new MetaData(
-                $aggregateId,
-                    $aggregateClass,
+                $aggregateDescriptor->getAggregateId(),
+                $aggregateDescriptor->getAggregateClass(),
                     new \DateTimeImmutable(),
                     null
             ));
@@ -126,9 +124,9 @@ class InMemoryEventStore implements EventStore
         return $this->latestSequence;
     }
 
-    private function constructKey(string $aggregateClass, $aggregateId): string
+    private function constructKey(AggregateDescriptor $aggregateDescriptor): string
     {
-        return $aggregateClass . '_' . (string)$aggregateId;
+        return $aggregateDescriptor->getAggregateClass() . '_' . (string)$aggregateDescriptor->getAggregateId();
     }
 
     public function findEventById(string $eventId): ?EventWithMetaData
@@ -151,5 +149,14 @@ class InMemoryEventStore implements EventStore
         }
 
         return null;
+    }
+
+    public function factoryAggregateEventStream(AggregateDescriptor $aggregateDescriptor)
+    {
+        return new InMemoryAggregateEventStream(
+            $this->getEventsArrayForAggregate($aggregateDescriptor),
+            $aggregateDescriptor->getAggregateId(),
+            $aggregateDescriptor->getAggregateClass(),
+            $this->latestSequence);
     }
 }

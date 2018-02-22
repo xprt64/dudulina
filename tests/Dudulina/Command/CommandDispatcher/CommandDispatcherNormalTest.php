@@ -6,6 +6,7 @@
 namespace tests\Dudulina\Command\CommandDispatcher;
 
 
+use Dudulina\Aggregate\AggregateDescriptor;
 use Dudulina\Aggregate\AggregateRepository;
 use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
@@ -24,13 +25,16 @@ use Gica\Types\Guid;
 
 class CommandDispatcherNormalTest extends \PHPUnit_Framework_TestCase
 {
-
     const AGGREGATE_ID = 123;
+
+    private function factoryAggregateDescriptor()
+    {
+        return new AggregateDescriptor(self::AGGREGATE_ID, Aggregate1::class);
+    }
 
     public function test_dispatchCommand()
     {
         $aggregateId = self::AGGREGATE_ID;
-        $aggregateClass = Aggregate1::class;
 
         $command = $this->mockCommand();
 
@@ -41,13 +45,11 @@ class CommandDispatcherNormalTest extends \PHPUnit_Framework_TestCase
         $eventStore = new InMemoryEventStore();
 
         $eventStore->appendEventsForAggregate(
-            $aggregateId,
-            $aggregateClass,
+            $this->factoryAggregateDescriptor(),
             $eventStore->decorateEventsWithMetadata(
-                $aggregateClass, $aggregateId, [new Event0($aggregateId)]
+                $this->factoryAggregateDescriptor(), [new Event0($aggregateId)]
             ),
-            0,
-            0
+            $eventStore->factoryAggregateEventStream($this->factoryAggregateDescriptor())
         );
 
         $eventsApplierOnAggregate = new EventsApplierOnAggregate();
@@ -76,9 +78,9 @@ class CommandDispatcherNormalTest extends \PHPUnit_Framework_TestCase
         $commandDispatcher->dispatchCommand($command, $metadata);
 
         $this->assertEquals(2, Aggregate1::$state);
-        $this->assertCount(2, $eventStore->loadEventsForAggregate($aggregateClass, $aggregateId));
+        $this->assertCount(2, $eventStore->loadEventsForAggregate($this->factoryAggregateDescriptor()));
 
-        $this->assertCount(2, $eventStore->loadEventsForAggregate($aggregateClass, $aggregateId));
+        $this->assertCount(2, $eventStore->loadEventsForAggregate($this->factoryAggregateDescriptor()));
     }
 
     private function mockCommand(): Command

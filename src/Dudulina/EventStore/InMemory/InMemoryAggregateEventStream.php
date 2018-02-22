@@ -47,4 +47,18 @@ class InMemoryAggregateEventStream implements AggregateEventStream
     {
         return $this->sequence;
     }
+
+    public function withIncrementedVersion():self
+    {
+        $other = clone $this;
+        $other->version++;
+        return $other;
+    }
+
+    public function withIncrementedSequence():self
+    {
+        $other = clone $this;
+        $other->sequence++;
+        return $other;
+    }
 }

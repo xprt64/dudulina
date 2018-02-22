@@ -6,27 +6,26 @@
 namespace Dudulina;
 
 
+use Dudulina\Aggregate\AggregateDescriptor;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\EventStore\AggregateEventStream;
 use Dudulina\EventStore\EventStreamGroupedByCommit;
 
 interface EventStore
 {
-    public function loadEventsForAggregate(string $aggregateClass, $aggregateId): AggregateEventStream;
+    public function loadEventsForAggregate(AggregateDescriptor $aggregateDescriptor): AggregateEventStream;
 
     /**
-     * @param $aggregateId
-     * @param string $aggregateClass
+     * @param AggregateDescriptor $aggregateDescriptor
      * @param EventWithMetaData[] $eventsWithMetaData
-     * @param int $expectedVersion
-     * @param int $expectedSequence
-     * @return
+     * @param AggregateEventStream $expectedEventStream
+     * @return void
      */
-    public function appendEventsForAggregate($aggregateId, string $aggregateClass, $eventsWithMetaData, int $expectedVersion, int $expectedSequence);
+    public function appendEventsForAggregate(AggregateDescriptor $aggregateDescriptor, $eventsWithMetaData, AggregateEventStream $expectedEventStream):void;
 
     public function loadEventsByClassNames(array $eventClasses): EventStreamGroupedByCommit;
 
-    public function getAggregateVersion(string $aggregateClass, $aggregateId);
+    public function getAggregateVersion(AggregateDescriptor $aggregateDescriptor);
 
     public function fetchLatestSequence(): int;
 
