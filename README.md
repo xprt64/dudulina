@@ -1,7 +1,7 @@
 # CQRS + Event Sourcing library for PHP 7+ #
 
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
-[![Build Status](https://travis-ci.org/xprt64/cqrs-es.svg?branch=master&rand=2)](https://travis-ci.org/xprt64/cqrs-es)
+[![Build Status](https://travis-ci.org/xprt64/dudulina.svg?branch=master&rand=2)](https://travis-ci.org/xprt64/dudulina)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/xprt64/cqrs-es/badges/quality-score.png?b=master&rand=4)](https://scrutinizer-ci.com/g/xprt64/cqrs-es/?branch=master)
 [![Code Climate](https://codeclimate.com/github/xprt64/cqrs-es/badges/gpa.svg)](https://codeclimate.com/github/xprt64/cqrs-es)
 [![Code Coverage](https://scrutinizer-ci.com/g/xprt64/cqrs-es/badges/coverage.png?b=master&rand=4)](https://scrutinizer-ci.com/g/xprt64/cqrs-es/?branch=master)
