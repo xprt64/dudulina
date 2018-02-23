@@ -7,6 +7,7 @@ namespace Dudulina\Scheduling;
 
 
 use Dudulina\Command\CommandDispatcher;
+use Psr\Log\LoggerInterface;
 
 class ScheduledCommandsDispatcher
 {
@@ -18,6 +19,10 @@ class ScheduledCommandsDispatcher
      * @var CommandDispatcher
      */
     private $dispatcher;
+    /**
+     * @var LoggerInterface|null
+     */
+    private $logger;
 
     public function __construct(
         ScheduledCommandStore $store,
@@ -28,10 +33,39 @@ class ScheduledCommandsDispatcher
         $this->dispatcher = $dispatcher;
     }
 
+    public function setLogger(?LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     public function run()
     {
         $this->store->loadAndProcessScheduledCommands(function (ScheduledCommand $scheduledCommand) {
-            $this->dispatcher->dispatchCommand($scheduledCommand);
+            try {
+                $this->dispatcher->dispatchCommand($scheduledCommand);
+            } catch (\Throwable $exception) {
+                $this->logCommandException($scheduledCommand, $exception);
+            }
         });
+    }
+
+    private function logCommandException(ScheduledCommand $scheduledCommand, \Throwable $exception)
+    {
+        if (!$this->logger) {
+            return;
+        }
+        $this->logger->error(
+            'Scheduled command exception',
+            [
+                'exception' => [
+                    'class' => \get_class($exception),
+                    'trace' => $exception->getTrace(),
+                ],
+                'dueDate'   => $scheduledCommand->getFireDate()->format('c'),
+                'commands'  => [
+                    'class' => \get_class($scheduledCommand),
+                    'dump'  => \serialize($scheduledCommand),
+                ],
+            ]);
     }
 }

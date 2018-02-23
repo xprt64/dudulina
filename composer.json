@@ -9,16 +9,6 @@
       "email": "gica.galbenu@gmail.com"
     }
   ],
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/xprt64/types.git"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/xprt64/lib.git"
-    }
-  ],
   "require": {
     "php": "^7.0",
     "xprt64/types": "^1.0",
