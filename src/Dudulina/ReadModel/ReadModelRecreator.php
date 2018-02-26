@@ -28,7 +28,7 @@ class ReadModelRecreator
      */
     private $logger;
     /**
-     * @var \Dudulina\ProgressReporting\TaskProgressReporter|null
+     * @var TaskProgressReporter|null
      */
     private $taskProgressReporter;
 
@@ -53,16 +53,16 @@ class ReadModelRecreator
             new AnyPhpClassIsAccepted()
         );
 
-        $allMethods = $discoverer->findListenerMethodsInClass(get_class($readModel));
+        $allMethods = $discoverer->findListenerMethodsInClass(\get_class($readModel));
 
         $eventClasses = $this->getEventClassesFromMethods($allMethods);
 
         $this->logger->info(print_r($eventClasses, true));
-        $this->logger->info("loading events...");
+        $this->logger->info('loading events...');
 
         $allEvents = $this->eventStore->loadEventsByClassNames($eventClasses);
 
-        $this->logger->info("applying events...");
+        $this->logger->info('applying events...');
 
         $taskProgress = null;
 
@@ -76,10 +76,10 @@ class ReadModelRecreator
 
             foreach ($eventsCommit->getEventsWithMetadata() as $eventWithMetadata) {
                 /** @var EventWithMetaData $eventWithMetadata */
-                $methods = $this->findMethodsByEventClass(get_class($eventWithMetadata->getEvent()), $allMethods);
+                $methods = $this->findMethodsByEventClass(\get_class($eventWithMetadata->getEvent()), $allMethods);
 
                 foreach ($methods as $method) {
-                    call_user_func([$readModel, $method->getMethodName()], $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
+                    $readModel->{$method->getMethodName()}($eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
                 }
             }
 
@@ -114,7 +114,7 @@ class ReadModelRecreator
         $result = [];
 
         foreach ($allMethods as $listenerMethod) {
-            if ($listenerMethod->getEventClassName() == $eventClass) {
+            if ($listenerMethod->getEventClassName() === $eventClass) {
                 $result[] = $listenerMethod;
             }
         }

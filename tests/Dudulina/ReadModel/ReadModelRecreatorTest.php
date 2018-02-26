@@ -10,6 +10,7 @@ use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
 use Dudulina\EventStore\EventsCommit;
 use Dudulina\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
+use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
 use Dudulina\ProgressReporting\TaskProgressReporter;
 use Dudulina\ReadModel\ReadModelInterface;
 use Dudulina\ReadModel\ReadModelRecreator;
@@ -36,7 +37,7 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
             new EventWithMetaData(new Event2, $metadata),
         ];
 
-        $eventStream = new FilteredRawEventStreamGroupedByCommit([new EventsCommit(1, 1, $events)]);
+        $eventStream = new FilteredRawEventStreamGroupedByCommit([new InMemoryEventsCommit(1, 1, $events)]);
 
         /** @var \Dudulina\ProgressReporting\TaskProgressReporter $taskProgressReporter */
         $taskProgressReporter = $this->getMockBuilder(TaskProgressReporter::class)

@@ -1,13 +1,15 @@
 <?php
+/**
+ * Copyright (c) 2018 Constantin Galbenu <xprt64@gmail.com>
+ */
 
-
-namespace tests\Dudulina\EventStore;
+namespace tests\Dudulina\EventStore\InMemory;
 
 
 use Dudulina\Event;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
-use Dudulina\EventStore\EventsCommit;
+use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
 
 
 class EventsCommitTest extends \PHPUnit_Framework_TestCase
@@ -15,7 +17,7 @@ class EventsCommitTest extends \PHPUnit_Framework_TestCase
 
     public function test()
     {
-        $sut = new EventsCommit(
+        $sut = new InMemoryEventsCommit(
             1,
             2,
             [
@@ -29,7 +31,7 @@ class EventsCommitTest extends \PHPUnit_Framework_TestCase
 
         $sut2 = $sut->filterEventsByClass([MyEvent::class]);
 
-        $this->assertInstanceOf(EventsCommit::class, $sut2);
+        $this->assertInstanceOf(InMemoryEventsCommit::class, $sut2);
 
         $this->assertCount(1, $sut2->getEventsWithMetadata());
         $this->assertInstanceOf(MyEvent::class, $sut2->getEventsWithMetadata()[0]->getEvent());

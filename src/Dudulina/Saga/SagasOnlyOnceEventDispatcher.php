@@ -60,9 +60,9 @@ class SagasOnlyOnceEventDispatcher implements EventDispatcher
                         $this->logger->error($exception->getMessage(), [
                             'saga'  => get_class($saga),
                             'event' => [
-                                'class'    => get_class($eventWithMetadata->getEvent()),
-                                'sequence' => $metaData->getSequence(),
-                                'index'    => $metaData->getIndex(),
+                                'class' => get_class($eventWithMetadata->getEvent()),
+                                'id'    => (string)$metaData->getEventId(),
+                                'index' => $metaData->getIndex(),
                             ],
                             'file'  => $exception->getFile(),
                             'line'  => $exception->getLine(),

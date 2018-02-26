@@ -16,7 +16,7 @@ use Gica\Iterator\IteratorTransformer\IteratorExpander;
 
 class InMemoryEventStore implements EventStore
 {
-    /** @var EventsCommit[] */
+    /** @var InMemoryEventsCommit[] */
     public $commitsByAggregate = [];
     private $versions = [];
     private $latestSequence = 0;
@@ -68,7 +68,7 @@ class InMemoryEventStore implements EventStore
 
     private function addEventsToArrayForAggregate(AggregateDescriptor $aggregateDescriptor, $newEvents, AggregateEventStream $expectedEventStream)
     {
-        $this->commitsByAggregate[$this->constructKey($aggregateDescriptor)][] = new EventsCommit(
+        $this->commitsByAggregate[$this->constructKey($aggregateDescriptor)][] = new InMemoryEventsCommit(
             $expectedEventStream->getSequence(), $expectedEventStream->getVersion(), $newEvents
         );
     }

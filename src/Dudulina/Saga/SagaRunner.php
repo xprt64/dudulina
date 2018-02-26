@@ -102,7 +102,7 @@ class SagaRunner
 
     /**
      * @param ListenerMethod[] $methods
-     * @return array
+     * @return string[]
      */
     private function getEventClassesFromMethods($methods)
     {

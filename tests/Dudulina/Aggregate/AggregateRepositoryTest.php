@@ -54,7 +54,7 @@ class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $newDecoratedEvents = $aggregateRepository->saveAggregate(self::AGGREGATE_ID, $aggregate, $this->getNewEvents());
 
-        $this->assertEquals(self::EVENTS_SEQUENCE, $newDecoratedEvents[0]->getMetaData()->getSequence());
+        $this->assertEquals(self::AGGREGATE_VERSION + 1, $newDecoratedEvents[0]->getMetaData()->getVersion());
         $this->assertEquals(0, $newDecoratedEvents[0]->getMetaData()->getIndex());
         $this->assertEquals(1, $newDecoratedEvents[1]->getMetaData()->getIndex());
     }

@@ -11,6 +11,7 @@ use Dudulina\Event\MetaData;
 use Dudulina\EventProcessing\ConcurentEventProcessingException;
 use Dudulina\EventStore;
 use Dudulina\EventStore\EventStreamGroupedByCommit;
+use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
 use Dudulina\ProgressReporting\TaskProgressReporter;
 use Dudulina\Saga\SagaEventTrackerRepository;
 use Dudulina\Saga\SagaRunner;
@@ -51,8 +52,8 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
         $eventStream->method('fetchCommits')
             ->willReturn([
-                new EventStore\EventsCommit(0,0, [new EventWithMetaData(new Event1(), $this->factoryMetadata($eventId1))]),
-                new EventStore\EventsCommit(1,1, [new EventWithMetaData(new Event2(), $this->factoryMetadata($eventId2))]),
+                new InMemoryEventsCommit(0, 0, [new EventWithMetaData(new Event1(), $this->factoryMetadata($eventId1))]),
+                new InMemoryEventsCommit(1, 1, [new EventWithMetaData(new Event2(), $this->factoryMetadata($eventId2))]),
             ]);
 
         $saga = new MySaga();
@@ -111,8 +112,8 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
         $eventStream->method('fetchCommits')
             ->willReturn(new \ArrayIterator([
-                new EventStore\EventsCommit(0,0, [new EventWithMetaData(new Event1(), $this->factoryMetadata($eventId1))]),
-                new EventStore\EventsCommit(1,1, [new EventWithMetaData(new Event2(), $this->factoryMetadata($eventId2))]),
+                new InMemoryEventsCommit(0, 0, [new EventWithMetaData(new Event1(), $this->factoryMetadata($eventId1))]),
+                new InMemoryEventsCommit(1, 1, [new EventWithMetaData(new Event2(), $this->factoryMetadata($eventId2))]),
             ]));
 
         $eventStore->expects($this->once())
@@ -171,7 +172,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 
         $eventStream->method('fetchCommits')
             ->willReturn([
-                new EventStore\EventsCommit(0,0, [new EventWithMetaData(new Event1(), $this->factoryMetadata("1"))]),
+                new InMemoryEventsCommit(0, 0, [new EventWithMetaData(new Event1(), $this->factoryMetadata("1"))]),
             ]);
 
         $eventStore->expects($this->once())

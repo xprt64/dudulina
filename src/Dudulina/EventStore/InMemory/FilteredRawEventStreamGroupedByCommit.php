@@ -54,14 +54,14 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
     }
 
     /**
-     * @inheritdoc
+     * @return InMemoryEventsCommit[]
      */
     public function fetchCommits()
     {
         $commits = $this->fetchCommitsWithoutLimit();
 
         if ($this->limit > 0) {
-            $commits = array_slice($commits, 0, $this->limit);
+            $commits = \array_slice($commits, 0, $this->limit);
         }
 
         return $this->sortCommits($commits);
@@ -79,7 +79,7 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
 
     public function countCommits(): int
     {
-        return count($this->fetchCommitsWithoutLimit());
+        return \count($this->fetchCommitsWithoutLimit());
     }
 
     public function beforeSequence(int $sequenceNumber)
@@ -93,7 +93,7 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
      */
     private function sortCommits(array $eventCommits)
     {
-        usort($eventCommits, function (EventsCommit $first, EventsCommit $second) {
+        usort($eventCommits, function (InMemoryEventsCommit $first, InMemoryEventsCommit $second) {
             return $first->getSequence() <=> $second->getSequence();
         });
 
@@ -107,19 +107,19 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
     private function filterCommits($eventCommits): array
     {
         if ($this->afterSequenceNumber > 0) {
-            $eventCommits = array_filter($eventCommits, function (EventsCommit $commit) {
+            $eventCommits = array_filter($eventCommits, function (InMemoryEventsCommit $commit) {
                 return $commit->getSequence() > $this->afterSequenceNumber;
             });
         }
 
         if ($this->beforeSequenceNumber > 0) {
-            $eventCommits = array_filter($eventCommits, function (EventsCommit $commit) {
+            $eventCommits = array_filter($eventCommits, function (InMemoryEventsCommit $commit) {
                 return $commit->getSequence() < $this->beforeSequenceNumber;
             });
         }
 
         if (!empty($this->eventClasses)) {
-            $eventCommits = array_filter($eventCommits, function (EventsCommit $commit) {
+            $eventCommits = array_filter($eventCommits, function (InMemoryEventsCommit $commit) {
                 $commit = $commit->filterEventsByClass($this->eventClasses);
                 return !empty($commit->getEventsWithMetadata());
             });
@@ -129,7 +129,7 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
     }
 
     /**
-     * @return EventsCommit[]
+     * @return InMemoryEventsCommit[]
      */
     private function fetchCommitsWithoutLimit()
     {

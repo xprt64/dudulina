@@ -33,10 +33,17 @@ class EventWithMetaData
         return $this->metaData;
     }
 
-    public function withSequenceAndIndex(int $sequence, int $index): self
+    public function withIndex(int $index): self
     {
         $other = clone $this;
-        $other->metaData = $other->metaData->withSequenceAndIndex($sequence, $index);
+        $other->metaData = $other->metaData->withIndex($index);
+        return $other;
+    }
+
+    public function withVersion(int $version): self
+    {
+        $other = clone $this;
+        $other->metaData = $other->metaData->withVersion($version);
         return $other;
     }
 }

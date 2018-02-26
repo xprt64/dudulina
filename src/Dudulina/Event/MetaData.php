@@ -29,6 +29,9 @@ class MetaData
     private $sequence = null;
 
     /** @var int */
+    private $version = null;
+
+    /** @var int */
     private $index = null;
     /**
      * @var string|null
@@ -81,10 +84,9 @@ class MetaData
             ($dateCreated->setTimezone(new \DateTimeZone('Europe/Bucharest')) ?: $dateCreated);
     }
 
-    public function withSequenceAndIndex(int $sequence, int $index): self
+    public function withIndex(int $index): self
     {
         $other = clone $this;
-        $other->sequence = $sequence;
         $other->index = $index;
         return $other;
     }
@@ -96,9 +98,16 @@ class MetaData
         return $other;
     }
 
-    public function getSequence(): ?int
+    public function withVersion(int $version): self
     {
-        return $this->sequence;
+        $other = clone $this;
+        $other->version = $version;
+        return $other;
+    }
+
+    public function getVersion(): ?int
+    {
+        return $this->version;
     }
 
     public function getIndex(): ?int

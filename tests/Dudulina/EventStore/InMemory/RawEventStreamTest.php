@@ -1,7 +1,7 @@
 <?php
 
 
-namespace tests\Dudulina\EventStore\InMemory;
+namespace tests\Dudulina\EventStore\InMemory\RawEventStreamTest;
 
 
 use Dudulina\Event;
@@ -9,6 +9,7 @@ use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventStore\EventsCommit;
 use Dudulina\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
+use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
 
 
 class RawEventStreamTest extends \PHPUnit_Framework_TestCase
@@ -17,16 +18,16 @@ class RawEventStreamTest extends \PHPUnit_Framework_TestCase
     public function test()
     {
         $eventCommits = [
-            new EventsCommit(
+            new InMemoryEventsCommit(
                 100,
                 1,
                 [1, 2]
             ),
-            new EventsCommit(
+            new InMemoryEventsCommit(
                 200,
                 2,
                 [3, 4])
-            , new EventsCommit(
+            , new InMemoryEventsCommit(
                 300,
                 3,
                 [5, 6]),
@@ -76,12 +77,12 @@ class RawEventStreamTest extends \PHPUnit_Framework_TestCase
         $event4->prop = '4';
 
         $eventCommits = [
-            new EventsCommit(
+            new InMemoryEventsCommit(
                 100,
                 1,
                 [$this->wrapEventInMetadata($event1), $this->wrapEventInMetadata($event2)]
             ),
-            new EventsCommit(
+            new InMemoryEventsCommit(
                 200,
                 2,
                 [$this->wrapEventInMetadata($event3), $this->wrapEventInMetadata($event4)]
