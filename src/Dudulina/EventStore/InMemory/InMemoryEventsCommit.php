@@ -6,11 +6,10 @@
 namespace Dudulina\EventStore\InMemory;
 
 
-use Dudulina\EventStore\EventsCommit;
-use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
 use Dudulina\Event\EventWithMetaData;
+use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
 
-class InMemoryEventsCommit implements EventsCommit
+class InMemoryEventsCommit
 {
 
     /**

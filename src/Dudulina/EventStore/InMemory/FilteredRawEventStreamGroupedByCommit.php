@@ -4,26 +4,18 @@
 namespace Dudulina\EventStore\InMemory;
 
 
-use Dudulina\EventStore\EventsCommit;
-use Dudulina\EventStore\EventStreamGroupedByCommit;
+use Dudulina\EventStore\EventStream;
 use Gica\Iterator\IteratorTransformer\IteratorExpander;
 
-class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommit
+class FilteredRawEventStreamGroupedByCommit implements EventStream
 {
-
     /**
-     * @var EventsCommit[]
+     * @var InMemoryEventsCommit[]
      */
     private $eventCommits = [];
 
     /** @var int|null */
     private $limit;
-
-    /** @var  int|null */
-    private $afterSequenceNumber;
-
-    /** @var  int|null */
-    private $beforeSequenceNumber;
 
     /**
      * @var array
@@ -31,7 +23,7 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
     private $eventClasses;
 
     /**
-     * @param  EventsCommit[] $eventCommits
+     * @param  InMemoryEventsCommit[] $eventCommits
      * @param array $eventClasses
      */
     public function __construct($eventCommits, array $eventClasses = [])
@@ -44,7 +36,7 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
     {
         $commits = $this->fetchCommits();
 
-        $deGrouper = new IteratorExpander(function (EventsCommit $group) {
+        $deGrouper = new IteratorExpander(function (InMemoryEventsCommit $group) {
             yield from $group->getEventsWithMetadata();
         });
 
@@ -72,24 +64,14 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
         $this->limit = $limit;
     }
 
-    public function afterSequence(int $sequenceNumber)
-    {
-        $this->afterSequenceNumber = $sequenceNumber;
-    }
-
     public function countCommits(): int
     {
         return \count($this->fetchCommitsWithoutLimit());
     }
 
-    public function beforeSequence(int $sequenceNumber)
-    {
-        $this->beforeSequenceNumber = $sequenceNumber;
-    }
-
     /**
-     * @param EventsCommit[] $eventCommits
-     * @return EventsCommit[]
+     * @param InMemoryEventsCommit[] $eventCommits
+     * @return InMemoryEventsCommit[]
      */
     private function sortCommits(array $eventCommits)
     {
@@ -101,23 +83,11 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
     }
 
     /**
-     * @param EventsCommit[] $eventCommits
-     * @return EventsCommit[]
+     * @param InMemoryEventsCommit[] $eventCommits
+     * @return InMemoryEventsCommit[]
      */
     private function filterCommits($eventCommits): array
     {
-        if ($this->afterSequenceNumber > 0) {
-            $eventCommits = array_filter($eventCommits, function (InMemoryEventsCommit $commit) {
-                return $commit->getSequence() > $this->afterSequenceNumber;
-            });
-        }
-
-        if ($this->beforeSequenceNumber > 0) {
-            $eventCommits = array_filter($eventCommits, function (InMemoryEventsCommit $commit) {
-                return $commit->getSequence() < $this->beforeSequenceNumber;
-            });
-        }
-
         if (!empty($this->eventClasses)) {
             $eventCommits = array_filter($eventCommits, function (InMemoryEventsCommit $commit) {
                 $commit = $commit->filterEventsByClass($this->eventClasses);
@@ -136,5 +106,14 @@ class FilteredRawEventStreamGroupedByCommit implements EventStreamGroupedByCommi
         return $this->filterCommits($this->eventCommits);
     }
 
+    public function count()
+    {
+        $commits = $this->fetchCommits();
 
+        $deGrouper = new IteratorExpander(function (InMemoryEventsCommit $group) {
+            yield from $group->getEventsWithMetadata();
+        });
+
+        return count(iterator_to_array($deGrouper($commits), false));
+    }
 }

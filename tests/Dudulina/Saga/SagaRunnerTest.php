@@ -10,7 +10,8 @@ use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventProcessing\ConcurentEventProcessingException;
 use Dudulina\EventStore;
-use Dudulina\EventStore\EventStreamGroupedByCommit;
+use Dudulina\EventStore\EventStream;
+use Dudulina\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
 use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
 use Dudulina\ProgressReporting\TaskProgressReporter;
 use Dudulina\Saga\SagaEventTrackerRepository;
@@ -21,9 +22,16 @@ use Psr\Log\LoggerInterface;
 
 class SagaRunnerTest extends \PHPUnit_Framework_TestCase
 {
-    private function factoryMetadata(string $eventId)
+    private function factoryMetadata(string $eventId, int $version = null)
     {
-        return (new MetaData('', '', new \DateTimeImmutable('2017-01-01 00:00:00')))->withEventId($eventId);
+        $metaData = (new MetaData('', '', new \DateTimeImmutable('2017-01-01 00:00:00')))
+            ->withEventId($eventId);
+
+        if ($version) {
+            $metaData = $metaData->withVersion($version);
+        }
+
+        return $metaData;
     }
 
     public function test()
@@ -35,7 +43,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->getMock();
 
-        $eventStream = $this->getMockBuilder(EventStreamGroupedByCommit::class)->getMock();
+        $eventStream = $this->getMockBuilder(EventStream::class)->getMock();
 
         $eventId1 = Guid::generate();
         $eventId2 = Guid::generate();
@@ -49,12 +57,6 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
         $eventStore->expects($this->once())
             ->method('loadEventsByClassNames')
             ->willReturn($eventStream);
-
-        $eventStream->method('fetchCommits')
-            ->willReturn([
-                new InMemoryEventsCommit(0, 0, [new EventWithMetaData(new Event1(), $this->factoryMetadata($eventId1))]),
-                new InMemoryEventsCommit(1, 1, [new EventWithMetaData(new Event2(), $this->factoryMetadata($eventId2))]),
-            ]);
 
         $saga = new MySaga();
 
@@ -108,13 +110,16 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->getMock();
 
-        $eventStream = $this->getMockBuilder(EventStreamGroupedByCommit::class)->getMock();
+        $eventStream = $this->getMockBuilder(EventStream::class)->getMock();
 
-        $eventStream->method('fetchCommits')
+        $eventStream->method('getIterator')
             ->willReturn(new \ArrayIterator([
-                new InMemoryEventsCommit(0, 0, [new EventWithMetaData(new Event1(), $this->factoryMetadata($eventId1))]),
-                new InMemoryEventsCommit(1, 1, [new EventWithMetaData(new Event2(), $this->factoryMetadata($eventId2))]),
+                new EventWithMetaData(new Event1(), $this->factoryMetadata($eventId1, 0)),
+                new EventWithMetaData(new Event2(), $this->factoryMetadata($eventId2, 1)),
             ]));
+
+        $eventStream->method('count')
+            ->willReturn(2);
 
         $eventStore->expects($this->once())
             ->method('loadEventsByClassNames')
@@ -168,12 +173,15 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->getMock();
 
-        $eventStream = $this->getMockBuilder(EventStreamGroupedByCommit::class)->getMock();
+        $eventStream = $this->getMockBuilder(EventStream::class)->getMock();
 
-        $eventStream->method('fetchCommits')
-            ->willReturn([
-                new InMemoryEventsCommit(0, 0, [new EventWithMetaData(new Event1(), $this->factoryMetadata("1"))]),
-            ]);
+        $eventStream->method('getIterator')
+            ->willReturn(new \ArrayIterator([
+                new EventWithMetaData(new Event1(), $this->factoryMetadata(1, 0)),
+            ]));
+
+        $eventStream->method('count')
+            ->willReturn(1);
 
         $eventStore->expects($this->once())
             ->method('loadEventsByClassNames')
@@ -216,58 +224,6 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
         $sut->feedSagaWithEvents($saga);
 
         $this->assertSame(0, $saga->event1Called);
-    }
-
-    public function test_afterSequence()
-    {
-        $eventStore = $this->getMockBuilder(EventStore::class)
-            //->setMethods(['loadEventsByClassNames'])
-            ->getMock();
-
-        $logger = $this->getMockBuilder(LoggerInterface::class)
-            ->getMock();
-
-        $eventStream = $this->getMockBuilder(EventStreamGroupedByCommit::class)->getMock();
-
-        $eventStream
-            ->expects($this->once())
-            ->method('fetchCommits')
-            ->willReturn([
-            ]);
-
-        $eventStream
-            ->expects($this->once())
-            ->method('afterSequence')
-            ->with(4);
-
-        $eventStore->expects($this->once())
-            ->method('loadEventsByClassNames')
-            ->willReturn($eventStream);
-
-        $saga = new MySaga();
-
-        $repository = $this->getMockBuilder(SagaEventTrackerRepository::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $repository
-            ->expects($this->never())
-            ->method('isEventProcessingAlreadyStarted');
-
-        /** @var SagaEventTrackerRepository $repository */
-        /** @var LoggerInterface $logger */
-        /** @var EventStore $eventStore */
-
-        $sut = new SagaRunner(
-            $eventStore,
-            $logger,
-            $repository
-        );
-
-        $sut->feedSagaWithEvents($saga, 4);
-
-        $this->assertSame(0, $saga->event1Called);
-        $this->assertSame(0, $saga->event2Called);
     }
 }
 

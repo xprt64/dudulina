@@ -9,14 +9,12 @@ use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
 use Dudulina\EventStore\AggregateEventStream;
-use Dudulina\EventStore\EventsCommit;
-use Dudulina\EventStore\EventStreamGroupedByCommit;
+use Dudulina\EventStore\EventStream;
 use Dudulina\EventStore\Exception\ConcurrentModificationException;
 use Gica\Iterator\IteratorTransformer\IteratorExpander;
 
 class InMemoryEventStore implements EventStore
 {
-    /** @var InMemoryEventsCommit[] */
     public $commitsByAggregate = [];
     private $versions = [];
     private $latestSequence = 0;
@@ -30,7 +28,7 @@ class InMemoryEventStore implements EventStore
     /**
      * @inheritdoc
      */
-    public function appendEventsForAggregate(AggregateDescriptor $aggregateDescriptor, $eventsWithMetaData, AggregateEventStream $expectedEventStream):void
+    public function appendEventsForAggregate(AggregateDescriptor $aggregateDescriptor, $eventsWithMetaData, AggregateEventStream $expectedEventStream): void
     {
         if ($this->getAggregateVersion($aggregateDescriptor) != $expectedEventStream->getVersion()) {
             throw new ConcurrentModificationException();
@@ -68,12 +66,13 @@ class InMemoryEventStore implements EventStore
 
     private function addEventsToArrayForAggregate(AggregateDescriptor $aggregateDescriptor, $newEvents, AggregateEventStream $expectedEventStream)
     {
+        /** @var InMemoryAggregateEventStream $expectedEventStream */
         $this->commitsByAggregate[$this->constructKey($aggregateDescriptor)][] = new InMemoryEventsCommit(
             $expectedEventStream->getSequence(), $expectedEventStream->getVersion(), $newEvents
         );
     }
 
-    public function loadEventsByClassNames(array $eventClasses): EventStreamGroupedByCommit
+    public function loadEventsByClassNames(array $eventClasses): EventStream
     {
         $commits = iterator_to_array((new IteratorExpander(function ($aggregateCommits) {
             yield from $aggregateCommits;
@@ -84,7 +83,7 @@ class InMemoryEventStore implements EventStore
 
     private function extractEventsFromCommits(array $commits = [])
     {
-        $eventsExtracter = new IteratorExpander(function (EventsCommit $commit) {
+        $eventsExtracter = new IteratorExpander(function (InMemoryEventsCommit $commit) {
             yield from $commit->getEventsWithMetadata();
         });
 
@@ -95,7 +94,7 @@ class InMemoryEventStore implements EventStore
     {
         $key = $this->constructKey($aggregateDescriptor);
 
-        return isset($this->versions[$key]) ? $this->versions[$key] : 0;
+        return $this->versions[$key] ?? 0;
     }
 
     /**
@@ -113,8 +112,8 @@ class InMemoryEventStore implements EventStore
             return new EventWithMetaData($event, new MetaData(
                 $aggregateDescriptor->getAggregateId(),
                 $aggregateDescriptor->getAggregateClass(),
-                    new \DateTimeImmutable(),
-                    null
+                new \DateTimeImmutable(),
+                null
             ));
         }, $priorEvents);
     }
@@ -131,21 +130,15 @@ class InMemoryEventStore implements EventStore
 
     public function findEventById(string $eventId): ?EventWithMetaData
     {
-        foreach($this->commitsByAggregate as $commits)
-        {
-            foreach($commits as $commit)
-            {
-                /** @var \Dudulina\EventStore\EventsCommit $commit */
-
-                foreach($commit->getEventsWithMetadata() as $eventWithMetadata)
-                {
-                    if($eventWithMetadata->getMetaData()->getEventId() === $eventId)
-                    {
+        foreach ($this->commitsByAggregate as $commits) {
+            /** @var InMemoryEventsCommit[] $commits */
+            foreach ($commits as $commit) {
+                foreach ($commit->getEventsWithMetadata() as $eventWithMetadata) {
+                    if ($eventWithMetadata->getMetaData()->getEventId() === $eventId) {
                         return $eventWithMetadata;
                     }
                 }
             }
-
         }
 
         return null;

@@ -7,7 +7,6 @@ namespace tests\Dudulina\EventStore\InMemory\RawEventStreamTest;
 use Dudulina\Event;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
-use Dudulina\EventStore\EventsCommit;
 use Dudulina\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
 use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
 
@@ -39,29 +38,9 @@ class RawEventStreamTest extends \PHPUnit_Framework_TestCase
 
 
         $sut = new FilteredRawEventStreamGroupedByCommit($eventCommits);
-        $sut->afterSequence(100);
-        $this->assertEquals([3, 4, 5, 6], iterator_to_array($sut->getIterator()));
-
-        $sut = new FilteredRawEventStreamGroupedByCommit($eventCommits);
         $sut->limitCommits(2);
         $this->assertEquals([1, 2, 3, 4], iterator_to_array($sut->getIterator()));
-
-        $sut = new FilteredRawEventStreamGroupedByCommit($eventCommits);
-        $sut->afterSequence(100);
-        $sut->limitCommits(1);
-        $this->assertEquals([3, 4], iterator_to_array($sut->getIterator()));
-        $this->assertEquals(2, $sut->countCommits());
-
-        $sut = new FilteredRawEventStreamGroupedByCommit($eventCommits);
-        $sut->beforeSequence(300);
-        $this->assertEquals([1, 2, 3, 4], iterator_to_array($sut->getIterator()));
-        $this->assertEquals(2, $sut->countCommits());
-
-        $sut = new FilteredRawEventStreamGroupedByCommit($eventCommits);
-        $sut->afterSequence(100);
-        $sut->beforeSequence(300);
-        $this->assertEquals([3, 4], iterator_to_array($sut->getIterator()));
-        $this->assertEquals(1, $sut->countCommits());
+        $this->assertEquals(4, $sut->count());
     }
 
     public function testWithEventClasses()

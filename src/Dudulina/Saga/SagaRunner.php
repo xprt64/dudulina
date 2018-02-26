@@ -57,7 +57,7 @@ class SagaRunner
         $this->taskProgressReporter = $taskProgressReporter;
     }
 
-    public function feedSagaWithEvents($saga, ?int $afterSequence = null)
+    public function feedSagaWithEvents($saga)
     {
         $discoverer = new MethodListenerDiscovery(
             new WriteSideEventHandlerDetector(),
@@ -73,26 +73,16 @@ class SagaRunner
 
         $allEvents = $this->eventStore->loadEventsByClassNames($eventClasses);
 
-        if (null !== $afterSequence) {
-            $allEvents->afterSequence($afterSequence);
-        }
-
         $this->logger->info("processing events...");
 
         $taskProgress = null;
 
         if ($this->taskProgressReporter) {
-            $taskProgress = new TaskProgressCalculator($allEvents->countCommits());
+            $taskProgress = new TaskProgressCalculator($allEvents->count());
         }
 
-        foreach ($allEvents->fetchCommits() as $eventsCommit) {
-
-            $eventsCommit = $eventsCommit->filterEventsByClass($eventClasses);
-
-            foreach ($eventsCommit->getEventsWithMetadata() as $eventWithMetadata) {
-                $this->processEvent($saga, $eventWithMetadata, $allMethods);
-            }
-
+        foreach ($allEvents as $eventWithMetadata) {
+            $this->processEvent($saga, $eventWithMetadata, $allMethods);
             if ($this->taskProgressReporter) {
                 $taskProgress->increment();
                 $this->taskProgressReporter->reportProgressUpdate($taskProgress->getStep(), $taskProgress->getTotalSteps(), $taskProgress->calculateSpeed(), $taskProgress->calculateEta());

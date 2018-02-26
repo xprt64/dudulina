@@ -8,7 +8,6 @@ use Dudulina\Event;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
-use Dudulina\EventStore\EventsCommit;
 use Dudulina\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
 use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
 use Dudulina\ProgressReporting\TaskProgressReporter;

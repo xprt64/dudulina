@@ -14,6 +14,7 @@ use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
 use Dudulina\EventStore\AggregateEventStream;
+use Dudulina\EventStore\InMemory\InMemoryAggregateEventStream;
 
 
 class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
@@ -101,7 +102,8 @@ class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
     private function mockEventStream(): AggregateEventStream
     {
         if (!$this->aggregateEventStream) {
-            $this->aggregateEventStream = $this->getMockBuilder(AggregateEventStream::class)
+            $this->aggregateEventStream = $this->getMockBuilder(InMemoryAggregateEventStream::class)
+                ->disableOriginalConstructor()
                 ->getMock();
 
             $this->aggregateEventStream

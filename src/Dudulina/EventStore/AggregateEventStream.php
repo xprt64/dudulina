@@ -9,6 +9,4 @@ namespace Dudulina\EventStore;
 interface AggregateEventStream extends EventStream
 {
     public function getVersion(): int;
-
-    public function getSequence(): int;
 }

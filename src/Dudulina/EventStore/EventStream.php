@@ -6,7 +6,12 @@
 namespace Dudulina\EventStore;
 
 
-interface EventStream extends \IteratorAggregate
-{
+use Dudulina\Event\EventWithMetaData;
 
+interface EventStream extends \IteratorAggregate, \Countable
+{
+    /**
+     * @return \Iterator|EventWithMetaData[]
+     */
+    public function getIterator();
 }
