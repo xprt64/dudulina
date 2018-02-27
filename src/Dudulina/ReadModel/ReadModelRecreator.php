@@ -67,22 +67,16 @@ class ReadModelRecreator
         $taskProgress = null;
 
         if ($this->taskProgressReporter) {
-            $taskProgress = new TaskProgressCalculator($allEvents->countCommits());
+            $taskProgress = new TaskProgressCalculator(count($allEvents));
         }
 
-        foreach ($allEvents->fetchCommits() as $eventsCommit) {
+        foreach ($allEvents as $eventWithMetadata) {
+            /** @var EventWithMetaData $eventWithMetadata */
+            $methods = $this->findMethodsByEventClass(\get_class($eventWithMetadata->getEvent()), $allMethods);
 
-            $eventsCommit = $eventsCommit->filterEventsByClass($eventClasses);
-
-            foreach ($eventsCommit->getEventsWithMetadata() as $eventWithMetadata) {
-                /** @var EventWithMetaData $eventWithMetadata */
-                $methods = $this->findMethodsByEventClass(\get_class($eventWithMetadata->getEvent()), $allMethods);
-
-                foreach ($methods as $method) {
-                    $readModel->{$method->getMethodName()}($eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
-                }
+            foreach ($methods as $method) {
+                $readModel->{$method->getMethodName()}($eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
             }
-
             if ($this->taskProgressReporter) {
                 $taskProgress->increment();
                 $this->taskProgressReporter->reportProgressUpdate($taskProgress->getStep(), $taskProgress->getTotalSteps(), $taskProgress->calculateSpeed(), $taskProgress->calculateEta());

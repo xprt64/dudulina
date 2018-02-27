@@ -73,6 +73,7 @@ class RawEventStreamTest extends \PHPUnit_Framework_TestCase
         $commits = $sut->fetchCommits();
 
         $this->assertCount(1, $commits);
+        $this->assertEquals(1, $sut->countCommits());
 
         $this->assertEquals(100, $commits[0]->getSequence());
     }
