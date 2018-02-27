@@ -9,19 +9,15 @@ namespace tests\Dudulina\Command\CommandDispatcher\CommandDispatcherCommandNotAc
 use Dudulina\Aggregate\AggregateRepository;
 use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
-use Dudulina\Command\CommandDispatcher;
-use Dudulina\Command\CommandDispatcher\AuthenticatedIdentityReaderService;
 use Dudulina\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
 use Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher;
 use Dudulina\Command\CommandDispatcher\SideEffectsDispatcher;
 use Dudulina\Command\CommandSubscriber;
-use Dudulina\Command\CommandValidator;
 use Dudulina\Command\MetadataFactory\DefaultMetadataWrapper;
 use Dudulina\Event\EventDispatcher\EventDispatcherBySubscriber;
 use Dudulina\Event\EventsApplier\EventsApplierOnAggregate;
 use Dudulina\Event\MetadataFactory\DefaultMetadataFactory;
 use Dudulina\EventStore\InMemory\InMemoryEventStore;
-use Dudulina\FutureEventsStore;
 
 class CommandDispatcherCommandNotAcceptedTest extends \PHPUnit_Framework_TestCase
 {
@@ -59,19 +55,6 @@ class CommandDispatcherCommandNotAcceptedTest extends \PHPUnit_Framework_TestCas
         $aggregateRepository = new AggregateRepository($eventStore, $eventsApplierOnAggregate);
 
         $concurrentProofFunctionCaller = new ConcurrentProofFunctionCaller;
-
-        /** @var \Dudulina\Command\CommandDispatcher\AuthenticatedIdentityReaderService $authenticatedIdentity */
-        $authenticatedIdentity = $this->getMockBuilder(AuthenticatedIdentityReaderService::class)
-            ->getMock();
-
-        /** @var FutureEventsStore $futureEventsStore */
-        $futureEventsStore = $this->getMockBuilder(FutureEventsStore::class)
-            ->getMock();
-
-        /** @var CommandValidator $commandValidator */
-        $commandValidator = $this->getMockBuilder(CommandValidator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
 
         Aggregate1::$expectedCommand = $this->command;
 
