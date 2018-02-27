@@ -12,6 +12,7 @@ use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
 use Dudulina\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
 use Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher;
+use Dudulina\Command\CommandDispatcher\SideEffectsDispatcher;
 use Dudulina\Command\CommandMetadata;
 use Dudulina\Command\CommandSubscriber;
 use Dudulina\Command\MetadataFactory\DefaultMetadataWrapper;
@@ -53,15 +54,13 @@ class CommandDispatcherScheduledCommandsTest extends \PHPUnit_Framework_TestCase
 
         $commandDispatcher = new DefaultCommandDispatcher(
             $commandSubscriber,
-            $eventDispatcher,
             $commandApplier,
             $aggregateRepository,
             $concurrentProofFunctionCaller,
             $eventsApplierOnAggregate,
             new DefaultMetadataFactory(),
             new DefaultMetadataWrapper(),
-            null,
-            $scheduledCommandStore
+            new SideEffectsDispatcher($eventDispatcher, $scheduledCommandStore)
         );
 
         $commandDispatcher->dispatchCommand($command);

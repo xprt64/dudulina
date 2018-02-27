@@ -13,6 +13,7 @@ use Dudulina\Command\CommandDispatcher;
 use Dudulina\Command\CommandDispatcher\AuthenticatedIdentityReaderService;
 use Dudulina\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
 use Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher;
+use Dudulina\Command\CommandDispatcher\SideEffectsDispatcher;
 use Dudulina\Command\CommandSubscriber;
 use Dudulina\Command\CommandValidator;
 use Dudulina\Command\MetadataFactory\DefaultMetadataWrapper;
@@ -79,13 +80,13 @@ class CommandDispatcherCommandNotAcceptedTest extends \PHPUnit_Framework_TestCas
 
         $commandDispatcher =  new DefaultCommandDispatcher(
             $commandSubscriber,
-            $eventDispatcher,
             $commandApplier,
             $aggregateRepository,
             $concurrentProofFunctionCaller,
             $eventsApplierOnAggregate,
             new DefaultMetadataFactory(),
-            new DefaultMetadataWrapper()
+            new DefaultMetadataWrapper(),
+            new SideEffectsDispatcher($eventDispatcher)
         );
 
         $commandDispatcher->dispatchCommand($this->command);

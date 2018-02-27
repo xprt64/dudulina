@@ -62,7 +62,6 @@ class SagasOnlyOnceEventDispatcher implements EventDispatcher
                             'event' => [
                                 'class' => get_class($eventWithMetadata->getEvent()),
                                 'id'    => (string)$metaData->getEventId(),
-                                'index' => $metaData->getIndex(),
                             ],
                             'file'  => $exception->getFile(),
                             'line'  => $exception->getLine(),

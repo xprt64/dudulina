@@ -26,17 +26,11 @@ class CommandHandlerDescriptor
         $this->methodName = $methodName;
     }
 
-    /**
-     * @return string
-     */
     public function getHandlerClass(): string
     {
         return $this->handlerClass;
     }
 
-    /**
-     * @return string
-     */
     public function getMethodName(): string
     {
         return $this->methodName;

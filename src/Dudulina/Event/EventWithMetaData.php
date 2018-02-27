@@ -33,13 +33,6 @@ class EventWithMetaData
         return $this->metaData;
     }
 
-    public function withIndex(int $index): self
-    {
-        $other = clone $this;
-        $other->metaData = $other->metaData->withIndex($index);
-        return $other;
-    }
-
     public function withVersion(int $version): self
     {
         $other = clone $this;

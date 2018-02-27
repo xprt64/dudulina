@@ -10,34 +10,25 @@ use Dudulina\Aggregate\AggregateRepository;
 use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
 use Dudulina\Command\CommandDispatcher;
+use Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher\SideEffects;
 use Dudulina\Command\CommandMetadata;
 use Dudulina\Command\CommandSubscriber;
 use Dudulina\Command\CommandWithMetadata;
 use Dudulina\Command\MetadataWrapper as CommandMetadataFactory;
 use Dudulina\Command\ValueObject\CommandHandlerAndAggregate;
-use Dudulina\Event\EventDispatcher;
 use Dudulina\Event\EventsApplier\EventsApplierOnAggregate;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\Event\MetadataFactory as EventMetadataFactory;
-use Dudulina\Event\ScheduledEvent;
-use Dudulina\FutureEventsStore;
-use Dudulina\Scheduling\CommandScheduler;
 use Dudulina\Scheduling\ScheduledCommand;
 use Gica\Types\Guid;
 
 class DefaultCommandDispatcher implements CommandDispatcher
 {
-    const MAXIMUM_SAVE_RETRIES = 50;
-
     /**
      * @var CommandSubscriber
      */
     private $commandSubscriber;
-    /**
-     * @var EventDispatcher
-     */
-    private $eventDispatcher;
     /**
      * @var CommandApplier
      */
@@ -51,17 +42,9 @@ class DefaultCommandDispatcher implements CommandDispatcher
      */
     private $concurrentProofFunctionCaller;
     /**
-     * @var FutureEventsStore|null
-     */
-    private $futureEventsStore;
-    /**
      * @var EventsApplierOnAggregate
      */
     private $eventsApplierOnAggregate;
-    /**
-     * @var CommandScheduler|null
-     */
-    private $commandScheduler;
     /**
      * @var EventMetadataFactory
      */
@@ -70,68 +53,58 @@ class DefaultCommandDispatcher implements CommandDispatcher
      * @var CommandMetadataFactory
      */
     private $commandMetadataFactory;
+    /**
+     * @var SideEffectsDispatcher
+     */
+    private $sideEffectsDispatcher;
 
     public function __construct(
         CommandSubscriber $commandSubscriber,
-        EventDispatcher $eventDispatcher,
         CommandApplier $commandApplier,
         AggregateRepository $aggregateRepository,
         ConcurrentProofFunctionCaller $functionCaller,
         EventsApplierOnAggregate $eventsApplier,
         EventMetadataFactory $eventMetadataFactory,
         CommandMetadataFactory $commandMetadataFactory,
-        ?FutureEventsStore $futureEventsStore = null,
-        ?CommandScheduler $commandScheduler = null
+        SideEffectsDispatcher $sideEffectsDispatcher
     )
     {
         $this->commandSubscriber = $commandSubscriber;
-        $this->eventDispatcher = $eventDispatcher;
         $this->commandApplier = $commandApplier;
         $this->aggregateRepository = $aggregateRepository;
         $this->concurrentProofFunctionCaller = $functionCaller;
-        $this->futureEventsStore = $futureEventsStore;
         $this->eventsApplierOnAggregate = $eventsApplier;
-        $this->commandScheduler = $commandScheduler;
         $this->eventMetadataFactory = $eventMetadataFactory;
         $this->commandMetadataFactory = $commandMetadataFactory;
+        $this->sideEffectsDispatcher = $sideEffectsDispatcher;
     }
 
     public function dispatchCommand(Command $command, CommandMetadata $metadata = null)
     {
-        $command = $this->commandMetadataFactory->wrapCommandWithMetadata($command, $metadata);
+        $sideEffects = $this->dispatchCommandAndSaveAggregate(
+            $this->commandMetadataFactory->wrapCommandWithMetadata($command, $metadata)
+        );
 
-        /** @var EventWithMetaData[] $eventsWithMetaData */
-        /** @var ScheduledCommand[] $scheduledCommands */
-
-        list($eventsWithMetaData, $futureEventsWithMeta, $scheduledCommands, $aggregateClass) = $this->concurrentProofFunctionCaller->executeFunction(function () use ($command) {
-            return $this->tryDispatchCommandAndSaveAggregate($command);
-        }, $this->getMaximumCommandRetryCount());
-
-        foreach ($eventsWithMetaData as $eventWithMetaData) {
-            $this->eventDispatcher->dispatchEvent($eventWithMetaData);
-        }
-
-        if ($this->futureEventsStore && !empty($futureEventsWithMeta)) {
-            $this->futureEventsStore->scheduleEvents($futureEventsWithMeta);
-        }
-
-        if ($this->commandScheduler && !empty($scheduledCommands)) {
-            foreach ($scheduledCommands as $scheduledCommand) {
-                $this->commandScheduler->scheduleCommand($scheduledCommand, new AggregateDescriptor($command->getAggregateId(), $aggregateClass), $metadata);
-            }
-        }
+        $this->sideEffectsDispatcher->dispatchSideEffects($sideEffects->withCommandMetadata($metadata));
     }
 
     private function tryDispatchCommandAndSaveAggregate(CommandWithMetadata $command)
     {
         $handlerAndAggregate = $this->loadCommandHandlerAndAggregate($command);
 
-        list($eventsForNow, $eventsForTheFuture, $scheduledCommands) = $this->applyCommandAndReturnMessages($command, $handlerAndAggregate);
+        $dispatchResult = $this->applyCommandAndReturnSideEffects($command, $handlerAndAggregate);
 
         $eventsForNow = $this->aggregateRepository->saveAggregate(
-            $command->getAggregateId(), $handlerAndAggregate->getAggregate(), $eventsForNow);
+            $command->getAggregateId(), $handlerAndAggregate->getAggregate(), $dispatchResult->getEventsForNow());
 
-        return [$eventsForNow, $eventsForTheFuture, $scheduledCommands, $handlerAndAggregate->getCommandHandler()->getHandlerClass()];
+        return $dispatchResult->withEventsForNow($eventsForNow);
+    }
+
+    private function dispatchCommandAndSaveAggregate(CommandWithMetadata $command): SideEffects
+    {
+        return $this->concurrentProofFunctionCaller->executeFunction(function () use ($command) {
+            return $this->tryDispatchCommandAndSaveAggregate($command);
+        });
     }
 
     private function loadCommandHandlerAndAggregate(CommandWithMetadata $command): CommandHandlerAndAggregate
@@ -150,12 +123,7 @@ class DefaultCommandDispatcher implements CommandDispatcher
         return new EventWithMetaData($event, $metaData->withEventId(Guid::generate()));
     }
 
-    /**
-     * @param CommandWithMetadata $command
-     * @param CommandHandlerAndAggregate $handlerAndAggregate
-     * @return array
-     */
-    private function applyCommandAndReturnMessages(CommandWithMetadata $command, CommandHandlerAndAggregate $handlerAndAggregate)
+    private function applyCommandAndReturnSideEffects(CommandWithMetadata $command, CommandHandlerAndAggregate $handlerAndAggregate)
     {
         $aggregate = $handlerAndAggregate->getAggregate();
         $handler = $handlerAndAggregate->getCommandHandler();
@@ -167,9 +135,6 @@ class DefaultCommandDispatcher implements CommandDispatcher
         /** @var EventWithMetaData[] $eventsWithMetaData */
         $eventsWithMetaData = [];
 
-        /** @var EventWithMetaData[] $scheduledEvents */
-        $scheduledEvents = [];
-
         /** @var ScheduledCommand[] $scheduledCommands */
         $scheduledCommands = [];
 
@@ -178,30 +143,20 @@ class DefaultCommandDispatcher implements CommandDispatcher
                 $scheduledCommands[] = $message;
             } else {
                 $eventWithMetaData = $this->decorateEventWithMetaData($message, $metaData);
-                if (!$this->isScheduledEvent($message)) {
-                    $this->eventsApplierOnAggregate->applyEventsOnAggregate($aggregate, [$eventWithMetaData]);
-                    $eventsWithMetaData[] = $eventWithMetaData;
-                } else {
-                    $scheduledEvents[] = $eventWithMetaData;
-                }
+                $this->eventsApplierOnAggregate->applyEventsOnAggregate($aggregate, [$eventWithMetaData]);
+                $eventsWithMetaData[] = $eventWithMetaData;
             }
         }
 
-        return [$eventsWithMetaData, $scheduledEvents, $scheduledCommands];
-    }
-
-    private function isScheduledEvent($event): bool
-    {
-        return $event instanceof ScheduledEvent;
+        return new SideEffects(
+            new AggregateDescriptor($command->getAggregateId(), $handler->getHandlerClass()),
+            $eventsWithMetaData,
+            $scheduledCommands
+        );
     }
 
     private function isScheduledCommand($message): bool
     {
         return $message instanceof ScheduledCommand;
-    }
-
-    protected function getMaximumCommandRetryCount(): int
-    {
-        return self::MAXIMUM_SAVE_RETRIES;
     }
 }

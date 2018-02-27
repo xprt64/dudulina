@@ -57,7 +57,7 @@ class ScheduledEventsPlayer
     {
         $this->concurrentProofFunctionCaller->executeFunction(function () use ($scheduledEvent) {
             $this->trySaveEventToStore($scheduledEvent);
-        }, 9999);
+        }, [], 9999);
     }
 
     private function trySaveEventToStore(ScheduledEventWithMetadata $scheduledEvent)

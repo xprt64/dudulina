@@ -25,7 +25,7 @@ class ConcurrentProofFunctionCallerTest extends \PHPUnit_Framework_TestCase
 
         $sut = new ConcurrentProofFunctionCaller();
 
-        $sut->executeFunction($pureFunction, 1, [100, 200]);
+        $sut->executeFunction($pureFunction, [100, 200], 1);
 
         $this->assertSame(1, $invocations);
         $this->assertSame(100, $argument1);
@@ -45,7 +45,7 @@ class ConcurrentProofFunctionCallerTest extends \PHPUnit_Framework_TestCase
 
         $sut = new ConcurrentProofFunctionCaller();
 
-        $sut->executeFunction($pureFunction, 999, [100, 200]);
+        $sut->executeFunction($pureFunction, [100, 200], 999);
 
         $this->assertSame(2, $invocations);
 
@@ -62,7 +62,7 @@ class ConcurrentProofFunctionCallerTest extends \PHPUnit_Framework_TestCase
         $sut = new ConcurrentProofFunctionCaller();
 
         try {
-            $sut->executeFunction($pureFunction, 10);
+            $sut->executeFunction($pureFunction, [],10);
             $this->fail("TooManyCommandExecutionRetries must be thrown");
         } catch (\Throwable $exception) {
             if (!$exception instanceof TooManyCommandExecutionRetries) {

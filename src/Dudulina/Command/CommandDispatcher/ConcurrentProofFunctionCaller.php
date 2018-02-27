@@ -11,7 +11,9 @@ use Dudulina\EventStore\Exception\ConcurrentModificationException;
 
 class ConcurrentProofFunctionCaller
 {
-    public function executeFunction($pureFunction, $maxRetries, array $arguments = [])
+    public const DEFAULT_MAXIMUM_RETRIES = 50;
+
+    public function executeFunction($pureFunction, array $arguments = [], int $maximumSaveRetries = self::DEFAULT_MAXIMUM_RETRIES)
     {
         $retries = -1;
         do {
@@ -20,12 +22,12 @@ class ConcurrentProofFunctionCaller
                 /**
                  * The real function call
                  */
-                return call_user_func_array($pureFunction, $arguments);
+                return \call_user_func_array($pureFunction, $arguments);
 
             } catch (ConcurrentModificationException $e) {
 
                 $retries++;
-                if ($retries >= $maxRetries) {
+                if ($retries >= $maximumSaveRetries) {
                     break;
                 }
 
@@ -34,6 +36,6 @@ class ConcurrentProofFunctionCaller
 
         } while (true);
 
-        throw new TooManyCommandExecutionRetries(sprintf("TooManyCommandExecutionRetries: %d (%s)", $retries, $e->getMessage()));
+        throw new TooManyCommandExecutionRetries(sprintf('TooManyCommandExecutionRetries: %d (%s)', $retries, $e->getMessage()));
     }
 }

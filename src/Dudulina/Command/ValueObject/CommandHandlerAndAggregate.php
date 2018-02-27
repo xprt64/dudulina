@@ -24,9 +24,6 @@ class CommandHandlerAndAggregate
         $this->aggregate = $aggregate;
     }
 
-    /**
-     * @return CommandHandlerDescriptor
-     */
     public function getCommandHandler(): CommandHandlerDescriptor
     {
         return $this->commandHandler;

@@ -26,13 +26,8 @@ class MetaData
     private $commandMetadata;
 
     /** @var int */
-    private $sequence = null;
-
-    /** @var int */
     private $version = null;
 
-    /** @var int */
-    private $index = null;
     /**
      * @var string|null
      */
@@ -84,13 +79,6 @@ class MetaData
             ($dateCreated->setTimezone(new \DateTimeZone('Europe/Bucharest')) ?: $dateCreated);
     }
 
-    public function withIndex(int $index): self
-    {
-        $other = clone $this;
-        $other->index = $index;
-        return $other;
-    }
-
     public function withEventId(string $eventId): self
     {
         $other = clone $this;
@@ -108,11 +96,6 @@ class MetaData
     public function getVersion(): ?int
     {
         return $this->version;
-    }
-
-    public function getIndex(): ?int
-    {
-        return $this->index;
     }
 
     public function getEventId(): ?string

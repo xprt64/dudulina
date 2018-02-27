@@ -66,16 +66,11 @@ class AggregateRepository
         $priorEvents = $this->aggregateToEventStreamMap[$aggregate];
 
         $this->eventStore->appendEventsForAggregate(
-            new AggregateDescriptor($aggregateId, get_class($aggregate)), $newEventsWithMeta, $priorEvents);
+            new AggregateDescriptor($aggregateId, \get_class($aggregate)), $newEventsWithMeta, $priorEvents
+        );
 
-        $decoratedEvents = [];
-
-        foreach ($newEventsWithMeta as $index => $eventWithMetaData) {
-            $decoratedEvents[] = $eventWithMetaData
-                ->withIndex($index)
-                ->withVersion($priorEvents->getVersion()+1);
-        }
-
-        return $decoratedEvents;
+        return array_map(function (EventWithMetaData $event) use ($priorEvents) {
+            return $event->withVersion($priorEvents->getVersion() + 1);
+        }, $newEventsWithMeta);
     }
 }

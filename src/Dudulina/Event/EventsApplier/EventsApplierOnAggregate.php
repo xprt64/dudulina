@@ -25,14 +25,14 @@ class EventsApplierOnAggregate
     {
         $methodName = self::getMethodName($eventWithMetaData->getEvent());
 
-        if (is_callable([$aggregate, $methodName])) {
-            call_user_func([$aggregate, $methodName], $eventWithMetaData->getEvent(), $eventWithMetaData->getMetaData());
+        if (\is_callable([$aggregate, $methodName])) {
+            $aggregate->$methodName($eventWithMetaData->getEvent(), $eventWithMetaData->getMetaData());
         }
     }
 
     public static function getMethodName($event)
     {
-        $parts = explode('\\', get_class($event));
+        $parts = explode('\\', \get_class($event));
 
         return 'apply' . end($parts);
     }
