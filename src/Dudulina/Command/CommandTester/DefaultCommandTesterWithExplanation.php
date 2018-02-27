@@ -17,7 +17,6 @@ use Dudulina\Event\EventsApplier\EventsApplierOnAggregate;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\Event\MetadataFactory as EventMetadataFactory;
-use Dudulina\Event\ScheduledEvent;
 use Dudulina\Scheduling\ScheduledCommand;
 use Gica\Types\Guid;
 
@@ -111,16 +110,9 @@ class DefaultCommandTesterWithExplanation implements Command\CommandTesterWithEx
         foreach ($newMessageGenerator as $message) {
             if (!$this->isScheduledCommand($message)) {
                 $eventWithMetaData = $this->decorateEventWithMetaData($message, $metaData);
-                if (!$this->isScheduledEvent($message)) {
-                    $this->eventsApplierOnAggregate->applyEventsOnAggregate($aggregate, [$eventWithMetaData]);
-                }
+                $this->eventsApplierOnAggregate->applyEventsOnAggregate($aggregate, [$eventWithMetaData]);
             }
         }
-    }
-
-    private function isScheduledEvent($event): bool
-    {
-        return $event instanceof ScheduledEvent;
     }
 
     private function isScheduledCommand($message): bool
