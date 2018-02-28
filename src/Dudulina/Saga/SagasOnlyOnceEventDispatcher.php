@@ -22,14 +22,14 @@ class SagasOnlyOnceEventDispatcher implements EventDispatcher
      */
     private $trackerRepository;
     /**
-     * @var LoggerInterface
+     * @var LoggerInterface|null
      */
     private $logger;
 
     public function __construct(
         SagaEventTrackerRepository $trackerRepository,
         EventSubscriber $eventSubscriber,
-        LoggerInterface $logger
+        ?LoggerInterface $logger
     )
     {
         $this->eventSubscriber = $eventSubscriber;
@@ -57,15 +57,17 @@ class SagasOnlyOnceEventDispatcher implements EventDispatcher
                     } catch (ConcurentEventProcessingException $exception) {
                         continue;
                     } catch (\Throwable $exception) {
-                        $this->logger->error($exception->getMessage(), [
-                            'saga'  => get_class($saga),
-                            'event' => [
-                                'class' => get_class($eventWithMetadata->getEvent()),
-                                'id'    => (string)$metaData->getEventId(),
-                            ],
-                            'file'  => $exception->getFile(),
-                            'line'  => $exception->getLine(),
-                        ]);
+                        if ($this->logger) {
+                            $this->logger->error($exception->getMessage(), [
+                                'saga'  => get_class($saga),
+                                'event' => [
+                                    'class' => get_class($eventWithMetadata->getEvent()),
+                                    'id'    => (string)$metaData->getEventId(),
+                                ],
+                                'file'  => $exception->getFile(),
+                                'line'  => $exception->getLine(),
+                            ]);
+                        }
                     }
                 }
             }
