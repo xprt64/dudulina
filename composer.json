@@ -3,6 +3,15 @@
   "description": "CQRS with Event Sourcing mini framework for PHP",
   "minimum-stability": "stable",
   "license": "proprietary",
+  "keywords": [
+    "CQRS",
+    "DDD",
+    "Domain driven design",
+    "Command query responsibility segregation",
+    "Event sourcing",
+    "Framework",
+    "Scalable"
+  ],
   "authors": [
     {
       "name": "Constantin GALBENU",
