@@ -71,11 +71,12 @@ class ReadModelRecreator
         }
 
         foreach ($allEvents as $eventWithMetadata) {
+
             /** @var EventWithMetaData $eventWithMetadata */
             $methods = $this->findMethodsByEventClass(\get_class($eventWithMetadata->getEvent()), $allMethods);
 
             foreach ($methods as $method) {
-                $readModel->{$method->getMethodName()}($eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
+                $this->executeMethod($readModel, $method, $eventWithMetadata);
             }
             if ($this->taskProgressReporter) {
                 $taskProgress->increment();
@@ -114,5 +115,22 @@ class ReadModelRecreator
         }
 
         return $result;
+    }
+
+    private function executeMethod(ReadModelInterface $readModel, ListenerMethod $method, EventWithMetaData $eventWithMetadata): void
+    {
+        try {
+            $readModel->{$method->getMethodName()}($eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
+        } catch (\Throwable $exception) {
+            $this->logger->error($exception->getMessage(), [
+                'model'          => \get_class($readModel),
+                'eventId'        => $eventWithMetadata->getMetaData()->getEventId(),
+                'aggregateId'    => $eventWithMetadata->getMetaData()->getAggregateId(),
+                'aggregateClass' => $eventWithMetadata->getMetaData()->getAggregateClass(),
+                'file'           => $exception->getFile(),
+                'line'           => $exception->getLine(),
+                'trace'          => $exception->getTraceAsString(),
+            ]);
+        }
     }
 }
