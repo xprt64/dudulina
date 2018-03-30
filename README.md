@@ -102,7 +102,7 @@ class OurAggregate
     //....
     public function handleDoSomethingImportant(DoSomethingImportantCommand $command)
     {
-        if($this->outStateDoesNotPermitThis()){
+        if($this->ourStateDoesNotPermitThis()){
             throw new \Exception("No no, it is not possible!");
         }
 
