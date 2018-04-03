@@ -155,6 +155,9 @@ If an exception is thrown by the command handler on the aggregate, no events are
 
 Read the entire [documentation here](DOCUMENTATION.md)
 
+## The Event store
+There is also a [MongoDB](https://github.com/xprt64/mongolina) implementation of the Event store and a [Restful HTTP API](https://github.com/xprt64/dudulina-eventstore-api) for this Event store if you want to build Read-models in other languages than PHP.
+
 ## Sample application ##
 A Todo list sample application can be found at [github.com/xprt64/todosample-cqrs-es](https://github.com/xprt64/todosample-cqrs-es).
 
