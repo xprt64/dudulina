@@ -32,6 +32,8 @@ class ReadModelTail
      */
     private $tailableEventStream;
 
+    private $allMethods = [];
+
     public function __construct(
         EventStore $eventStore,
         LoggerInterface $logger,
@@ -50,9 +52,9 @@ class ReadModelTail
             new AnyPhpClassIsAccepted()
         );
 
-        $allMethods = $discoverer->findListenerMethodsInClass(\get_class($readModel));
+        $this->allMethods = $discoverer->findListenerMethodsInClass(\get_class($readModel));
 
-        $eventClasses = $this->getEventClassesFromMethods($allMethods);
+        $eventClasses = $this->getEventClassesFromMethods($this->allMethods);
 
         $this->logger->info(print_r($eventClasses, true));
         $this->logger->info('loading events...');
@@ -65,24 +67,18 @@ class ReadModelTail
 
         $this->logger->info('applying events...');
 
-        $lastTimestamp = null;
+        $lastTimestamp = $after;
 
         foreach ($allEvents as $eventWithMetadata) {
             /** @var EventWithMetaData $eventWithMetadata */
-            $methods = $this->findMethodsByEventClass(\get_class($eventWithMetadata->getEvent()), $allMethods);
-            foreach ($methods as $method) {
-                $this->executeMethod($readModel, $method, $eventWithMetadata);
-            }
+            $this->applyEvent($readModel, $eventWithMetadata);
             $lastTimestamp = $eventWithMetadata->getMetaData()->getTimestamp();
         }
 
         $this->logger->info('tailing events...');
 
-        $this->tailableEventStream->tail(function (EventWithMetaData $eventWithMetadata) use ($readModel, $allMethods) {
-            $methods = $this->findMethodsByEventClass(\get_class($eventWithMetadata->getEvent()), $allMethods);
-            foreach ($methods as $method) {
-                $this->executeMethod($readModel, $method, $eventWithMetadata);
-            }
+        $this->tailableEventStream->tail(function (EventWithMetaData $eventWithMetadata) use ($readModel) {
+            $this->applyEvent($readModel, $eventWithMetadata);
         }, $eventClasses, $lastTimestamp);
     }
 
@@ -102,14 +98,27 @@ class ReadModelTail
 
     /**
      * @param string $eventClass
+     * @return ListenerMethod[]
+     */
+    private function findMethodsByEventClass(string $eventClass)
+    {
+        static $cache = [];
+        if (!isset($cache[$eventClass])) {
+            $cache[$eventClass] = $this->_findMethodsByEventClass($eventClass);
+        }
+        return $cache[$eventClass];
+    }
+
+    /**
+     * @param string $eventClass
      * @param ListenerMethod[] $allMethods
      * @return ListenerMethod[]
      */
-    private function findMethodsByEventClass(string $eventClass, $allMethods)
+    private function _findMethodsByEventClass(string $eventClass)
     {
         $result = [];
 
-        foreach ($allMethods as $listenerMethod) {
+        foreach ($this->allMethods as $listenerMethod) {
             if ($listenerMethod->getEventClassName() === $eventClass) {
                 $result[] = $listenerMethod;
             }
@@ -131,6 +140,20 @@ class ReadModelTail
                 'file'           => $exception->getFile(),
                 'line'           => $exception->getLine(),
             ]);
+        }
+    }
+
+    private function applyEvent(ReadModelInterface $readModel, EventWithMetaData $eventWithMetadata): void
+    {
+        static $appliedEvents = [];
+        if (isset($appliedEvents[(string)$eventWithMetadata->getMetaData()->getEventId()])) {
+            return;
+        }
+        $appliedEvents[(string)$eventWithMetadata->getMetaData()->getEventId()] = true;
+
+        $methods = $this->findMethodsByEventClass(\get_class($eventWithMetadata->getEvent()));
+        foreach ($methods as $method) {
+            $this->executeMethod($readModel, $method, $eventWithMetadata);
         }
     }
 }

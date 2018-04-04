@@ -28,21 +28,26 @@ class ReadModelTailTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         /** @var MetaData $metadata */
-        $metadata = $this->getMockBuilder(MetaData::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $metadata = new MetaData(
+            'id',
+            'class',
+            new \DateTimeImmutable(),
+            null,
+            null
+        );
 
 
         /** @var EventWithMetaData[] $events */
         $events = [
-            new EventWithMetaData(new Event1, $metadata),
-            new EventWithMetaData(new Event2, $metadata),
+            new EventWithMetaData(new Event1, $metadata->withEventId(1)),
+            new EventWithMetaData(new Event1, $metadata->withEventId(1)),
+            new EventWithMetaData(new Event2, $metadata->withEventId(2)),
         ];
 
         /** @var EventWithMetaData[] $tailEvents */
         $tailEvents = [
-            new EventWithMetaData(new Event3, $metadata),
-            new EventWithMetaData(new Event4, $metadata),
+            new EventWithMetaData(new Event3, $metadata->withEventId(3)),
+            new EventWithMetaData(new Event4, $metadata->withEventId(4)),
         ];
 
         $eventStream = new FilteredRawEventStreamGroupedByCommit([new InMemoryEventsCommit(1, 1, $events)]);
