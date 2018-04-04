@@ -80,7 +80,7 @@ class ReadModelTailTest extends \PHPUnit_Framework_TestCase
 
     private function factoryTail($tailEvents)
     {
-        return new class ($tailEvents) implements \Dudulina\EventStore\TailableEventStore
+        return new class ($tailEvents) implements \Dudulina\EventStore\TailableEventStream
         {
             private $tailEvents;
 

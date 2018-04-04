@@ -6,7 +6,7 @@
 namespace Dudulina\EventStore;
 
 
-interface TailableEventStore
+interface TailableEventStream
 {
     /**
      * @param callable $callback function(EventWithMetadata)

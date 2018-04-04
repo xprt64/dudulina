@@ -10,7 +10,7 @@ use Dudulina\Command\CodeAnalysis\ReadModelEventHandlerDetector;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\EventStore;
 use Dudulina\EventStore\SeekableEventStream;
-use Dudulina\EventStore\TailableEventStore;
+use Dudulina\EventStore\TailableEventStream;
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerMethod;
@@ -28,19 +28,19 @@ class ReadModelTail
      */
     private $logger;
     /**
-     * @var TailableEventStore
+     * @var TailableEventStream
      */
-    private $tailableEventStore;
+    private $tailableEventStream;
 
     public function __construct(
         EventStore $eventStore,
         LoggerInterface $logger,
-        TailableEventStore $tailableEventStore
+        TailableEventStream $tailableEventStream
     )
     {
         $this->eventStore = $eventStore;
         $this->logger = $logger;
-        $this->tailableEventStore = $tailableEventStore;
+        $this->tailableEventStream = $tailableEventStream;
     }
 
     public function tailRead(ReadModelInterface $readModel, $after = null)
@@ -78,7 +78,7 @@ class ReadModelTail
 
         $this->logger->info('tailing events...');
 
-        $this->tailableEventStore->tail(function (EventWithMetaData $eventWithMetadata) use ($readModel, $allMethods) {
+        $this->tailableEventStream->tail(function (EventWithMetaData $eventWithMetadata) use ($readModel, $allMethods) {
             $methods = $this->findMethodsByEventClass(\get_class($eventWithMetadata->getEvent()), $allMethods);
             foreach ($methods as $method) {
                 $this->executeMethod($readModel, $method, $eventWithMetadata);
