@@ -1,7 +1,9 @@
 <?php
+/**
+ * Copyright (c) 2018 Constantin Galbenu <xprt64@gmail.com>
+ */
 
-
-namespace tests\Dudulina\ReadModel;
+namespace tests\Dudulina\ReadModelTailTest;
 
 
 use Dudulina\Event;
@@ -13,10 +15,11 @@ use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
 use Dudulina\ProgressReporting\TaskProgressReporter;
 use Dudulina\ReadModel\ReadModelInterface;
 use Dudulina\ReadModel\ReadModelRecreator;
+use Dudulina\ReadModel\ReadModelTail;
 use Psr\Log\LoggerInterface;
 
 
-class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
+class ReadModelTailTest extends \PHPUnit_Framework_TestCase
 {
 
     public function test()
@@ -36,6 +39,12 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
             new EventWithMetaData(new Event2, $metadata),
         ];
 
+        /** @var EventWithMetaData[] $tailEvents */
+        $tailEvents = [
+            new EventWithMetaData(new Event3, $metadata),
+            new EventWithMetaData(new Event4, $metadata),
+        ];
+
         $eventStream = new FilteredRawEventStreamGroupedByCommit([new InMemoryEventsCommit(1, 1, $events)]);
 
         /** @var \Dudulina\ProgressReporting\TaskProgressReporter $taskProgressReporter */
@@ -48,24 +57,50 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
 
         $eventStore->expects($this->once())
             ->method('loadEventsByClassNames')
-            ->with([Event1::class, Event2::class])
+            ->with([Event1::class, Event2::class, Event3::class, Event4::class])
             ->willReturn($eventStream);
 
         /** @var EventStore $eventStore */
 
-        $sut = new ReadModelRecreator(
+        $sut = new ReadModelTail(
             $eventStore,
-            $logger
+            $logger,
+            $this->factoryTail($tailEvents)
         );
-
-        $sut->setTaskProgressReporter($taskProgressReporter);
 
         $readModel = new ReadModel();
 
-        $sut->recreateRead($readModel);
+        $sut->tailRead($readModel, "someTimestamp");
 
         $this->assertSame(1, $readModel->onEvent1Called);
         $this->assertSame(1, $readModel->onEvent2Called);
+        $this->assertSame(1, $readModel->onEvent3Called);
+        $this->assertSame(1, $readModel->onEvent4Called);
+    }
+
+    private function factoryTail($tailEvents)
+    {
+        return new class ($tailEvents) implements \Dudulina\EventStore\TailableEventStore
+        {
+            private $tailEvents;
+
+            public function __construct($tailEvents)
+            {
+                $this->tailEvents = $tailEvents;
+            }
+
+            /**
+             * @param callable $callback function(EventWithMetadata)
+             * @param string[] $eventClasses
+             * @param mixed|null $afterTimestamp
+             */
+            public function tail(callable $callback, $eventClasses = [], $afterTimestamp = null): void
+            {
+                foreach ($this->tailEvents as $event) {
+                    $callback($event);
+                }
+            }
+        };
     }
 }
 
@@ -73,6 +108,8 @@ class ReadModel implements ReadModelInterface
 {
     public $onEvent1Called = 0;
     public $onEvent2Called = 0;
+    public $onEvent3Called = 0;
+    public $onEvent4Called = 0;
 
     public function clearModel()
     {
@@ -91,7 +128,19 @@ class ReadModel implements ReadModelInterface
     public function onEvent2(Event2 $event)
     {
         $this->onEvent2Called++;
-        throw new \Exception();
+        return $event;
+    }
+
+    public function onEvent3(Event3 $event)
+    {
+        $this->onEvent3Called++;
+        return $event;
+    }
+
+    public function onEvent4(Event4 $event)
+    {
+        $this->onEvent4Called++;
+        throw new \Exception();//testing how it reacts to exceptions
     }
 
     public function someOtherMethod($argument)
@@ -111,6 +160,16 @@ class Event1 implements Event
 }
 
 class Event2 implements Event
+{
+
+}
+
+class Event3 implements Event
+{
+
+}
+
+class Event4 implements Event
 {
 
 }

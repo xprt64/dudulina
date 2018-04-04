@@ -5,9 +5,10 @@ namespace Dudulina\EventStore\InMemory;
 
 
 use Dudulina\EventStore\EventStream;
+use Dudulina\EventStore\SeekableEventStream;
 use Gica\Iterator\IteratorTransformer\IteratorExpander;
 
-class FilteredRawEventStreamGroupedByCommit implements EventStream
+class FilteredRawEventStreamGroupedByCommit implements EventStream, SeekableEventStream
 {
     /**
      * @var InMemoryEventsCommit[]
@@ -21,6 +22,8 @@ class FilteredRawEventStreamGroupedByCommit implements EventStream
      * @var array
      */
     private $eventClasses;
+
+    private $afterTimestamp;
 
     /**
      * @param  InMemoryEventsCommit[] $eventCommits
@@ -115,5 +118,10 @@ class FilteredRawEventStreamGroupedByCommit implements EventStream
         });
 
         return count(iterator_to_array($deGrouper($commits), false));
+    }
+
+    public function afterTimestamp($after)
+    {
+        $this->afterTimestamp = $after;
     }
 }

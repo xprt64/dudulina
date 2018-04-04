@@ -9,7 +9,7 @@ namespace Dudulina\EventStore;
 interface TailableEventStore
 {
     /**
-     * @param callable $callback
+     * @param callable $callback function(EventWithMetadata)
      * @param string[] $eventClasses
      * @param mixed|null $afterTimestamp
      */
