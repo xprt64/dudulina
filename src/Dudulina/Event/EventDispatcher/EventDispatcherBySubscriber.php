@@ -34,16 +34,21 @@ class EventDispatcherBySubscriber implements EventDispatcher
 
         foreach ($listeners as $listener) {
             try {
-                call_user_func($listener, $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
+                \call_user_func($listener, $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
             } catch (\Throwable $exception) {
                 if ($this->logger) {
                     $this->logger->error(
                         sprintf(
                             "Dispatch event of type %s to %s failed: %s",
-                            get_class($eventWithMetadata->getEvent()),
-                            get_class($listener[0]),
+                            \get_class($eventWithMetadata->getEvent()),
+                            \get_class($listener[0]),
                             $exception->getMessage()),
-                        $exception->getTrace());
+                        [
+                            'eventId'    => $eventWithMetadata->getMetaData()->getEventId(),
+                            'eventClass' => \get_class($eventWithMetadata->getEvent()),
+                            'listener'   => \get_class($listener[0]),
+                            'trace'      => $exception->getTraceAsString(),
+                        ]);
                 }
             }
         }
