@@ -5,15 +5,11 @@
 
 namespace Dudulina\ReadModel;
 
-
-use Gica\CodeAnalysis\MethodListenerDiscovery;
-use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
-use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerMethod;
-use Dudulina\Command\CodeAnalysis\ReadModelEventHandlerDetector;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\EventStore;
 use Dudulina\ProgressReporting\TaskProgressCalculator;
 use Dudulina\ProgressReporting\TaskProgressReporter;
+use Dudulina\ReadModel\ReadModelEventApplier\ReadModelReflector;
 use Psr\Log\LoggerInterface;
 
 class ReadModelRecreator
@@ -31,14 +27,26 @@ class ReadModelRecreator
      * @var TaskProgressReporter|null
      */
     private $taskProgressReporter;
+    /**
+     * @var ReadModelEventApplier
+     */
+    private $readModelEventApplier;
+    /**
+     * @var ReadModelReflector
+     */
+    private $readModelReflector;
 
     public function __construct(
         EventStore $eventStore,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ReadModelEventApplier $readModelEventApplier,
+        ReadModelReflector $readModelReflector
     )
     {
         $this->eventStore = $eventStore;
         $this->logger = $logger;
+        $this->readModelEventApplier = $readModelEventApplier;
+        $this->readModelReflector = $readModelReflector;
     }
 
     public function setTaskProgressReporter(?TaskProgressReporter $taskProgressReporter)
@@ -48,14 +56,7 @@ class ReadModelRecreator
 
     public function recreateRead(ReadModelInterface $readModel)
     {
-        $discoverer = new MethodListenerDiscovery(
-            new ReadModelEventHandlerDetector(),
-            new AnyPhpClassIsAccepted()
-        );
-
-        $allMethods = $discoverer->findListenerMethodsInClass(\get_class($readModel));
-
-        $eventClasses = $this->getEventClassesFromMethods($allMethods);
+        $eventClasses = $this->readModelReflector->getEventClassesFromReadModel($readModel);
 
         $this->logger->info(print_r($eventClasses, true));
         $this->logger->info('loading events...');
@@ -71,13 +72,8 @@ class ReadModelRecreator
         }
 
         foreach ($allEvents as $eventWithMetadata) {
-
             /** @var EventWithMetaData $eventWithMetadata */
-            $methods = $this->findMethodsByEventClass(\get_class($eventWithMetadata->getEvent()), $allMethods);
-
-            foreach ($methods as $method) {
-                $this->executeMethod($readModel, $method, $eventWithMetadata);
-            }
+            $this->readModelEventApplier->applyEventOnlyOnce($readModel, $eventWithMetadata);
             if ($this->taskProgressReporter) {
                 $taskProgress->increment();
                 $this->taskProgressReporter->reportProgressUpdate($taskProgress->getStep(), $taskProgress->getTotalSteps(), $taskProgress->calculateSpeed(), $taskProgress->calculateEta());
@@ -86,51 +82,25 @@ class ReadModelRecreator
     }
 
     /**
-     * @param ListenerMethod[] $methods
-     * @return array
+     * @param ReadModelInterface $readModel
+     * @param string $afterTimestap only the events strictly after this timestamp are applied
+     * @return string The last timestamp processed
      */
-    private function getEventClassesFromMethods($methods)
+    public function pollAndApplyEvents(ReadModelInterface $readModel, string $afterTimestap = null)
     {
-        $eventClasses = [];
-        foreach ($methods as $listenerMethod) {
-            $eventClasses[] = $listenerMethod->getEventClassName();
+        $eventClasses = $this->readModelReflector->getEventClassesFromReadModel($readModel);
+
+        $allEvents = $this->eventStore->loadEventsByClassNames($eventClasses);
+
+        if ($afterTimestap) {
+            $allEvents->afterSequence($afterTimestap);
         }
 
-        return $eventClasses;
-    }
-
-    /**
-     * @param string $eventClass
-     * @param ListenerMethod[] $allMethods
-     * @return ListenerMethod[]
-     */
-    private function findMethodsByEventClass(string $eventClass, $allMethods)
-    {
-        $result = [];
-
-        foreach ($allMethods as $listenerMethod) {
-            if ($listenerMethod->getEventClassName() === $eventClass) {
-                $result[] = $listenerMethod;
-            }
+        foreach ($allEvents as $eventWithMetadata) {
+            /** @var EventWithMetaData $eventWithMetadata */
+            $this->readModelEventApplier->applyEventOnlyOnce($readModel, $eventWithMetadata);
+            $afterTimestap = $eventWithMetadata->getMetaData()->getTimestamp();
         }
-
-        return $result;
-    }
-
-    private function executeMethod(ReadModelInterface $readModel, ListenerMethod $method, EventWithMetaData $eventWithMetadata): void
-    {
-        try {
-            $readModel->{$method->getMethodName()}($eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
-        } catch (\Throwable $exception) {
-            $this->logger->error($exception->getMessage(), [
-                'model'          => \get_class($readModel),
-                'eventId'        => $eventWithMetadata->getMetaData()->getEventId(),
-                'aggregateId'    => $eventWithMetadata->getMetaData()->getAggregateId(),
-                'aggregateClass' => $eventWithMetadata->getMetaData()->getAggregateClass(),
-                'file'           => $exception->getFile(),
-                'line'           => $exception->getLine(),
-                'trace'          => $exception->getTraceAsString(),
-            ]);
-        }
+        return $afterTimestap;
     }
 }

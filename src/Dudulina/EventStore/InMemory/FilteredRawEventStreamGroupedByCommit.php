@@ -4,9 +4,11 @@
 namespace Dudulina\EventStore\InMemory;
 
 
+use Dudulina\Event\EventWithMetaData;
 use Dudulina\EventStore\EventStream;
 use Dudulina\EventStore\SeekableEventStream;
 use Gica\Iterator\IteratorTransformer\IteratorExpander;
+use Gica\Iterator\IteratorTransformer\IteratorFilter;
 
 class FilteredRawEventStreamGroupedByCommit implements EventStream, SeekableEventStream
 {
@@ -23,7 +25,11 @@ class FilteredRawEventStreamGroupedByCommit implements EventStream, SeekableEven
      */
     private $eventClasses;
 
-    private $afterTimestamp;
+    /** @var EventSequence|null */
+    private $afterSequence;
+    /** @var EventSequence|null */
+    private $beforeSequence;
+    private $ascending = true;
 
     /**
      * @param  InMemoryEventsCommit[] $eventCommits
@@ -33,6 +39,7 @@ class FilteredRawEventStreamGroupedByCommit implements EventStream, SeekableEven
     {
         $this->eventCommits = $eventCommits;
         $this->eventClasses = $eventClasses;
+        $this->sort(true);
     }
 
     public function getIterator()
@@ -43,9 +50,27 @@ class FilteredRawEventStreamGroupedByCommit implements EventStream, SeekableEven
             yield from $group->getEventsWithMetadata();
         });
 
-        $events = iterator_to_array($deGrouper($commits));
+        $events = $deGrouper($commits);
 
-        return new \ArrayIterator($events);
+        if ($this->afterSequence) {
+            $filter = new IteratorFilter(function (EventWithMetaData $eventWithMetaData) {
+                /** @var EventSequence $eventSequence */
+                $eventSequence = $eventWithMetaData->getMetaData()->getTimestamp();
+                return $eventSequence->isAfter($this->afterSequence);
+            });
+            $events = $filter($events);
+        }
+
+        if ($this->beforeSequence) {
+            $filter = new IteratorFilter(function (EventWithMetaData $eventWithMetaData) {
+                /** @var EventSequence $eventSequence */
+                $eventSequence = $eventWithMetaData->getMetaData()->getTimestamp();
+                return $eventSequence->isBefore($this->beforeSequence);
+            });
+            $events = $filter($events);
+        }
+
+        return new \ArrayIterator(iterator_to_array($events, false));
     }
 
     /**
@@ -79,7 +104,8 @@ class FilteredRawEventStreamGroupedByCommit implements EventStream, SeekableEven
     private function sortCommits(array $eventCommits)
     {
         usort($eventCommits, function (InMemoryEventsCommit $first, InMemoryEventsCommit $second) {
-            return $first->getSequence() <=> $second->getSequence();
+            $order = $first->getCommitSequence() <=> $second->getCommitSequence();
+            return $this->ascending ? $order : -$order;
         });
 
         return $eventCommits;
@@ -111,17 +137,21 @@ class FilteredRawEventStreamGroupedByCommit implements EventStream, SeekableEven
 
     public function count()
     {
-        $commits = $this->fetchCommits();
-
-        $deGrouper = new IteratorExpander(function (InMemoryEventsCommit $group) {
-            yield from $group->getEventsWithMetadata();
-        });
-
-        return count(iterator_to_array($deGrouper($commits), false));
+        return \count(\iterator_to_array($this->getIterator(), false));
     }
 
-    public function afterTimestamp($after)
+    public function afterSequence(string $after)
     {
-        $this->afterTimestamp = $after;
+        $this->afterSequence = EventSequence::fromString($after);
+    }
+
+    public function beforeSequence(string $before)
+    {
+        $this->beforeSequence = EventSequence::fromString($before);
+    }
+
+    public function sort(bool $chronological)
+    {
+        $this->ascending = $chronological;
     }
 }

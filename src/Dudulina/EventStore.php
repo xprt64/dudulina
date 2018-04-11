@@ -9,7 +9,7 @@ namespace Dudulina;
 use Dudulina\Aggregate\AggregateDescriptor;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\EventStore\AggregateEventStream;
-use Dudulina\EventStore\EventStream;
+use Dudulina\EventStore\SeekableEventStream;
 
 interface EventStore
 {
@@ -21,9 +21,9 @@ interface EventStore
      * @param AggregateEventStream $expectedEventStream
      * @return void
      */
-    public function appendEventsForAggregate(AggregateDescriptor $aggregateDescriptor, $eventsWithMetaData, AggregateEventStream $expectedEventStream):void;
+    public function appendEventsForAggregate(AggregateDescriptor $aggregateDescriptor, $eventsWithMetaData, AggregateEventStream $expectedEventStream): void;
 
-    public function loadEventsByClassNames(array $eventClasses): EventStream;
+    public function loadEventsByClassNames(array $eventClasses): SeekableEventStream;
 
     public function getAggregateVersion(AggregateDescriptor $aggregateDescriptor);
 

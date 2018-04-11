@@ -11,7 +11,7 @@ interface TailableEventStream
     /**
      * @param callable $callback function(EventWithMetadata)
      * @param string[] $eventClasses
-     * @param mixed|null $afterTimestamp
+     * @param string|null $afterTimestamp Opaque sequence; it makes sense only to the event store implementation
      */
-    public function tail(callable $callback, $eventClasses = [], $afterTimestamp = null):void;
+    public function tail(callable $callback, $eventClasses = [], string $afterTimestamp = null):void;
 }

@@ -1,0 +1,96 @@
+# Readmodels and Microservices
+
+Can a Readmodel be a microservice? Yes. In fact it is a very good canditate for this.
+
+A Readmodel has two components:
+- readmodel-updater; it listen for events and updates the query state (i.e. a database)
+- query-service; it responds to client (outside) requests (i.e. HTTP REST)
+
+Each one of these components can be a separate microservice or a single microservice
+
+## Readmodel-updater as a microservice
+
+The Readmodel-updater can be a separate microservice, with only one job: keep the query-able state up-to-date. 
+It does this by listening to the events. 
+
+There are two modes in which a Readmodel-updater can run:
+
+- periodically running and polling the Event store
+- as a daemon by tailing the Event store
+
+### Running the Readmodel-updater microservice by periodically running and polling the Event store
+
+You can do this using a cron-job:
+
+```
+* * * * * /usr/local/bin/php /app/bin/readmodel.php
+``` 
+
+The `readmodel.php` script looks like this:
+
+```php
+    $readModelTailer = $container->get(\Dudulina\ReadModel\ReadModelTail::class);
+    /** @var \Dudulina\ReadModel\ReadModelInterface $readModel */
+    $readModel = $container->get(\Some\Read\Model);
+    
+    /** @var $somePersistentStorage that you own */
+    $previousProcessedEvent = $somePersistentStorage->load();
+    
+    $lastProcessedEventTimestamp = $readModelTailer->pollAndApplyEvents($readModel, $previousProcessedEvent); //does not block
+    
+    $somePersistentStorage->save($lastProcessedEventTimestamp);
+```
+
+If you want to reuse the loaded instances, you could use a while loop combined with a sleep:
+
+```php
+    $readModelTailer = $container->get(\Dudulina\ReadModel\ReadModelTail::class);
+    /** @var \Dudulina\ReadModel\ReadModelInterface $readModel */
+    $readModel = $container->get(\Some\Read\Model);
+    
+    /** @var $somePersistentStorage that you own */
+    $previousProcessedEvent = $somePersistentStorage->load();
+    
+    while(true) {
+        $previousProcessedEvent = $readModelTailer->pollAndApplyEvents($readModel, $previousProcessedEvent); //does not block
+        $somePersistentStorage->save($previousProcessedEvent);
+        sleep(1);
+    }
+```
+
+The disadvantage of this method is that it may takes some time until the Readmodel is updated.
+
+### Running the Readmodel-updater microservice by tail-ing the Event store
+
+You can have a realtime-like update of a Readmodel by tailing the Event store.
+The `\Dudulina\ReadModel\ReadModelTail` is the class responsible with tailing the Event store and applying the new events 
+to the Readmodel. 
+Below it is a sample of complete (re)building of a Readmodel, followed by a tail on the Event store:
+
+```php
+    $readModelTailer = $container->get(\Dudulina\ReadModel\ReadModelTail::class);
+    
+    /** @var \Dudulina\ReadModel\ReadModelInterface $readModel */
+    $readModel = $container->get(\Some\Read\Model);
+    
+    $readModel->clearModel();
+    $readModel->createModel();
+    
+    $readModelTailer->tailRead($readModel); //blocks forever
+
+``` 
+
+It is as simple as that.
+
+You can put this inside a docker container or docker swarm service and you have a microservice.
+
+### Use other programming languages
+
+If you want to use JavaScript you can use [dudulina-js-connector](https://github.com/xprt64/dudulina-js-connector) 
+and run the updater in a nodejs application.
+
+## Readmodel-query-service as a microservice
+
+Once you have the Readmodel-updater running as a separate microservice, you can put a HTTP REST interface in front
+of the persistence (the database) and have a Readmodel-query-service, in whatever language you want.
+

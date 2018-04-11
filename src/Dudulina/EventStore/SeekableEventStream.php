@@ -6,7 +6,9 @@
 namespace Dudulina\EventStore;
 
 
-interface SeekableEventStream
+interface SeekableEventStream extends EventStream
 {
-    public function afterTimestamp($after);
+    public function afterSequence(string $after);
+    public function beforeSequence(string $before);
+    public function sort(bool $chronological);
 }

@@ -8,9 +8,12 @@ use Dudulina\Event;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
+use Dudulina\EventStore\InMemory\EventSequence;
 use Dudulina\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
 use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
 use Dudulina\ProgressReporting\TaskProgressReporter;
+use Dudulina\ReadModel\ReadModelEventApplier;
+use Dudulina\ReadModel\ReadModelEventApplier\ReadModelReflector;
 use Dudulina\ReadModel\ReadModelInterface;
 use Dudulina\ReadModel\ReadModelRecreator;
 use Psr\Log\LoggerInterface;
@@ -25,15 +28,17 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         /** @var MetaData $metadata */
-        $metadata = $this->getMockBuilder(MetaData::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $metadata = new MetaData(
+            'someId',
+            'someClass',
+            new \DateTimeImmutable()
+        );
 
 
         /** @var EventWithMetaData[] $events */
         $events = [
-            new EventWithMetaData(new Event1, $metadata),
-            new EventWithMetaData(new Event2, $metadata),
+            new EventWithMetaData(new Event1, $metadata->withEventId(1)),
+            new EventWithMetaData(new Event2, $metadata->withEventId(2)),
         ];
 
         $eventStream = new FilteredRawEventStreamGroupedByCommit([new InMemoryEventsCommit(1, 1, $events)]);
@@ -55,7 +60,12 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
 
         $sut = new ReadModelRecreator(
             $eventStore,
-            $logger
+            $logger,
+            new ReadModelEventApplier(
+                $logger,
+                new ReadModelReflector()
+            ),
+            new ReadModelReflector()
         );
 
         $sut->setTaskProgressReporter($taskProgressReporter);
@@ -63,6 +73,118 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
         $readModel = new ReadModel();
 
         $sut->recreateRead($readModel);
+
+        $this->assertSame(1, $readModel->onEvent1Called);
+        $this->assertSame(1, $readModel->onEvent2Called);
+    }
+
+    public function testPoll()
+    {
+        $eventStore = $this->getMockBuilder(EventStore::class)
+            ->getMock();
+
+        /** @var MetaData $metadata */
+        $metadata = new MetaData(
+            'someId',
+            'someClass',
+            new \DateTimeImmutable()
+        );
+
+
+        /** @var EventWithMetaData[] $events */
+        $events = [
+            new EventWithMetaData(new Event1, $metadata->withTimestamp(new EventSequence(100, 0))),
+            new EventWithMetaData(new Event2, $metadata->withTimestamp(new EventSequence(100, 1))),
+        ];
+
+        $eventStream = new FilteredRawEventStreamGroupedByCommit([new InMemoryEventsCommit(100, 1, $events)]);
+
+        /** @var \Dudulina\ProgressReporting\TaskProgressReporter $taskProgressReporter */
+        $taskProgressReporter = $this->getMockBuilder(TaskProgressReporter::class)
+            ->getMock();
+
+        /** @var LoggerInterface $logger */
+        $logger = $this->getMockBuilder(LoggerInterface::class)
+            ->getMock();
+
+        $eventStore->expects($this->once())
+            ->method('loadEventsByClassNames')
+            ->with([Event1::class, Event2::class])
+            ->willReturn($eventStream);
+
+        /** @var EventStore $eventStore */
+
+        $sut = new ReadModelRecreator(
+            $eventStore,
+            $logger,
+            new ReadModelEventApplier(
+                $logger,
+                new ReadModelReflector()
+            ),
+            new ReadModelReflector()
+        );
+
+        $sut->setTaskProgressReporter($taskProgressReporter);
+
+        $readModel = new ReadModel();
+
+        $sut->pollAndApplyEvents($readModel, new EventSequence(100, 0));
+
+        $this->assertSame(0, $readModel->onEvent1Called);
+        $this->assertSame(1, $readModel->onEvent2Called);
+    }
+
+    public function testPollFromTheBegining()
+    {
+        $eventStore = $this->getMockBuilder(EventStore::class)
+            ->getMock();
+
+        /** @var MetaData $metadata */
+        $metadata = new MetaData(
+            'someId',
+            'someClass',
+            new \DateTimeImmutable()
+        );
+
+
+        /** @var EventWithMetaData[] $events */
+        $events = [
+            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withTimestamp(new EventSequence(100, 0))),
+            new EventWithMetaData(new Event2, $metadata->withEventId(2)->withTimestamp(new EventSequence(100, 1))),
+        ];
+
+        $eventStream = new FilteredRawEventStreamGroupedByCommit([new InMemoryEventsCommit(100, 1, $events)]);
+
+        /** @var \Dudulina\ProgressReporting\TaskProgressReporter $taskProgressReporter */
+        $taskProgressReporter = $this->getMockBuilder(TaskProgressReporter::class)
+            ->getMock();
+
+        /** @var LoggerInterface $logger */
+        $logger = $this->getMockBuilder(LoggerInterface::class)
+            ->getMock();
+
+        $eventStore->expects($this->once())
+            ->method('loadEventsByClassNames')
+            ->with([Event1::class, Event2::class])
+            ->willReturn($eventStream);
+
+        /** @var EventStore $eventStore */
+
+        $sut = new ReadModelRecreator(
+            $eventStore,
+            $logger,
+            new ReadModelEventApplier(
+                $logger,
+                new ReadModelReflector()
+            ),
+            new ReadModelReflector()
+        );
+
+        $sut->setTaskProgressReporter($taskProgressReporter);
+
+        $readModel = new ReadModel();
+
+        $sut->pollAndApplyEvents($readModel, null);
 
         $this->assertSame(1, $readModel->onEvent1Called);
         $this->assertSame(1, $readModel->onEvent2Called);

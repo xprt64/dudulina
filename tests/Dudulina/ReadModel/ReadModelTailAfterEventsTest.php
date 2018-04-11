@@ -3,16 +3,17 @@
  * Copyright (c) 2018 Constantin Galbenu <xprt64@gmail.com>
  */
 
-namespace tests\Dudulina\ReadModelTailTest;
+namespace tests\Dudulina\ReadModel\ReadModelTailAfterEventsTest;
+
 
 use Dudulina\Event;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
+use Dudulina\EventStore\InMemory\EventSequence;
 use Dudulina\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
 use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
 use Dudulina\EventStore\TailableEventStream;
-use Dudulina\ProgressReporting\TaskProgressReporter;
 use Dudulina\ReadModel\ReadModelEventApplier;
 use Dudulina\ReadModel\ReadModelEventApplier\ReadModelReflector;
 use Dudulina\ReadModel\ReadModelInterface;
@@ -20,10 +21,9 @@ use Dudulina\ReadModel\ReadModelTail;
 use Psr\Log\LoggerInterface;
 
 
-class ReadModelTailTest extends \PHPUnit_Framework_TestCase
+class ReadModelTailAfterEventsTest extends \PHPUnit_Framework_TestCase
 {
-
-    public function test_tailRead()
+    public function testAfterSomeEvent()
     {
         $eventStore = $this->getMockBuilder(EventStore::class)
             ->getMock();
@@ -37,25 +37,20 @@ class ReadModelTailTest extends \PHPUnit_Framework_TestCase
             null
         );
 
-
         /** @var EventWithMetaData[] $events */
         $events = [
-            new EventWithMetaData(new Event1, $metadata->withEventId(1)),
-            new EventWithMetaData(new Event1, $metadata->withEventId(1)),
-            new EventWithMetaData(new Event2, $metadata->withEventId(2)),
+            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withTimestamp(new EventSequence(100, 0))),
+            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withTimestamp(new EventSequence(100, 0))),
+            new EventWithMetaData(new Event2, $metadata->withEventId(2)->withTimestamp(new EventSequence(100, 1))),
         ];
 
         /** @var EventWithMetaData[] $tailEvents */
         $tailEvents = [
-            new EventWithMetaData(new Event3, $metadata->withEventId(3)),
-            new EventWithMetaData(new Event4, $metadata->withEventId(4)),
+            new EventWithMetaData(new Event3, $metadata->withEventId(3)->withTimestamp(new EventSequence(200, 0))),
+            new EventWithMetaData(new Event4, $metadata->withEventId(4)->withTimestamp(new EventSequence(200, 1))),
         ];
 
-        $eventStream = new FilteredRawEventStreamGroupedByCommit([new InMemoryEventsCommit(1, 1, $events)]);
-
-        /** @var \Dudulina\ProgressReporting\TaskProgressReporter $taskProgressReporter */
-        $taskProgressReporter = $this->getMockBuilder(TaskProgressReporter::class)
-            ->getMock();
+        $eventStream = new FilteredRawEventStreamGroupedByCommit([new InMemoryEventsCommit(100, 0, $events)]);
 
         /** @var LoggerInterface $logger */
         $logger = $this->getMockBuilder(LoggerInterface::class)
@@ -81,9 +76,9 @@ class ReadModelTailTest extends \PHPUnit_Framework_TestCase
 
         $readModel = new ReadModel();
 
-        $sut->tailRead($readModel, null);
+        $sut->tailRead($readModel, new EventSequence(100, 0));
 
-        $this->assertSame(1, $readModel->onEvent1Called);
+        $this->assertSame(0, $readModel->onEvent1Called);
         $this->assertSame(1, $readModel->onEvent2Called);
         $this->assertSame(1, $readModel->onEvent3Called);
         $this->assertSame(1, $readModel->onEvent4Called);

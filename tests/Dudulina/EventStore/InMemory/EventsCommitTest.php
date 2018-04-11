@@ -26,7 +26,7 @@ class EventsCommitTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $this->assertSame(1, $sut->getSequence());
+        $this->assertSame(1, $sut->getCommitSequence());
         $this->assertSame(2, $sut->getVersion());
 
         $sut2 = $sut->filterEventsByClass([MyEvent::class]);

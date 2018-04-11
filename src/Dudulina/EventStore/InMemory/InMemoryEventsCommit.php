@@ -15,7 +15,7 @@ class InMemoryEventsCommit
     /**
      * @var int
      */
-    private $sequence;
+    private $commitSequence;
     /**
      * @var int
      */
@@ -26,19 +26,19 @@ class InMemoryEventsCommit
     private $eventsWithMetadata;
 
     public function __construct(
-        int $sequence,
+        int $commitSequence,
         int $version,
         array $eventsWithMetadata
     )
     {
-        $this->sequence = $sequence;
+        $this->commitSequence = $commitSequence;
         $this->version = $version;
         $this->eventsWithMetadata = $eventsWithMetadata;
     }
 
-    public function getSequence(): int
+    public function getCommitSequence(): int
     {
-        return $this->sequence;
+        return $this->commitSequence;
     }
 
     public function getVersion(): int

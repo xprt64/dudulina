@@ -10,6 +10,7 @@ use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
 use Dudulina\EventStore\Debug\DumpEventsByClass;
 use Dudulina\EventStore\EventStream;
+use Dudulina\EventStore\SeekableEventStream;
 use Psr\Log\LoggerInterface;
 
 
@@ -40,7 +41,7 @@ class DumpEventsByClassTest extends \PHPUnit_Framework_TestCase
             ),
         ];
 
-        $eventStream = $this->getMockBuilder(EventStream::class)
+        $eventStream = $this->getMockBuilder(SeekableEventStream::class)
             ->getMock();
         $eventStream->expects($this->once())
             ->method('getIterator')

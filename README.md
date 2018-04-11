@@ -142,6 +142,8 @@ class SomeReadModel
     }
 }
 ```
+The Read-models can be updated in a separate process, in realtime-like (by tailing) or by polling the Event store or even using [JavaScript](https://github.com/xprt64/dudulina-js-connector). Read more here about how you can [keep the Read-model up-to-date](https://github.com/xprt64/dudulina/docs/ReadmodelsAndMicroservices).
+ 
 So, when a command is dispatched the following things happen:
 - the aggregate class is identified
 - the aggregate is loaded from the repository, replaying all previous events
@@ -149,14 +151,16 @@ So, when a command is dispatched the following things happen:
 - the aggregate yields the events
 - the events are persisted to the event store
 - the read-models are notified about the new events
-- the sagas are notified also; if the sagas generate other commands, the loop is restarted
+- the sagas are notified also; if the sagas generate other commands, the loop is started again.
 
 If an exception is thrown by the command handler on the aggregate, no events are persisted and the exception reach the caller
 
 Read the entire [documentation here](DOCUMENTATION.md)
 
 ## The Event store
-There is also a [MongoDB](https://github.com/xprt64/mongolina) implementation of the Event store and a [Restful HTTP API](https://github.com/xprt64/dudulina-eventstore-api) for this Event store if you want to build Read-models in other languages than PHP.
+There is a [MongoDB](https://github.com/xprt64/mongolina) implementation of the Event store and a [Restful HTTP API](https://github.com/xprt64/dudulina-eventstore-api) for this Event store if you want to build Read-models in any other languages than PHP.
+
+A [JavaScript connector](https://github.com/xprt64/dudulina-js-connector) is also available. [Here you can find some examples of updating a Read-model in JavaScript](https://github.com/xprt64/dudulina-js-connector/tree/master/sample).
 
 ## Sample application ##
 A Todo list sample application can be found at [github.com/xprt64/todosample-cqrs-es](https://github.com/xprt64/todosample-cqrs-es).

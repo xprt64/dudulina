@@ -10,9 +10,7 @@ use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventProcessing\ConcurentEventProcessingException;
 use Dudulina\EventStore;
-use Dudulina\EventStore\EventStream;
-use Dudulina\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
-use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
+use Dudulina\EventStore\SeekableEventStream;
 use Dudulina\ProgressReporting\TaskProgressReporter;
 use Dudulina\Saga\SagaEventTrackerRepository;
 use Dudulina\Saga\SagaRunner;
@@ -43,7 +41,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->getMock();
 
-        $eventStream = $this->getMockBuilder(EventStream::class)->getMock();
+        $eventStream = $this->getMockBuilder(SeekableEventStream::class)->getMock();
 
         $eventId1 = Guid::generate();
         $eventId2 = Guid::generate();
@@ -110,7 +108,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->getMock();
 
-        $eventStream = $this->getMockBuilder(EventStream::class)->getMock();
+        $eventStream = $this->getMockBuilder(SeekableEventStream::class)->getMock();
 
         $eventStream->method('getIterator')
             ->willReturn(new \ArrayIterator([
@@ -173,7 +171,7 @@ class SagaRunnerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->getMock();
 
-        $eventStream = $this->getMockBuilder(EventStream::class)->getMock();
+        $eventStream = $this->getMockBuilder(SeekableEventStream::class)->getMock();
 
         $eventStream->method('getIterator')
             ->willReturn(new \ArrayIterator([

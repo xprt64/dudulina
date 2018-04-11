@@ -9,8 +9,8 @@ use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
 use Dudulina\EventStore\AggregateEventStream;
-use Dudulina\EventStore\EventStream;
 use Dudulina\EventStore\Exception\ConcurrentModificationException;
+use Dudulina\EventStore\SeekableEventStream;
 use Gica\Iterator\IteratorTransformer\IteratorExpander;
 
 class InMemoryEventStore implements EventStore
@@ -72,7 +72,7 @@ class InMemoryEventStore implements EventStore
         );
     }
 
-    public function loadEventsByClassNames(array $eventClasses): EventStream
+    public function loadEventsByClassNames(array $eventClasses): SeekableEventStream
     {
         $commits = iterator_to_array((new IteratorExpander(function ($aggregateCommits) {
             yield from $aggregateCommits;
