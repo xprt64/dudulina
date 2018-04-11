@@ -82,6 +82,22 @@ Below it is a sample of complete (re)building of a Readmodel, followed by a tail
 
 It is as simple as that.
 
+If you want to be able to restart the Readmodel-updater without a complete rebuild, you need to persist the last 
+processed event. You can do this be supplying a `EventProcessedNotifier` to the `tailRead` method and the 
+last processed event sequence.
+
+```php
+    /** @var $somePersistentStorage that you own */
+    $lastEventSequence = $somePersistentStorage->load();
+
+    $recreator->tailRead($readmodel, $lastEventSequence, new class implements EventProcessedNotifier {
+        public function onEventProcessed(EventWithMetaData $eventWithMetaData): void
+        {
+            $somePersistentStorage->save((string)$eventWithMetaData->getMetaData()->getSequence()));
+        }
+    });
+```
+
 You can put this inside a docker container or docker swarm service and you have a microservice.
 
 ### Use other programming languages
