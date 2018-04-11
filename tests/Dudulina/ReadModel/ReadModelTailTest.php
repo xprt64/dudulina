@@ -100,7 +100,7 @@ class ReadModelTailTest extends \PHPUnit_Framework_TestCase
                 $this->tailEvents = $tailEvents;
             }
 
-            public function tail(callable $callback, $eventClasses = [], string $afterTimestamp = null): void
+            public function tail(callable $callback, $eventClasses = [], string $afterSequence = null): void
             {
                 foreach ($this->tailEvents as $event) {
                     $callback($event);

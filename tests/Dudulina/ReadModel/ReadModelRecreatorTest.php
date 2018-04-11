@@ -93,8 +93,8 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
 
         /** @var EventWithMetaData[] $events */
         $events = [
-            new EventWithMetaData(new Event1, $metadata->withTimestamp(new EventSequence(100, 0))),
-            new EventWithMetaData(new Event2, $metadata->withTimestamp(new EventSequence(100, 1))),
+            new EventWithMetaData(new Event1, $metadata->withSequence(new EventSequence(100, 0))),
+            new EventWithMetaData(new Event2, $metadata->withSequence(new EventSequence(100, 1))),
         ];
 
         $eventStream = new FilteredRawEventStreamGroupedByCommit([new InMemoryEventsCommit(100, 1, $events)]);
@@ -149,8 +149,8 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
 
         /** @var EventWithMetaData[] $events */
         $events = [
-            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withTimestamp(new EventSequence(100, 0))),
-            new EventWithMetaData(new Event2, $metadata->withEventId(2)->withTimestamp(new EventSequence(100, 1))),
+            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withSequence(new EventSequence(100, 0))),
+            new EventWithMetaData(new Event2, $metadata->withEventId(2)->withSequence(new EventSequence(100, 1))),
         ];
 
         $eventStream = new FilteredRawEventStreamGroupedByCommit([new InMemoryEventsCommit(100, 1, $events)]);

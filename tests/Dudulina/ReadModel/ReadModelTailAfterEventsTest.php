@@ -39,15 +39,15 @@ class ReadModelTailAfterEventsTest extends \PHPUnit_Framework_TestCase
 
         /** @var EventWithMetaData[] $events */
         $events = [
-            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withTimestamp(new EventSequence(100, 0))),
-            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withTimestamp(new EventSequence(100, 0))),
-            new EventWithMetaData(new Event2, $metadata->withEventId(2)->withTimestamp(new EventSequence(100, 1))),
+            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withSequence(new EventSequence(100, 0))),
+            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withSequence(new EventSequence(100, 0))),
+            new EventWithMetaData(new Event2, $metadata->withEventId(2)->withSequence(new EventSequence(100, 1))),
         ];
 
         /** @var EventWithMetaData[] $tailEvents */
         $tailEvents = [
-            new EventWithMetaData(new Event3, $metadata->withEventId(3)->withTimestamp(new EventSequence(200, 0))),
-            new EventWithMetaData(new Event4, $metadata->withEventId(4)->withTimestamp(new EventSequence(200, 1))),
+            new EventWithMetaData(new Event3, $metadata->withEventId(3)->withSequence(new EventSequence(200, 0))),
+            new EventWithMetaData(new Event4, $metadata->withEventId(4)->withSequence(new EventSequence(200, 1))),
         ];
 
         $eventStream = new FilteredRawEventStreamGroupedByCommit([new InMemoryEventsCommit(100, 0, $events)]);
@@ -95,7 +95,7 @@ class ReadModelTailAfterEventsTest extends \PHPUnit_Framework_TestCase
                 $this->tailEvents = $tailEvents;
             }
 
-            public function tail(callable $callback, $eventClasses = [], string $afterTimestamp = null): void
+            public function tail(callable $callback, $eventClasses = [], string $afterSequence = null): void
             {
                 foreach ($this->tailEvents as $event) {
                     $callback($event);

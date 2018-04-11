@@ -32,7 +32,7 @@ class MetaData
      * The sequence/timestamp. It is always increasing
      * @var mixed
      */
-    private $ts = null;
+    private $sequence = null;
 
     /**
      * @var string|null
@@ -85,9 +85,9 @@ class MetaData
             ($dateCreated->setTimezone(new \DateTimeZone('Europe/Bucharest')) ?: $dateCreated);
     }
 
-    public function getTimestamp()
+    public function getSequence()
     {
-        return $this->ts;
+        return $this->sequence;
     }
 
     public function withEventId(string $eventId): self
@@ -97,10 +97,10 @@ class MetaData
         return $other;
     }
 
-    public function withTimestamp($ts): self
+    public function withSequence($ts): self
     {
         $other = clone $this;
-        $other->ts = $ts;
+        $other->sequence = $ts;
         return $other;
     }
 

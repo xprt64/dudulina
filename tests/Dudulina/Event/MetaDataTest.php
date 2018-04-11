@@ -35,7 +35,7 @@ class MetaDataTest extends \PHPUnit_Framework_TestCase
         $metaData2 = $metaData->withEventId('234');
         $this->assertSame('234', $metaData2->getEventId());
 
-        $metaData3 = $metaData->withTimestamp('100');
-        $this->assertSame('100', $metaData3->getTimestamp());
+        $metaData3 = $metaData->withSequence('100');
+        $this->assertSame('100', $metaData3->getSequence());
     }
 }

@@ -83,24 +83,24 @@ class ReadModelRecreator
 
     /**
      * @param ReadModelInterface $readModel
-     * @param string $afterTimestap only the events strictly after this timestamp are applied
+     * @param string $afterSequence only the events strictly after this sequence are applied
      * @return string The last timestamp processed
      */
-    public function pollAndApplyEvents(ReadModelInterface $readModel, string $afterTimestap = null)
+    public function pollAndApplyEvents(ReadModelInterface $readModel, string $afterSequence = null)
     {
         $eventClasses = $this->readModelReflector->getEventClassesFromReadModel($readModel);
 
         $allEvents = $this->eventStore->loadEventsByClassNames($eventClasses);
 
-        if ($afterTimestap) {
-            $allEvents->afterSequence($afterTimestap);
+        if ($afterSequence) {
+            $allEvents->afterSequence($afterSequence);
         }
 
         foreach ($allEvents as $eventWithMetadata) {
             /** @var EventWithMetaData $eventWithMetadata */
             $this->readModelEventApplier->applyEventOnlyOnce($readModel, $eventWithMetadata);
-            $afterTimestap = $eventWithMetadata->getMetaData()->getTimestamp();
+            $afterSequence = $eventWithMetadata->getMetaData()->getSequence();
         }
-        return $afterTimestap;
+        return $afterSequence;
     }
 }

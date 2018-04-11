@@ -145,7 +145,7 @@ class RawEventStreamTest extends \PHPUnit_Framework_TestCase
             null
         );
         if ($eventSequence) {
-            $metaData = $metaData->withTimestamp($eventSequence);
+            $metaData = $metaData->withSequence($eventSequence);
         }
         return new EventWithMetaData(
             $event,

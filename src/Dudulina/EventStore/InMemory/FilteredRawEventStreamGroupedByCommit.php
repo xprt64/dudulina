@@ -1,16 +1,16 @@
 <?php
-
+/**
+ * Copyright (c) 2018 Constantin Galbenu <xprt64@gmail.com>
+ */
 
 namespace Dudulina\EventStore\InMemory;
 
-
 use Dudulina\Event\EventWithMetaData;
-use Dudulina\EventStore\EventStream;
 use Dudulina\EventStore\SeekableEventStream;
 use Gica\Iterator\IteratorTransformer\IteratorExpander;
 use Gica\Iterator\IteratorTransformer\IteratorFilter;
 
-class FilteredRawEventStreamGroupedByCommit implements EventStream, SeekableEventStream
+class FilteredRawEventStreamGroupedByCommit implements SeekableEventStream
 {
     /**
      * @var InMemoryEventsCommit[]
@@ -55,7 +55,7 @@ class FilteredRawEventStreamGroupedByCommit implements EventStream, SeekableEven
         if ($this->afterSequence) {
             $filter = new IteratorFilter(function (EventWithMetaData $eventWithMetaData) {
                 /** @var EventSequence $eventSequence */
-                $eventSequence = $eventWithMetaData->getMetaData()->getTimestamp();
+                $eventSequence = $eventWithMetaData->getMetaData()->getSequence();
                 return $eventSequence->isAfter($this->afterSequence);
             });
             $events = $filter($events);
@@ -64,7 +64,7 @@ class FilteredRawEventStreamGroupedByCommit implements EventStream, SeekableEven
         if ($this->beforeSequence) {
             $filter = new IteratorFilter(function (EventWithMetaData $eventWithMetaData) {
                 /** @var EventSequence $eventSequence */
-                $eventSequence = $eventWithMetaData->getMetaData()->getTimestamp();
+                $eventSequence = $eventWithMetaData->getMetaData()->getSequence();
                 return $eventSequence->isBefore($this->beforeSequence);
             });
             $events = $filter($events);

@@ -64,19 +64,19 @@ class ReadModelTail
 
         $this->logger->info('applying events...');
 
-        $lastTimestamp = $after;
+        $lastSequence = $after;
 
         foreach ($allEvents as $eventWithMetadata) {
             /** @var EventWithMetaData $eventWithMetadata */
             $this->readModelEventApplier->applyEventOnlyOnce($readModel, $eventWithMetadata);
-            $lastTimestamp = $eventWithMetadata->getMetaData()->getTimestamp();
+            $lastSequence = $eventWithMetadata->getMetaData()->getSequence();
         }
 
         $this->logger->info('tailing events...');
 
         $this->tailableEventStream->tail(function (EventWithMetaData $eventWithMetadata) use ($readModel) {
             $this->readModelEventApplier->applyEventOnlyOnce($readModel, $eventWithMetadata);
-        }, $eventClasses, $lastTimestamp);
+        }, $eventClasses, $lastSequence);
     }
 
 }
