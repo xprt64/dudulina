@@ -100,6 +100,23 @@ last processed event sequence.
 
 You can put this inside a docker container or docker swarm service and you have a microservice.
 
+#### Safely resuming a Readmodel-updater
+
+In order to restart a Readmodel one needs to *remember* the last processed event and to continue from there.
+It should be a simple thing, and it is, in most of the cases. 
+But there are situations when an event is processed more than once: when the Readmodel processes the event 
+(i.e. by inserting/updating some entity) and then the host process is somehow stopped (i.e. a server crash).
+In this way, the last processed event sequence is not persisted so it is not remembered. The next time the Readmodel
+starts, it will process again the last processed event. This is a problem in many of the cases. There are at least
+two solutions:
+
+1. make the entity mutation idempotent; this means for example that a failed attempt to create an existing entity should be *silently* ignored.
+2. store the last processed event sequence in the same transaction (in the same place) as the mutation is done and 
+ask the Readmodel-updater to get the last processed event sequence. This is the safest possible solution. The con is the 
+fact that the Readmodel-updater has an additional responsibility: to remember the last processed event sequence. 
+
+One needs to decide for himself what is the best solution.
+
 ### Use other programming languages
 
 If you want to use JavaScript you can use [dudulina-js-connector](https://github.com/xprt64/dudulina-js-connector) 
