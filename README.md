@@ -166,7 +166,7 @@ A [JavaScript connector](https://github.com/xprt64/dudulina-js-connector) is als
 A Todo list sample application can be found at [github.com/xprt64/todosample-cqrs-es](https://github.com/xprt64/todosample-cqrs-es).
 
 ## Querying an Aggregate in DDD ##
-Read more about how to [query an Aggregate](https://github.com/xprt64/dudulina/blob/master/docs/QueryingAnAggregate.md) in order to test if a command will succeed or not, without actually executing id.
+Read more about how to [query an Aggregate](https://github.com/xprt64/dudulina/blob/master/docs/QueryingAnAggregate.md) in order to test if a command will succeed or not, without actually executing it.
 
 ## Questions? ##
 Feel free to post to this group: [https://groups.google.com/forum/#!forum/cqrs--event-sourcing-for-php](https://groups.google.com/forum/#!forum/cqrs--event-sourcing-for-php).
