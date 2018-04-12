@@ -142,7 +142,7 @@ class SomeReadModel
     }
 }
 ```
-The Read-models can be updated in a separate process, in realtime-like (by tailing) or by polling the Event store or even using [JavaScript](https://github.com/xprt64/dudulina-js-connector). Read more here about how you can [keep the Read-model up-to-date](https://github.com/xprt64/dudulina/docs/ReadmodelsAndMicroservices).
+The Read-models can be updated in a separate process, in realtime-like (by tailing) or by polling the Event store or even using [JavaScript](https://github.com/xprt64/dudulina-js-connector). Read more here about how you can [keep the Read-model up-to-date](https://github.com/xprt64/dudulina/blob/master/docs/ReadmodelsAndMicroservices.md).
  
 So, when a command is dispatched the following things happen:
 - the aggregate class is identified
@@ -164,6 +164,9 @@ A [JavaScript connector](https://github.com/xprt64/dudulina-js-connector) is als
 
 ## Sample application ##
 A Todo list sample application can be found at [github.com/xprt64/todosample-cqrs-es](https://github.com/xprt64/todosample-cqrs-es).
+
+## Querying an Aggregate in DDD ##
+Read more about how to [query an Aggregate](https://github.com/xprt64/dudulina/blob/master/docs/QueryingAnAggregate.md) in order to test if a command will succeed or not, without actually executing id.
 
 ## Questions? ##
 Feel free to post to this group: [https://groups.google.com/forum/#!forum/cqrs--event-sourcing-for-php](https://groups.google.com/forum/#!forum/cqrs--event-sourcing-for-php).
