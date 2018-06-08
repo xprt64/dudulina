@@ -331,4 +331,4 @@ Scheduled commands could be processed in a [cron job](https://github.com/xprt64/
 See a [demo here](https://github.com/xprt64/todosample-cqrs-es/blob/master/bin/cron/play_scheduled_commands.php).
 
 ## UML Diagram ##
-[![UML Diagram](https://github.com/xprt64/dudulina/blob/master/docs/dudulina.svg)](https://github.com/xprt64/dudulina/blob/master/docs/dudulina.svg)
+[![UML Diagram](https://github.com/xprt64/dudulina/blob/master/docs/dudulina.svg)](https://github.com/xprt64/dudulina/blob/master/docs/dudulina.jpg)
