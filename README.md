@@ -7,7 +7,7 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/xprt64/cqrs-es/badges/coverage.png?b=master&rand=4)](https://scrutinizer-ci.com/g/xprt64/cqrs-es/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/xprt64/cqrs-es/badges/build.png?b=master&rand=4)](https://scrutinizer-ci.com/g/xprt64/cqrs-es/build-status/master)
 
-This is a non-obtrusive CQRS + Event Sourcing library that helps building complex DDD web applications.
+This is a non-obtrusive [CQRS](http://www.cqrs.nu/) + Event Sourcing library that helps building complex DDD web applications.
 
 ## Minimum dependency on the library in the domain code ##
 ### Only 3 interfaces need to be implemented ###
