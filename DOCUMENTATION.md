@@ -329,3 +329,6 @@ that command will be scheduled to be dispatched at the specified date by [\Dudul
 
 Scheduled commands could be processed in a [cron job](https://github.com/xprt64/todosample-cqrs-es/blob/master/deploy/cron). See [\Dudulina\Scheduling\ScheduledCommandsDispatcher](https://github.com/xprt64/cqrs-es/blob/master/src/Gica/Cqrs/Scheduling/ScheduledCommandsDispatcher.php) for more informations.
 See a [demo here](https://github.com/xprt64/todosample-cqrs-es/blob/master/bin/cron/play_scheduled_commands.php).
+
+## UML Diagram ##
+[![UML Diagram](https://yuml.me/xprt64/dudulina.svg)](https://yuml.me/xprt64/dudulina.svg)
