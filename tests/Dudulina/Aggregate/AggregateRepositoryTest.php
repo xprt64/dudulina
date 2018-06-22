@@ -8,7 +8,7 @@ namespace tests\Dudulina\Aggregate;
 
 
 use Dudulina\Aggregate\AggregateDescriptor;
-use Dudulina\Aggregate\AggregateRepository;
+use Dudulina\Aggregate\EventSourcedAggregateRepository;
 use Dudulina\Event\EventsApplier\EventsApplierOnAggregate;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
@@ -44,7 +44,7 @@ class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
         $eventStore = $this->mockEventStore();
         $eventsApplier = $this->mockEventsApplierOnAggregate();
 
-        $aggregateRepository = new AggregateRepository(
+        $aggregateRepository = new EventSourcedAggregateRepository(
             $eventStore,
             $eventsApplier
         );

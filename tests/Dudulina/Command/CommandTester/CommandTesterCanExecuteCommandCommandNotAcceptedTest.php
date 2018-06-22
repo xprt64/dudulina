@@ -6,7 +6,7 @@
 namespace tests\Dudulina\Command\CommandTester\CommandDispatcherCanExecuteCommandCommandNotAcceptedTest;
 
 
-use Dudulina\Aggregate\AggregateRepository;
+use Dudulina\Aggregate\EventSourcedAggregateRepository;
 use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
 use Dudulina\Command\CommandSubscriber;
@@ -48,7 +48,7 @@ class CommandTesterCanExecuteCommandCommandNotAcceptedTest extends \PHPUnit_Fram
 
         $commandApplier = new CommandApplier();
 
-        $aggregateRepository = new AggregateRepository($eventStore, $eventsApplierOnAggregate);
+        $aggregateRepository = new EventSourcedAggregateRepository($eventStore, $eventsApplierOnAggregate);
 
         Aggregate1::$expectedCommand = $this->command;
 

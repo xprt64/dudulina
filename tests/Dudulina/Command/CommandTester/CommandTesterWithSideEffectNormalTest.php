@@ -7,7 +7,7 @@ namespace tests\Dudulina\Command\CommandTester\CommandTesterWithSideEffectNormal
 
 
 use Dudulina\Aggregate\AggregateDescriptor;
-use Dudulina\Aggregate\AggregateRepository;
+use Dudulina\Aggregate\EventSourcedAggregateRepository;
 use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
 use Dudulina\Command\CommandSubscriber;
@@ -52,7 +52,7 @@ class CommandTesterWithSideEffectNormalTest extends \PHPUnit_Framework_TestCase
 
         $commandApplier = new CommandApplier();
 
-        $aggregateRepository = new AggregateRepository($eventStore, $eventsApplierOnAggregate);
+        $aggregateRepository = new EventSourcedAggregateRepository($eventStore, $eventsApplierOnAggregate);
 
         Aggregate1::$state = 0;
 

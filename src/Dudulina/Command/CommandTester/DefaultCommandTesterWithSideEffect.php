@@ -6,7 +6,7 @@
 namespace Dudulina\Command\CommandTester;
 
 use Dudulina\Aggregate\AggregateDescriptor;
-use Dudulina\Aggregate\AggregateRepository;
+use Dudulina\Aggregate\EventSourcedAggregateRepository;
 use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
 use Dudulina\Command\CommandSubscriber;
@@ -32,7 +32,7 @@ class DefaultCommandTesterWithSideEffect implements CommandTesterWithSideEffect
      */
     private $commandApplier;
     /**
-     * @var AggregateRepository
+     * @var EventSourcedAggregateRepository
      */
     private $aggregateRepository;
     /**
@@ -51,7 +51,7 @@ class DefaultCommandTesterWithSideEffect implements CommandTesterWithSideEffect
     public function __construct(
         CommandSubscriber $commandSubscriber,
         CommandApplier $commandApplier,
-        AggregateRepository $aggregateRepository,
+        EventSourcedAggregateRepository $aggregateRepository,
         EventsApplierOnAggregate $eventsApplier,
         EventMetadataFactory $eventMetadataFactory,
         CommandMetadataFactory $commandMetadataFactory

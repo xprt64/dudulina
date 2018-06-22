@@ -6,7 +6,7 @@
 namespace tests\Dudulina\Command\CommandDispatcher\CommandDispatcherCommandNotAcceptedTest;
 
 
-use Dudulina\Aggregate\AggregateRepository;
+use Dudulina\Aggregate\EventSourcedAggregateRepository;
 use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
 use Dudulina\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
@@ -52,7 +52,7 @@ class CommandDispatcherCommandNotAcceptedTest extends \PHPUnit_Framework_TestCas
 
         $commandApplier = new CommandApplier();
 
-        $aggregateRepository = new AggregateRepository($eventStore, $eventsApplierOnAggregate);
+        $aggregateRepository = new EventSourcedAggregateRepository($eventStore, $eventsApplierOnAggregate);
 
         $concurrentProofFunctionCaller = new ConcurrentProofFunctionCaller;
 
