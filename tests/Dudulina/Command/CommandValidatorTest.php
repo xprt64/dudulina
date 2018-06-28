@@ -8,7 +8,7 @@ use Dudulina\Command;
 use Dudulina\Command\CommandValidation\CommandValidatorSubscriber;
 use Dudulina\Command\CommandValidator;
 use Dudulina\Command\ValueObject\CommandHandlerDescriptor;
-use Gica\Dependency\AbstractFactory;
+use Psr\Container\ContainerInterface;
 
 
 class CommandValidatorTest extends \PHPUnit_Framework_TestCase
@@ -22,9 +22,8 @@ class CommandValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $commandValidator = new CommandValidator(
             $this->mockCommandValidatorSubscriber(),
-            $this->mockAbstractFactory()
+            $this->mockContainer()
         );
-
         $commandValidator->validateCommand($this->mockCommand());
     }
 
@@ -34,7 +33,6 @@ class CommandValidatorTest extends \PHPUnit_Framework_TestCase
             $this->validator = $this->getMockBuilder(\stdClass::class)
                 ->setMethods(['validateTheCommand'])
                 ->getMock();
-
             $this->validator->expects($this->once())
                 ->method('validateTheCommand')
                 ->with($this->mockCommand())
@@ -42,10 +40,8 @@ class CommandValidatorTest extends \PHPUnit_Framework_TestCase
                     yield "some error";
                 });
         }
-
         /** @var CommandValidatorSubscriber $validator */
         return $this->validator;
-
     }
 
     private function mockCommand(): Command
@@ -54,7 +50,6 @@ class CommandValidatorTest extends \PHPUnit_Framework_TestCase
             $this->command = $this->getMockBuilder(Command::class)
                 ->getMock();
         }
-
         return $this->command;
     }
 
@@ -62,30 +57,28 @@ class CommandValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $commandValidatorSubscriber = $this->getMockBuilder(CommandValidatorSubscriber::class)
             ->getMock();
-
         $commandValidatorSubscriber->expects($this->once())
             ->method('getHandlersForCommand')
             ->with($this->mockCommand())
-            ->willReturn([new CommandHandlerDescriptor(
-                get_class($this->mockValidator()),
-                'validateTheCommand'
-            )]);
-
+            ->willReturn([
+                new CommandHandlerDescriptor(
+                    \get_class($this->mockValidator()),
+                    'validateTheCommand'
+                ),
+            ]);
         /** @var CommandValidatorSubscriber $commandValidatorSubscriber */
         return $commandValidatorSubscriber;
     }
 
-    private function mockAbstractFactory(): AbstractFactory
+    private function mockContainer()
     {
-        $abstractFactory = $this->getMockBuilder(AbstractFactory::class)
+        $container = $this->getMockBuilder(ContainerInterface::class)
             ->getMock();
-
-        $abstractFactory->expects($this->once())
-            ->method('createObject')
-            ->with(get_class($this->mockValidator()))
+        $container->expects($this->once())
+            ->method('get')
+            ->with(\get_class($this->mockValidator()))
             ->willReturn($this->mockValidator());
-
-        /** @var AbstractFactory $abstractFactory */
-        return $abstractFactory;
+        /** @var ContainerInterface $container */
+        return $container;
     }
 }

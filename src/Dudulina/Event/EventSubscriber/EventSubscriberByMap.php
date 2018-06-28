@@ -7,20 +7,20 @@ namespace Dudulina\Event\EventSubscriber;
 
 
 use Dudulina\Event\EventSubscriber;
-use Gica\Dependency\AbstractFactory;
+use Psr\Container\ContainerInterface;
 
 abstract class EventSubscriberByMap implements EventSubscriber
 {
     abstract protected function getMap(): array;
 
-    /** @var AbstractFactory */
-    private $abstractFactory;
+    /** @var ContainerInterface */
+    private $container;
 
     public function __construct(
-        AbstractFactory $abstractFactory
+        ContainerInterface $container
     )
     {
-        $this->abstractFactory = $abstractFactory;
+        $this->container = $container;
     }
 
     /**
@@ -29,7 +29,7 @@ abstract class EventSubscriberByMap implements EventSubscriber
      */
     private function createListenerByMethod(array $listenerDescriptor)
     {
-        return [$this->abstractFactory->createObject($listenerDescriptor[0]), $listenerDescriptor[1]];
+        return [$this->container->get($listenerDescriptor[0]), $listenerDescriptor[1]];
     }
 
     /**

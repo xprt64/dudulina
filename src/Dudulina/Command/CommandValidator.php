@@ -9,7 +9,7 @@ namespace Dudulina\Command;
 use Dudulina\Command;
 use Dudulina\Command\CommandValidation\CommandValidatorSubscriber;
 use Dudulina\Command\ValueObject\CommandHandlerDescriptor;
-use Gica\Dependency\AbstractFactory;
+use Psr\Container\ContainerInterface;
 
 class CommandValidator
 {
@@ -19,36 +19,29 @@ class CommandValidator
      */
     private $commandValidatorSubscriber;
     /**
-     * @var AbstractFactory
+     * @var ContainerInterface
      */
-    private $abstractFactory;
+    private $container;
 
     public function __construct(
         CommandValidatorSubscriber $subscriber,
-        AbstractFactory $abstractFactory
+        ContainerInterface $container
     )
     {
         $this->commandValidatorSubscriber = $subscriber;
-        $this->abstractFactory = $abstractFactory;
+        $this->container = $container;
     }
 
     public function validateCommand(Command $command)
     {
         $handlerDescriptors = $this->commandValidatorSubscriber->getHandlersForCommand($command);
-
-        $errors = [];
-
+        $errors = [[]];
         /** @var CommandHandlerDescriptor $handlerDescriptor */
         foreach ($handlerDescriptors as $handlerDescriptor) {
-            $handler = $this->abstractFactory->createObject($handlerDescriptor->getHandlerClass());
-
+            $handler = $this->container->get($handlerDescriptor->getHandlerClass());
             $generator = call_user_func([$handler, $handlerDescriptor->getMethodName()], $command);
-
-            $ownErrors = iterator_to_array($generator, false);
-
-            $errors = array_merge($errors, $ownErrors);
+            $errors[] = iterator_to_array($generator, false);
         }
-
-        return $errors;
+        return array_merge(...$errors);
     }
 }
