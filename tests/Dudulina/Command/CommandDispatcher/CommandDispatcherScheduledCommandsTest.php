@@ -12,7 +12,7 @@ use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
 use Dudulina\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
 use Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher;
-use Dudulina\Command\CommandDispatcher\SideEffectsDispatcher;
+use Dudulina\Command\CommandDispatcher\SideEffectsDispatcher\DefaultSideEffectsDispatcher;
 use Dudulina\Command\CommandMetadata;
 use Dudulina\Command\CommandSubscriber;
 use Dudulina\Command\MetadataFactory\DefaultMetadataWrapper;
@@ -60,7 +60,7 @@ class CommandDispatcherScheduledCommandsTest extends \PHPUnit_Framework_TestCase
             $eventsApplierOnAggregate,
             new DefaultMetadataFactory(),
             new DefaultMetadataWrapper(),
-            new SideEffectsDispatcher($eventDispatcher, $scheduledCommandStore)
+            new DefaultSideEffectsDispatcher($eventDispatcher, $scheduledCommandStore)
         );
 
         $commandDispatcher->dispatchCommand($command);

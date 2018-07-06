@@ -11,6 +11,7 @@ use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
 use Dudulina\Command\CommandDispatcher;
 use Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher\SideEffects;
+use Dudulina\Command\CommandDispatcher\SideEffectsDispatcher\DefaultSideEffectsDispatcher;
 use Dudulina\Command\CommandMetadata;
 use Dudulina\Command\CommandSubscriber;
 use Dudulina\Command\CommandWithMetadata;
@@ -84,19 +85,15 @@ class DefaultCommandDispatcher implements CommandDispatcher
         $sideEffects = $this->dispatchCommandAndSaveAggregate(
             $this->commandMetadataFactory->wrapCommandWithMetadata($command, $metadata)
         );
-
         $this->sideEffectsDispatcher->dispatchSideEffects($sideEffects->withCommandMetadata($metadata));
     }
 
     private function tryDispatchCommandAndSaveAggregate(CommandWithMetadata $command)
     {
         $handlerAndAggregate = $this->loadCommandHandlerAndAggregate($command);
-
         $dispatchResult = $this->applyCommandAndReturnSideEffects($command, $handlerAndAggregate);
-
         $eventsForNow = $this->aggregateRepository->saveAggregate(
             $command->getAggregateId(), $handlerAndAggregate->getAggregate(), $dispatchResult->getEventsForNow());
-
         return $dispatchResult->withEventsForNow($eventsForNow);
     }
 
@@ -110,11 +107,9 @@ class DefaultCommandDispatcher implements CommandDispatcher
     private function loadCommandHandlerAndAggregate(CommandWithMetadata $command): CommandHandlerAndAggregate
     {
         $handler = $this->commandSubscriber->getHandlerForCommand($command->getCommand());
-
         $aggregate = $this->aggregateRepository->loadAggregate(
             new AggregateDescriptor($command->getAggregateId(), $handler->getHandlerClass())
         );
-
         return new CommandHandlerAndAggregate($handler, $aggregate);
     }
 
@@ -127,17 +122,12 @@ class DefaultCommandDispatcher implements CommandDispatcher
     {
         $aggregate = $handlerAndAggregate->getAggregate();
         $handler = $handlerAndAggregate->getCommandHandler();
-
         $metaData = $this->eventMetadataFactory->factoryEventMetadata($command, $aggregate);
-
         $newMessageGenerator = $this->commandApplier->applyCommand($aggregate, $command->getCommand(), $handler->getMethodName());
-
         /** @var EventWithMetaData[] $eventsWithMetaData */
         $eventsWithMetaData = [];
-
         /** @var ScheduledCommand[] $scheduledCommands */
         $scheduledCommands = [];
-
         foreach ($newMessageGenerator as $message) {
             if ($this->isScheduledCommand($message)) {
                 $scheduledCommands[] = $message;
@@ -147,7 +137,6 @@ class DefaultCommandDispatcher implements CommandDispatcher
                 $eventsWithMetaData[] = $eventWithMetaData;
             }
         }
-
         return new SideEffects(
             new AggregateDescriptor($command->getAggregateId(), $handler->getHandlerClass()),
             $eventsWithMetaData,

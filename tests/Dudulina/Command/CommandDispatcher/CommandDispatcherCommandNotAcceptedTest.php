@@ -11,7 +11,7 @@ use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
 use Dudulina\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
 use Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher;
-use Dudulina\Command\CommandDispatcher\SideEffectsDispatcher;
+use Dudulina\Command\CommandDispatcher\SideEffectsDispatcher\DefaultSideEffectsDispatcher;
 use Dudulina\Command\CommandSubscriber;
 use Dudulina\Command\MetadataFactory\DefaultMetadataWrapper;
 use Dudulina\Event\EventDispatcher\EventDispatcherBySubscriber;
@@ -69,7 +69,7 @@ class CommandDispatcherCommandNotAcceptedTest extends \PHPUnit_Framework_TestCas
             $eventsApplierOnAggregate,
             new DefaultMetadataFactory(),
             new DefaultMetadataWrapper(),
-            new SideEffectsDispatcher($eventDispatcher)
+            new DefaultSideEffectsDispatcher($eventDispatcher)
         );
 
         $commandDispatcher->dispatchCommand($this->command);
