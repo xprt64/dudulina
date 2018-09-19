@@ -39,9 +39,11 @@ class EventDispatcherBySubscriber implements EventDispatcher
                 if ($this->logger) {
                     $this->logger->error(
                         sprintf(
-                            "Dispatch event of type %s to %s failed: %s",
+                            "Dispatch event of type %s to %s failed on %s:%d: %s",
                             \get_class($eventWithMetadata->getEvent()),
                             \get_class($listener[0]),
+                            $exception->getFile(),
+                            $exception->getLine(),
                             $exception->getMessage()),
                         [
                             'eventId'    => $eventWithMetadata->getMetaData()->getEventId(),
