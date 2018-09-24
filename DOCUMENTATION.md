@@ -220,7 +220,7 @@ class CommandHandlerSubscriber extends CommandSubscriberByMap
 }
 ```
 The map has the key as the Event class and the value as command handler (Aggregate class + method name).
-This map (the file that contain the `CommandHandlerSubscriber` class) is constructed automatically by a tool, `\Dudulina\CodeGeneration\CommandHandlersMapCodeGenerator`, that scans all the files in the `Write` folder in the Domain layer and finds all the command handlers.
+This map (the file that contain the `CommandHandlerSubscriber` class) is constructed automatically by a tool, `\Dudulina\CodeGeneration\Command\CommandHandlersMapCodeGenerator`, that scans all the files in the `Write` folder in the Domain layer and finds all the command handlers.
 Every time you add a new Command and a new command handler, you must run this tool to update the mapping between Commands and command handlers.
 There is possibility that more than one command handler exists for a Command. The tool can and will detect this.
 

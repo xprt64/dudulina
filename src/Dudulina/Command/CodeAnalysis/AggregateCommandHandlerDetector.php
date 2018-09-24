@@ -19,6 +19,7 @@ class AggregateCommandHandlerDetector implements MessageClassDetector
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod):bool
     {
-        return 0 === stripos($reflectionMethod->name, 'handle');
+        return 0 === stripos($reflectionMethod->name, 'handle') ||
+            false !== stripos($reflectionMethod->getDocComment(), '@AggregateCommandHandler');
     }
 }

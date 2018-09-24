@@ -18,7 +18,10 @@ class ReadModel1 implements ReadModelInterface
     {
     }
 
-    public function onEvent1(Event1 $event)
+    /**
+     * @EventListener
+     */
+    public function Event1(Event1 $event)
     {
 
     }

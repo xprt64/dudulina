@@ -1,14 +1,12 @@
 <?php
-
+/**
+ * Copyright (c) 2018 Constantin Galbenu <xprt64@gmail.com>
+ */
 
 namespace tests\Dudulina\CodeGeneration;
 
-
-use Dudulina\CodeGeneration\ReadModelsMapCodeGenerator;
-use Gica\FileSystem\FileSystemInterface;
-use Gica\FileSystem\InMemoryFileSystem;
-use tests\Dudulina\CodeGeneration\ReadModelsMapCodeGeneratorData\ReadModelsMap;
-use tests\Dudulina\CodeGeneration\ReadModelsMapCodeGeneratorData\ReadModelsMapTemplate;
+use Dudulina\CodeGeneration\Event\ReadModelsMapCodeGenerator;
+use Dudulina\CodeGeneration\Event\ReadModelsMapTemplate;
 
 
 class ReadModelsMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
@@ -26,25 +24,23 @@ class ReadModelsMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function test_generate()
     {
-        $fileSystem = $this->stubFileSystem();
+        $template = file_get_contents(__DIR__ . '/../../../src/Dudulina/CodeGeneration/Event/ReadModelsMapTemplate.php');
 
-        $sut = new ReadModelsMapCodeGenerator(
-            $this->mockLogger(),
-            $fileSystem
+        $sut = new ReadModelsMapCodeGenerator();
+
+        $generated = $sut->generateClass(
+            $template,
+            new \ArrayIterator([
+                __DIR__ . '/ReadModelsMapCodeGeneratorData/Events/Event1.php',
+                __DIR__ . '/ReadModelsMapCodeGeneratorData/Events/Event2.php',
+                __DIR__ . '/ReadModelsMapCodeGeneratorData/FirstReadModel.php',
+                __DIR__ . '/ReadModelsMapCodeGeneratorData/subdir/SecondReadModel.php',
+            ])
         );
 
-        $sut->generate(
-            ReadModelsMapTemplate::class,
-            new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . '/ReadModelsMapCodeGeneratorData')),
-            __DIR__ . '/ReadModelsMapCodeGeneratorData/ReadModelsMap.php',
-            'ReadModelsMap'
-        );
+        $this->evaluateGeneratedClass($generated);
 
-        $this->evaluateGeneratedClass($fileSystem);
-
-        /** @var ReadModelsMapTemplate $mapper */
-        /** @noinspection PhpUndefinedClassInspection */
-        $mapper = new ReadModelsMap();
+        $mapper = new ReadModelsMapTemplate();
 
         $map = $mapper->getEventHandlersDefinitions();
 
@@ -53,31 +49,9 @@ class ReadModelsMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::EXPECTED_MAP, $map);
     }
 
-    private function mockLogger()
+    private function evaluateGeneratedClass(string $content)
     {
-        $logger = $this->getMockBuilder(\Psr\Log\LoggerInterface::class)
-            ->getMock();
-        return $logger;
-        /** @var \Psr\Log\LoggerInterface $logger */
-    }
-
-    private function evaluateGeneratedClass(FileSystemInterface $fileSystem)
-    {
-        if (class_exists(ReadModelsMap::class)) {
-            return;
-        }
-
-        $content = $fileSystem->fileGetContents(__DIR__ . '/ReadModelsMapCodeGeneratorData/ReadModelsMap.php');
         $content = str_replace('<?php', '', $content);
         eval($content);
-    }
-
-    private function stubFileSystem(): InMemoryFileSystem
-    {
-        $fileSystem = new InMemoryFileSystem();
-
-        $fileSystem->makeDirectory(__DIR__ . '/ReadModelsMapCodeGeneratorData', 0777, true);
-        $fileSystem->filePutContents(__DIR__ . '/ReadModelsMapCodeGeneratorData/ReadModelsMapTemplate.php', file_get_contents(__DIR__ . '/ReadModelsMapCodeGeneratorData/ReadModelsMapTemplate.php'));
-        return $fileSystem;
     }
 }

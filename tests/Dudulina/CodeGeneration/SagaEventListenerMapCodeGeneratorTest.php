@@ -4,9 +4,7 @@
 namespace tests\Dudulina\CodeGeneration;
 
 
-use Dudulina\CodeGeneration\SagaEventListenerMapCodeGenerator;
-use Gica\FileSystem\FileSystemInterface;
-use Gica\FileSystem\InMemoryFileSystem;
+use Dudulina\CodeGeneration\Event\SagaEventProcessorsMapCodeGenerator;
 use tests\Dudulina\CodeGeneration\SagaEventListenerMapCodeGeneratorData\Event1;
 use tests\Dudulina\CodeGeneration\SagaEventListenerMapCodeGeneratorData\Event2;
 use tests\Dudulina\CodeGeneration\SagaEventListenerMapCodeGeneratorData\Saga1;
@@ -35,22 +33,21 @@ class SagaEventListenerMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function test()
     {
-        $fileSystem = $this->stubFileSystem();
+        $template = file_get_contents(__DIR__ . '/../../../src/Dudulina/CodeGeneration/Event/SagaEventProcessorsMapTemplate.php');
 
-        $sut = new SagaEventListenerMapCodeGenerator(
-            $this->mockLogger(),
-            $fileSystem);
+        $sut = new SagaEventProcessorsMapCodeGenerator();
 
-        $sut->generate(
-            SagaEventProcessorsMapTemplate::class,
-            new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . '/SagaEventListenerMapCodeGeneratorData')),
-            __DIR__ . '/SagaEventListenerMapCodeGeneratorData/SagaEventProcessorsMap.php',
-            'SagaEventProcessorsMap'
+        $generated = $sut->generateClass(
+            $template,
+            new \ArrayIterator([
+                __DIR__ . '/SagaEventListenerMapCodeGeneratorData/Saga1.php',
+                __DIR__ . '/SagaEventListenerMapCodeGeneratorData/Saga2.php',
+            ])
         );
 
-        $this->evaluateGeneratedClass($fileSystem);
+        $this->evaluateGeneratedClass($generated);
 
-        $mapper = new SagaEventProcessorsMap();
+        $mapper = new \Dudulina\CodeGeneration\Event\SagaEventProcessorsMapTemplate();
 
         $map = $mapper->getMap();
 
@@ -61,34 +58,9 @@ class SagaEventListenerMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    private function mockLogger()
+    private function evaluateGeneratedClass($content)
     {
-        $logger = $this->getMockBuilder(\Psr\Log\LoggerInterface::class)
-            ->getMock();
-        return $logger;
-        /** @var \Psr\Log\LoggerInterface $logger */
-    }
-
-    private function evaluateGeneratedClass(FileSystemInterface $fileSystem)
-    {
-        if (class_exists(SagaEventProcessorsMap::class)) {
-            return;
-        }
-
-        $content = $fileSystem->fileGetContents(__DIR__ . '/SagaEventListenerMapCodeGeneratorData/SagaEventProcessorsMap.php');
         $content = str_replace('<?php', '', $content);
         eval($content);
     }
-
-    private function stubFileSystem(): InMemoryFileSystem
-    {
-        $fileSystem = new InMemoryFileSystem();
-
-        $fileSystem->makeDirectory(__DIR__ . '/SagaEventListenerMapCodeGeneratorData', 0777, true);
-        $fileSystem->filePutContents(
-            __DIR__ . '/SagaEventListenerMapCodeGeneratorData/SagaEventProcessorsMapTemplate.php',
-            file_get_contents(__DIR__ . '/SagaEventListenerMapCodeGeneratorData/SagaEventProcessorsMapTemplate.php'));
-        return $fileSystem;
-    }
-
 }

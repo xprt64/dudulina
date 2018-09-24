@@ -25,7 +25,7 @@
     "xprt64/iterator": "^1.0",
     "xprt64/filesystem": "^1.0.1",
     "psr/log": "^1.0",
-    "xprt64/code-analysis": "^1.1.11",
+    "xprt64/code-analysis": "^1.1.14",
     "xprt64/selector": "^0.0.3"
   },
   "require-dev": {

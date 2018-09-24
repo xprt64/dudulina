@@ -19,6 +19,7 @@ class AggregateCommandValidatorDetector implements MessageClassDetector
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod):bool
     {
-        return 0 === stripos($reflectionMethod->name, 'validate');
+        return 0 === stripos($reflectionMethod->name, 'validate') ||
+            false !== stripos($reflectionMethod->getDocComment(), '@AggregateCommandValidator');
     }
 }

@@ -19,6 +19,7 @@ class WriteSideEventHandlerDetector implements MessageClassDetector
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod):bool
     {
-        return 0 === stripos($reflectionMethod->name, 'process');
+        return 0 === stripos($reflectionMethod->name, 'process') ||
+            false !== stripos($reflectionMethod->getDocComment(), '@EventProcessor');
     }
 }

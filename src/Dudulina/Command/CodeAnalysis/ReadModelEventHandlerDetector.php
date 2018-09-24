@@ -19,6 +19,7 @@ class ReadModelEventHandlerDetector implements MessageClassDetector
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod): bool
     {
-        return 0 === stripos($reflectionMethod->name, 'on');
+        return 0 === stripos($reflectionMethod->name, 'on') ||
+            false !== stripos($reflectionMethod->getDocComment(), '@EventListener');
     }
 }

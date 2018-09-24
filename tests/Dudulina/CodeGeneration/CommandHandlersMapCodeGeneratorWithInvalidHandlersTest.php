@@ -1,54 +1,27 @@
 <?php
+/**
+ * Copyright (c) 2018 Constantin Galbenu <xprt64@gmail.com>
+ */
 
-
-namespace tests\Dudulina\CodeGeneration;
-
-
-use Dudulina\CodeGeneration\CommandHandlersMapCodeGenerator;
-use Gica\FileSystem\InMemoryFileSystem;
-use tests\Dudulina\CodeGeneration\CommandHandlersMapCodeGeneratorWithInvalidHandlersData\CommandHandlersMap;
-use tests\Dudulina\CodeGeneration\CommandHandlersMapCodeGeneratorWithInvalidHandlersData\CommandHandlersMapTemplate;
-
+namespace tests\Dudulina\CodeGeneration\CommandHandlersMapCodeGeneratorWithInvalidHandlersTest;
 
 class CommandHandlersMapCodeGeneratorWithInvalidHandlersTest extends \PHPUnit_Framework_TestCase
 {
     public function test()
     {
+        $sut = new \Dudulina\CodeGeneration\Command\CommandHandlersMapCodeGenerator();
 
-        $fileSystem = $this->stubFileSystem();
-
-        $sut = new CommandHandlersMapCodeGenerator(
-            $this->mockLogger(),
-            $fileSystem
-        );
-
-        $this->expectException(\Exception::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessageRegExp('#multiple handlers exists for command#ims');
 
-        $sut->generate(
-            CommandHandlersMapTemplate::class,
-            new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . '/CommandHandlersMapCodeGeneratorWithInvalidHandlersData')),
-            __DIR__ . '/CommandHandlersMapCodeGeneratorWithInvalidHandlersData/CommandHandlersMap.php',
-            'CommandHandlersMap'
+        $template = file_get_contents(__DIR__ . '/../../../src/Dudulina/CodeGeneration/Command/CommandHandlersMapTemplate.php');
+
+        $sut->generateClass(
+            $template,
+            new \ArrayIterator([
+                __DIR__ . '/CommandHandlersMapCodeGeneratorWithInvalidHandlersData/FirstAggregate.php',
+                __DIR__ . '/CommandHandlersMapCodeGeneratorWithInvalidHandlersData/SecondAggregate.php',
+            ])
         );
-    }
-
-    private function mockLogger()
-    {
-        $logger = $this->getMockBuilder(\Psr\Log\LoggerInterface::class)
-            ->getMock();
-        return $logger;
-        /** @var \Psr\Log\LoggerInterface $logger */
-    }
-
-    private function stubFileSystem(): InMemoryFileSystem
-    {
-        $fileSystem = new InMemoryFileSystem();
-
-        $fileSystem->makeDirectory(__DIR__ . '/CommandHandlersMapCodeGeneratorWithInvalidHandlersData', 0777, true);
-        $fileSystem->filePutContents(
-            __DIR__ . '/CommandHandlersMapCodeGeneratorWithInvalidHandlersData/CommandHandlersMapTemplate.php',
-            file_get_contents(__DIR__ . '/CommandHandlersMapCodeGeneratorWithInvalidHandlersData/CommandHandlersMapTemplate.php'));
-        return $fileSystem;
     }
 }

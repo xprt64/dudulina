@@ -34,6 +34,18 @@
             <!--<directory suffix=".php">../application</directory>-->
             <exclude>
                 <directory suffix=".php">.</directory>
+                <directory suffix=".php">../bin</directory>
+                <directory suffix=".php">../docs</directory>
+                <directory suffix=".php">../vendor</directory>
+                <directory suffix=".php">../tests</directory>
+                <file>../src/Dudulina/CodeGeneration/Command/CommandHandlersMapTemplate.php</file>
+                <file>../src/Dudulina/CodeGeneration/Command/CommandValidatorSubscriberTemplate.php</file>
+                <file>../src/Dudulina/CodeGeneration/Query/QueryAskersMapTemplate.php</file>
+                <file>../src/Dudulina/CodeGeneration/Query/QueryHandlersMapTemplate.php</file>
+                <file>../src/Dudulina/CodeGeneration/Event/EventListenersMapTemplate.php</file>
+                <file>../src/Dudulina/CodeGeneration/Event/ReadModelsMapTemplate.php</file>
+                <file>../src/Dudulina/CodeGeneration/Event/SagaEventProcessorsMapTemplate.php</file>
+                <file>../src/Dudulina/CodeGeneration/CodeWriter.php</file>
             </exclude>
         </whitelist>
     </filter>

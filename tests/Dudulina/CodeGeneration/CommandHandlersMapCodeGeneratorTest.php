@@ -1,15 +1,11 @@
 <?php
+/**
+ * Copyright (c) 2018 Constantin Galbenu <xprt64@gmail.com>
+ */
 
+namespace tests\Dudulina\CodeGeneration\CommandHandlersMapCodeGeneratorTest;
 
-namespace tests\Dudulina\CodeGeneration;
-
-
-use Dudulina\CodeGeneration\CommandHandlersMapCodeGenerator;
-use Gica\FileSystem\FileSystemInterface;
-use Gica\FileSystem\InMemoryFileSystem;
-use tests\Dudulina\CodeGeneration\CommandHandlersMapCodeGeneratorData\CommandHandlersMap;
-use tests\Dudulina\CodeGeneration\CommandHandlersMapCodeGeneratorData\CommandHandlersMapTemplate;
-
+use Dudulina\CodeGeneration\Command\CommandHandlersMapCodeGenerator;
 
 class CommandHandlersMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -43,64 +39,32 @@ class CommandHandlersMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function test()
     {
-        $fileSystem = $this->stubFileSystem();
+        $sut = new CommandHandlersMapCodeGenerator();
 
-        $sut = new CommandHandlersMapCodeGenerator(
-            $this->mockLogger(),
-            $fileSystem
+        $template = file_get_contents(__DIR__ . '/../../../src/Dudulina/CodeGeneration/Command/CommandHandlersMapTemplate.php');
+
+        $generated = $sut->generateClass(
+            $template,
+            new \ArrayIterator([
+                __DIR__ . '/CommandHandlersMapCodeGeneratorData/FirstAggregate.php',
+                __DIR__ . '/CommandHandlersMapCodeGeneratorData/SecondAggregate.php',
+            ])
         );
 
-        $fileSystem->filePutContents(__DIR__ . '/CommandHandlersMapCodeGeneratorData/CommandHandlersMap.php', 'some content');
+        $this->evaluateGeneratedClass($generated);
 
-        $sut->generate(
-            CommandHandlersMapTemplate::class,
-            new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . '/CommandHandlersMapCodeGeneratorData')),
-            __DIR__ . '/CommandHandlersMapCodeGeneratorData/CommandHandlersMap.php',
-            'CommandHandlersMap'
-        );
-
-        $this->evaluateGeneratedClass($fileSystem);
-
-        /** @var CommandHandlersMapTemplate $mapper */
-        /** @noinspection PhpUndefinedClassInspection */
-        $mapper = new CommandHandlersMap();
+        $mapper = new \Dudulina\CodeGeneration\Command\CommandHandlersMapTemplate();
 
         $map = $mapper->getCommandHandlersDefinitions();
 
         $this->assertCount(4, $map);
 
         $this->assertEquals(self::EXPECTED_MAP, $map);
-
     }
 
-    private function mockLogger()
+    private function evaluateGeneratedClass(string $content)
     {
-        $logger = $this->getMockBuilder(\Psr\Log\LoggerInterface::class)
-            ->getMock();
-        return $logger;
-        /** @var \Psr\Log\LoggerInterface $logger */
-    }
-
-    private function evaluateGeneratedClass(FileSystemInterface $fileSystem)
-    {
-        /** @noinspection PhpUndefinedClassInspection */
-        if (class_exists(CommandHandlersMap::class)) {
-            return;
-        }
-
-        $content = $fileSystem->fileGetContents(__DIR__ . '/CommandHandlersMapCodeGeneratorData/CommandHandlersMap.php');
         $content = str_replace('<?php', '', $content);
         eval($content);
-    }
-
-    private function stubFileSystem(): InMemoryFileSystem
-    {
-        $fileSystem = new InMemoryFileSystem();
-
-        $fileSystem->makeDirectory(__DIR__ . '/CommandHandlersMapCodeGeneratorData', 0777, true);
-        $fileSystem->filePutContents(
-            __DIR__ . '/CommandHandlersMapCodeGeneratorData/CommandHandlersMapTemplate.php',
-            file_get_contents(__DIR__ . '/CommandHandlersMapCodeGeneratorData/CommandHandlersMapTemplate.php'));
-        return $fileSystem;
     }
 }
