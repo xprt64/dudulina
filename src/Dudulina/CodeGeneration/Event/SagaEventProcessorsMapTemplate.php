@@ -1,7 +1,7 @@
 <?php
 namespace Dudulina\CodeGeneration\Event;
 
-class SagaEventProcessorsMapTemplate
+class SagaEventProcessorsMapTemplate extends \Dudulina\Event\EventSubscriber\EventSubscriberByMap
 {
     public function getMap():array
     {
