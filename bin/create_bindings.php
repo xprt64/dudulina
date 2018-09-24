@@ -15,18 +15,24 @@ $src = implode(' ', array_map(function ($src) {
     return '--src=' . escapeshellarg($src) . '';
 }, $srcFolders));
 
-system('php -f ' . __DIR__ . '/validate_aggregate_event_appliers.php -- '  . $src, $return);
+system('php -f ' . __DIR__ . '/validate_aggregate_event_appliers.php -- ' . $src, $return);
 
 if (0 !== $return) {
     exit($return);
 }
 
+$scripts = [
+    'create_cqrs_command_handlers_map.php', 'create_cqrs_command_validators_map.php',
+    'create_cqrs_event_listeners_map.php', 'create_cqrs_query_askers_map.php',
+    'create_cqrs_query_handlers_map.php', 'create_cqrs_readmodels_map.php',
+    'create_cqrs_saga_event_processors_map.php',
+];
+
 echo "<?php \n";
 
-system('php -f ' . __DIR__ . '/create_cqrs_command_handlers_map.php  --  --output="-" ' . $src . "", $return);
-system('php -f ' . __DIR__ . '/create_cqrs_command_validators_map.php  --  --output="-" ' . $src . "", $return);
-system('php -f ' . __DIR__ . '/create_cqrs_event_listeners_map.php  --  --output="-" ' . $src . "", $return);
-system('php -f ' . __DIR__ . '/create_cqrs_query_askers_map.php  --  --output="-" ' . $src . "", $return);
-system('php -f ' . __DIR__ . '/create_cqrs_query_handlers_map.php  --  --output="-" ' . $src . "", $return);
-system('php -f ' . __DIR__ . '/create_cqrs_readmodels_map.php  --  --output="-" ' . $src . "", $return);
-system('php -f ' . __DIR__ . '/create_cqrs_saga_event_processors_map.php  --  --output="-" ' . $src . "", $return);
+foreach ($scripts as $script) {
+    system('php -f ' . __DIR__ . '/' . $script . '  --  --output="-" ' . $src . "", $return);
+    if ($return) {
+        exit($return);
+    }
+}

@@ -162,6 +162,30 @@ There is a [MongoDB](https://github.com/xprt64/mongolina) implementation of the 
 
 A [JavaScript connector](https://github.com/xprt64/dudulina-js-connector) is also available. [Here you can find some examples of updating a Read-model in JavaScript](https://github.com/xprt64/dudulina-js-connector/tree/master/sample).
 
+## The Queries
+
+The library can dispatch queries also. The *Askers* ask questions and the *Answerers* answser them. 
+
+The Askers ask question to the `\Dudulina\Query\Asker` and the can receive the answer as return value or as callback on them
+ (the method `$this->whenAnsweredXYZ` or the one marked with `@QueryAsker`).
+ 
+ The Answerers answer questions at the `$this->whenAskedXXX` or `@QueryHandler` marked methods. 
+ They can also answer a question when they know that the answer has changed and all the askers are notified, by calling `\Dudulina\Query\Answerer::answer()`.
+
+## CQRS bindinds
+How does the library know what command handler to call when a command is dispatched? 
+Or what read models to notify when a new event is published? The answer to all these questions is CQRS bindings.
+
+Long story short, [the tools](https://github.com/xprt64/dudulina/tree/master/bin) analyze the domain code, detect the handlers and build a PHP file with all the bindings as classes.
+Then you use those classes to configure the CommandDispatcher. The `create_bindings.php` must be run every time the domain code changes.
+
+```
+php -f vendor/xprt64/dudulina/bin/create_bindings.php -- --src="/some/source/directory" --src="/some/other/source/directory" > cqrs_bindings.php
+```
+
+Then you need to include the file `create_bindings.php` to your `index.php` usually after `vendors/autoload.php`.
+
+
 ## Sample application ##
 A Todo list sample application can be found at [github.com/xprt64/todosample-cqrs-es](https://github.com/xprt64/todosample-cqrs-es).
 

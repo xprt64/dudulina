@@ -17,6 +17,7 @@ class QueryAskerDetector implements MessageClassDetector
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod): bool
     {
-        return 0 === stripos($reflectionMethod->name, 'whenAnswered');
+        return 0 === stripos($reflectionMethod->name, 'whenAnswered') ||
+            false !== stripos($reflectionMethod->getDocComment(), '@QueryAsker');
     }
 }
