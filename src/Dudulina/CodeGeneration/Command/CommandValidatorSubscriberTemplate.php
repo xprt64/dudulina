@@ -6,7 +6,7 @@ class CommandValidatorSubscriberTemplate
 {
     private static $map = [/*do not modify this line!*/];
 
-    public function getMap(): array
+    public static function getMap(): array
     {
         return self::$map;
     }
