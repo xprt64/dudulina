@@ -7,35 +7,36 @@ namespace Dudulina\Command\CommandValidation;
 
 
 use Dudulina\Command;
-use Dudulina\Command\CommandValidation;
 use Dudulina\Command\ValueObject\CommandHandlerDescriptor;
 
-abstract class CommandValidatorSubscriberByMap implements CommandValidation\CommandValidatorSubscriber
+class CommandValidatorSubscriberByMap implements CommandValidatorSubscriber
 {
+    /**
+     * @var array
+     */
+    private $map;
+
+    public function __construct(
+        array $map
+    )
+    {
+        $this->map = $map;
+    }
+
     /**
      * @inheritdoc
      */
     public function getHandlersForCommand(Command $command)
     {
-        $definitions = $this->getCommandHandlersDefinitions();
-
-        if (!isset($definitions[get_class($command)])) {
+        $definitions = $this->map;
+        if (!isset($definitions[\get_class($command)])) {
             return [];
         }
-
-        $handlersForCommand = $definitions[get_class($command)];
-
+        $handlersForCommand = $definitions[\get_class($command)];
         $result = [];
-
-        foreach ($handlersForCommand as $commandDefinition) {
-
-            list($aggregateClass, $methodName) = $commandDefinition;
-
+        foreach ($handlersForCommand as list($aggregateClass, $methodName)) {
             $result[] = new CommandHandlerDescriptor($aggregateClass, $methodName);
         }
-
         return $result;
     }
-
-    abstract protected function getCommandHandlersDefinitions(): array;
 }

@@ -5,7 +5,6 @@
 
 namespace Dudulina\Command\CommandTester;
 
-
 use Dudulina\Command;
 use Dudulina\Command\CommandTesterWithExplanation;
 use Dudulina\Command\CommandValidator;
@@ -35,17 +34,13 @@ class CommandTesterWithExplanationWithValidator implements CommandTesterWithExpl
     public function whyCantExecuteCommand(Command $command)
     {
         $unknownErrors = $this->commandValidator->validateCommand($command);
-
         $validatorErrors = array_map(function ($error) {
             if (!($error instanceof \Throwable)) {
                 $error = new \Exception((string)$error);
             }
-
             return $error;
         }, $unknownErrors);
-
         $testerErrors = $this->commandTester->whyCantExecuteCommand($command);
-
         return array_merge($validatorErrors, $testerErrors);
     }
 }

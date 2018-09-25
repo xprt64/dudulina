@@ -18,17 +18,12 @@ class CommandValidatorSubscriberByMapTest extends \PHPUnit_Framework_TestCase
         $command = $this->getMockBuilder(Command::class)
             ->getMock();
 
-        $sut = $this->getMockForAbstractClass(CommandValidatorSubscriberByMap::class);
-
-        $sut->expects($this->once())
-            ->method('getCommandHandlersDefinitions')
-            ->willReturn([
-                get_class($command) => [
-                    ['SomeAggregate', 'someMethod'],
-                    ['SomeAggregate2', 'someMethod2'],
-                ],
-            ]);
-        /** @var CommandValidatorSubscriberByMap $sut */
+        $sut = new CommandValidatorSubscriberByMap([
+            \get_class($command) => [
+                ['SomeAggregate', 'someMethod'],
+                ['SomeAggregate2', 'someMethod2'],
+            ],
+        ]);
         $handlers = $sut->getHandlersForCommand($command);
 
         $this->assertCount(2, $handlers);
@@ -52,13 +47,8 @@ class CommandValidatorSubscriberByMapTest extends \PHPUnit_Framework_TestCase
         $command = $this->getMockBuilder(Command::class)
             ->getMock();
 
-        $sut = $this->getMockForAbstractClass(CommandValidatorSubscriberByMap::class);
+        $sut = new CommandValidatorSubscriberByMap([]);
 
-        $sut->expects($this->once())
-            ->method('getCommandHandlersDefinitions')
-            ->willReturn([
-            ]);
-        /** @var CommandValidatorSubscriberByMap $sut */
         $handlers = $sut->getHandlersForCommand($command);
 
         $this->assertInternalType('array', $handlers);

@@ -54,7 +54,7 @@ class CommandTesterWithValidatorWithExplanationTest extends \PHPUnit_Framework_T
             $commandTester, $commandValidator);
 
         $this->assertFalse($commandDispatcherWithValidator->canExecuteCommand($this->command));
-   }
+    }
 
 
     /**

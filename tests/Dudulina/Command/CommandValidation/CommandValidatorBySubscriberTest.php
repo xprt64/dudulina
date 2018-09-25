@@ -1,17 +1,19 @@
 <?php
+/**
+ * Copyright (c) 2018 Constantin Galbenu <xprt64@gmail.com>
+ */
 
-
-namespace tests\Dudulina\Command;
+namespace tests\Dudulina\Command\CommandValidatorBySubscriber;
 
 
 use Dudulina\Command;
+use Dudulina\Command\CommandValidation\CommandValidatorBySubscriber;
 use Dudulina\Command\CommandValidation\CommandValidatorSubscriber;
-use Dudulina\Command\CommandValidator;
 use Dudulina\Command\ValueObject\CommandHandlerDescriptor;
 use Psr\Container\ContainerInterface;
 
 
-class CommandValidatorTest extends \PHPUnit_Framework_TestCase
+class CommandValidatorBySubscriberTest extends \PHPUnit_Framework_TestCase
 {
     /** @var Command */
     private $command;
@@ -20,7 +22,7 @@ class CommandValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testValidateCommand()
     {
-        $commandValidator = new CommandValidator(
+        $commandValidator = new CommandValidatorBySubscriber(
             $this->mockCommandValidatorSubscriber(),
             $this->mockContainer()
         );
