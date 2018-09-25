@@ -3,8 +3,10 @@ namespace Dudulina\CodeGeneration\Event;
 
 class ReadModelsMapTemplate
 {
-    public function getEventHandlersDefinitions():array
+    private static $map = [/*do not modify this line!*/];
+
+    public function getMap(): array
     {
-        return [/*do not modify this line!*/];
+        return self::$map;
     }
 }

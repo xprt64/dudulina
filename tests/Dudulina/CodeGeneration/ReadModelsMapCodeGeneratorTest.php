@@ -42,7 +42,7 @@ class ReadModelsMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $mapper = new ReadModelsMapTemplate();
 
-        $map = $mapper->getEventHandlersDefinitions();
+        $map = $mapper->getMap();
 
         $this->assertCount(2, $map);
 
