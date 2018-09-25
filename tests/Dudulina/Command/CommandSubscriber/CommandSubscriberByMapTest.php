@@ -19,13 +19,10 @@ class CommandSubscriberByMapTest extends \PHPUnit_Framework_TestCase
         $command = $this->getMockBuilder(Command::class)
             ->getMock();
 
-        $sut = $this->getMockForAbstractClass(CommandSubscriberByMap::class);
+        $sut = new CommandSubscriberByMap([
+            \get_class($command) => [['SomeAggregate', 'someMethod']],
+        ]);
 
-        $sut->expects($this->once())
-            ->method('getCommandHandlersDefinitions')
-            ->willReturn([
-                get_class($command) => [['SomeAggregate', 'someMethod']],
-            ]);
         /** @var CommandSubscriberByMap $sut */
         $handler = $sut->getHandlerForCommand($command);
 
@@ -40,12 +37,7 @@ class CommandSubscriberByMapTest extends \PHPUnit_Framework_TestCase
         $command = $this->getMockBuilder(Command::class)
             ->getMock();
 
-        $sut = $this->getMockForAbstractClass(CommandSubscriberByMap::class);
-
-        $sut->expects($this->once())
-            ->method('getCommandHandlersDefinitions')
-            ->willReturn([
-            ]);
+        $sut = new CommandSubscriberByMap([]);
 
         $this->expectException(CommandHandlerNotFound::class);
 

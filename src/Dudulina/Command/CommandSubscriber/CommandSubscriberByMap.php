@@ -11,8 +11,20 @@ use Dudulina\Command\CommandSubscriber;
 use Dudulina\Command\Exception\CommandHandlerNotFound;
 use Dudulina\Command\ValueObject\CommandHandlerDescriptor;
 
-abstract class CommandSubscriberByMap implements CommandSubscriber
+class CommandSubscriberByMap implements CommandSubscriber
 {
+    /**
+     * @var array
+     */
+    private $map;
+
+    public function __construct(
+        array $map
+    )
+    {
+        $this->map = $map;
+    }
+
     /**
      * @param Command $command
      * @return CommandHandlerDescriptor
@@ -20,23 +32,13 @@ abstract class CommandSubscriberByMap implements CommandSubscriber
      */
     public function getHandlerForCommand(Command $command)
     {
-        $definitions = $this->getCommandHandlersDefinitions();
-
-        if (isset($definitions[get_class($command)])) {
-            $handlersForCommand = $definitions[get_class($command)];
-
+        $definitions = $this->map;
+        if (isset($definitions[\get_class($command)])) {
+            $handlersForCommand = $definitions[\get_class($command)];
             if ($handlersForCommand) {
-                foreach ($handlersForCommand as $commandDefinition) {
-
-                    list($aggregateClass, $methodName) = $commandDefinition;
-
-                    return new CommandHandlerDescriptor($aggregateClass, $methodName);
-                }
+                return new CommandHandlerDescriptor($handlersForCommand[0][0], $handlersForCommand[0][1]);
             }
         }
-
-        throw new CommandHandlerNotFound(sprintf("A handler for command %s was not found", get_class($command)));
+        throw new CommandHandlerNotFound(sprintf('A handler for command %s was not found', get_class($command)));
     }
-
-    abstract protected function getCommandHandlersDefinitions(): array;
 }

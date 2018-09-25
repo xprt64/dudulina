@@ -1,10 +1,13 @@
 <?php
+
 namespace Dudulina\CodeGeneration\Event;
 
-class EventListenersMapTemplate extends \Dudulina\Event\EventSubscriber\EventSubscriberByMap
+class EventListenersMapTemplate
 {
-    public function getMap():array
+    private static $map = [/*do not modify this line!*/];
+
+    public function getMap(): array
     {
-        return [/*do not modify this line!*/];
+        return static::$map;
     }
 }

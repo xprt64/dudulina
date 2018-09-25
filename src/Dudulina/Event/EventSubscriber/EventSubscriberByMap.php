@@ -9,18 +9,23 @@ namespace Dudulina\Event\EventSubscriber;
 use Dudulina\Event\EventSubscriber;
 use Psr\Container\ContainerInterface;
 
-abstract class EventSubscriberByMap implements EventSubscriber
+class EventSubscriberByMap implements EventSubscriber
 {
-    abstract protected function getMap(): array;
 
     /** @var ContainerInterface */
     private $container;
+    /**
+     * @var array
+     */
+    private $map;
 
     public function __construct(
-        ContainerInterface $container
+        ContainerInterface $container,
+        array $map
     )
     {
         $this->container = $container;
+        $this->map = $map;
     }
 
     /**
@@ -39,11 +44,9 @@ abstract class EventSubscriberByMap implements EventSubscriber
     private function createListenersByMethod(array $listenersDescriptor)
     {
         $result = [];
-
         foreach ($listenersDescriptor as $listenerDescriptor) {
             $result[] = $this->createListenerByMethod($listenerDescriptor);
         }
-
         return $result;
     }
 
@@ -52,12 +55,10 @@ abstract class EventSubscriberByMap implements EventSubscriber
      */
     public function getListenersForEvent($event)
     {
-        $eventClass = get_class($event);
-
-        if (isset($this->getMap()[$eventClass])) {
-            return $this->createListenersByMethod($this->getMap()[$eventClass]);
+        $eventClass = \get_class($event);
+        if (isset($this->map[$eventClass])) {
+            return $this->createListenersByMethod($this->map[$eventClass]);
         }
-
         return [];
     }
 }

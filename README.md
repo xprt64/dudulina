@@ -179,12 +179,16 @@ Or what read models to notify when a new event is published? The answer to all t
 Long story short, [the tools](https://github.com/xprt64/dudulina/tree/master/bin) analyze the domain code, detect the handlers and build a PHP file with all the bindings as classes.
 Then you use those classes to configure the CommandDispatcher. The `create_bindings.php` must be run every time the domain code changes.
 
-```
+```PHP
 php -f vendor/xprt64/dudulina/bin/create_bindings.php -- --src="/some/source/directory" --src="/some/other/source/directory" > cqrs_bindings.php
 ```
 
 Then you need to include the file `create_bindings.php` to your `index.php` usually after `vendors/autoload.php`.
 
+```PHP
+require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../deploy/cqrs_bindings.php';
+```
 
 ## Sample application ##
 A Todo list sample application can be found at [github.com/xprt64/todosample-cqrs-es](https://github.com/xprt64/todosample-cqrs-es).

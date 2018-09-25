@@ -1,10 +1,13 @@
 <?php
+
 namespace Dudulina\CodeGeneration\Command;
 
-class CommandHandlersMapTemplate extends \Dudulina\Command\CommandSubscriber\CommandSubscriberByMap
+class CommandHandlersMapTemplate
 {
-    public function getCommandHandlersDefinitions():array
+    private static $map = [/*do not modify this line!*/];
+
+    public function getMap(): array
     {
-        return [/*do not modify this line!*/];
+        return self::$map;
     }
 }

@@ -2,6 +2,7 @@
 /**
  * Copyright (c) 2018 Constantin Galbenu <xprt64@gmail.com>
  */
+
 namespace tests\Dudulina\Event\EventSubscriber;
 
 use Dudulina\Event;
@@ -14,8 +15,9 @@ class EventSubscriberByMapTest extends \PHPUnit_Framework_TestCase
 
     public function test()
     {
-        $sut = new ConcreteEventSubscriberByMap(
-            $this->mockContainer()
+        $sut = new EventSubscriberByMap(
+            $this->mockContainer(),
+            (new ConcreteEventSubscriberByMap)->getMap()
         );
 
         $this->assertCount(2, $sut->getListenersForEvent(new Event1));
@@ -32,10 +34,10 @@ class EventSubscriberByMapTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-class ConcreteEventSubscriberByMap extends EventSubscriberByMap
+class ConcreteEventSubscriberByMap
 {
 
-    protected function getMap(): array
+    public function getMap(): array
     {
         return [
             Event1::class => [
@@ -50,6 +52,7 @@ class Event1 implements Event
 {
 
 }
+
 class Event2 implements Event
 {
 

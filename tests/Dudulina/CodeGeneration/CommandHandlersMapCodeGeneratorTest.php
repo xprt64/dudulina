@@ -55,7 +55,7 @@ class CommandHandlersMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $mapper = new \Dudulina\CodeGeneration\Command\CommandHandlersMapTemplate();
 
-        $map = $mapper->getCommandHandlersDefinitions();
+        $map = $mapper->getMap();
 
         $this->assertCount(4, $map);
 

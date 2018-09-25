@@ -2,10 +2,12 @@
 
 namespace Dudulina\CodeGeneration\Command;
 
-class CommandValidatorSubscriberTemplate extends \Dudulina\Command\CommandValidation\CommandValidatorSubscriberByMap
+class CommandValidatorSubscriberTemplate
 {
-    public function getCommandHandlersDefinitions():array
+    private static $map = [/*do not modify this line!*/];
+
+    public function getMap(): array
     {
-        return [/*do not modify this line!*/];
+        return self::$map;
     }
 }

@@ -44,7 +44,7 @@ class CommandValidatorsMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $this->evaluateGeneratedClass($generated);
         $mapper = new \Dudulina\CodeGeneration\Command\CommandValidatorSubscriberTemplate();
-        $map = $mapper->getCommandHandlersDefinitions();
+        $map = $mapper->getMap();
         $this->assertCount(2, $map);
         $this->assertEquals(self::EXPECTED_MAP[Command1::class], $map[Command1::class]);
         $this->assertEquals(self::EXPECTED_MAP[Command2::class], $map[Command2::class]);
