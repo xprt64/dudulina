@@ -11,5 +11,5 @@ interface ProcessStateUpdater
     public function createStorage(string $storageName, string $namespace = '');
     public function updateState($stateId, callable $updater, string $storageName, string $namespace = '');
     public function clearAllStates(string $storageName, string $namespace = '');
-    public function moveStorageToNamespace(string $source, string $destination);
+    public function moveEntireNamespace(string $sourceNamespace, string $destinationNamespace);
 }

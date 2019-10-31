@@ -69,9 +69,9 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
         $this->states[$namespace][$storageName] = [];
     }
 
-    public function moveStorageToNamespace(string $source, string $destination)
+    public function moveEntireNamespace(string $sourceNamespace, string $destinationNamespace)
     {
-        $this->states[$destination] = $this->states[$source];
-        $this->states[$source] = [];
+        $this->states[$destinationNamespace] = $this->states[$sourceNamespace];
+        $this->states[$sourceNamespace] = [];
     }
 }

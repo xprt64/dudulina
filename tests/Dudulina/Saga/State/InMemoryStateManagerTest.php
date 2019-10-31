@@ -99,7 +99,7 @@ class InMemoryStateManagerTest extends \PHPUnit_Framework_TestCase
         $sut->updateState(self::STATE_ID, $updater, $storageName, $sourceNamespace);
         $this->assertTrue($sut->hasState(\stdClass::class, self::STATE_ID, $storageName, $sourceNamespace));
         $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID, $storageName, $destinationNamespace));
-        $sut->moveStorageToNamespace($sourceNamespace, $destinationNamespace);
+        $sut->moveEntireNamespace($sourceNamespace, $destinationNamespace);
         $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID, $storageName, $sourceNamespace));
         $this->assertTrue($sut->hasState(\stdClass::class, self::STATE_ID, $storageName, $destinationNamespace));
     }
