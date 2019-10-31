@@ -10,30 +10,30 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
 {
     private $states = [];
 
-    public function loadState(string $stateClass, $stateId, string $namespace = 'global_namespace')
+    public function loadState(string $stateClass, $stateId, string $storageName = 'default', string $namespace = '')
     {
         $key = $stateClass . $stateId;
 
-        if (isset($this->states[$namespace][$key])) {
-            return $this->states[$namespace][$key];
+        if (isset($this->states[$namespace][$storageName][$key])) {
+            return $this->states[$namespace][$storageName][$key];
         }
 
         return null;
     }
 
-    public function hasState(string $stateClass, $stateId, string $namespace)
+    public function hasState(string $stateClass, $stateId, string $storageName, string $namespace = '')
     {
         $key = $stateClass . $stateId;
 
-        return isset($this->states[$namespace][$key]);
+        return isset($this->states[$namespace][$storageName][$key]);
     }
 
-    public function updateState($stateId, callable $updater, string $namespace = 'global_namespace')
+    public function updateState($stateId, callable $updater, string $storageName = 'default', string $namespace = '')
     {
         list($stateClass, $isOptional) = $this->getStateClass($updater);
 
-        $oldState = $this->loadState($stateClass, $stateId, $namespace);
-        if (!$this->hasState($stateClass, $stateId, $namespace)) {
+        $oldState = $this->loadState($stateClass, $stateId, $storageName, $namespace);
+        if (!$this->hasState($stateClass, $stateId, $storageName, $namespace)) {
             if (!$isOptional) {
                 $oldState = new $stateClass;
             }
@@ -43,7 +43,7 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
 
         $key = $stateClass . $stateId;
 
-        $this->states[$namespace][$key] = $newState;
+        $this->states[$namespace][$storageName][$key] = $newState;
     }
 
     private function getStateClass(callable $update)
@@ -59,13 +59,19 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
         return [$parameter->getClass()->name, $parameter->isOptional()];
     }
 
-    public function clearAllStates(string $namespace = 'global_namespace')
+    public function clearAllStates(string $storageName = 'default', string $namespace = '')
     {
-        $this->states[$namespace] = [];
+        $this->states[$namespace][$storageName] = [];
     }
 
-    public function createStorage(string $namespace = 'global_namespace')
+    public function createStorage(string $storageName = 'default', string $namespace = '')
     {
-        $this->states[$namespace] = [];
+        $this->states[$namespace][$storageName] = [];
+    }
+
+    public function moveStorageToNamespace(string $source, string $destination)
+    {
+        $this->states[$destination] = $this->states[$source];
+        $this->states[$source] = [];
     }
 }

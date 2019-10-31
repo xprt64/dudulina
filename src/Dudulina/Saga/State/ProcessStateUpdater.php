@@ -8,7 +8,8 @@ namespace Dudulina\Saga\State;
 
 interface ProcessStateUpdater
 {
-    public function createStorage(string $namespace);
-    public function updateState($stateId, callable $updater, string $namespace);
-    public function clearAllStates(string $namespace);
+    public function createStorage(string $storageName, string $namespace = '');
+    public function updateState($stateId, callable $updater, string $storageName, string $namespace = '');
+    public function clearAllStates(string $storageName, string $namespace = '');
+    public function moveStorageToNamespace(string $source, string $destination);
 }

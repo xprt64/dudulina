@@ -16,8 +16,8 @@ class InMemoryStateManagerTest extends \PHPUnit_Framework_TestCase
     {
         $sut = new InMemoryStateManager();
 
-        $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID, 'test_namespace'));
-        $this->assertNull($sut->loadState(\stdClass::class, self::STATE_ID, 'test_namespace'));
+        $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID, 'test_namespace', ''));
+        $this->assertNull($sut->loadState(\stdClass::class, self::STATE_ID, 'test_namespace', ''));
 
         $sut->updateState(self::STATE_ID, function (\stdClass $state) {
             $state->someValue = 345;
@@ -32,18 +32,20 @@ class InMemoryStateManagerTest extends \PHPUnit_Framework_TestCase
     {
         $sut = new InMemoryStateManager();
 
-        $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID, 'test_namespace'));
-        $this->assertNull($sut->loadState(\stdClass::class, self::STATE_ID, 'test_namespace'));
+        $namespace = '';
+        $storageName = 'storage';
+        $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID, $storageName, $namespace));
+        $this->assertNull($sut->loadState(\stdClass::class, self::STATE_ID, $storageName, $namespace));
 
         $sut->updateState(self::STATE_ID, function (\stdClass $state = null) {
 
-            $state  = new \stdClass();
+            $state = new \stdClass();
             $state->someValue = 345;
 
             return $state;
-        }, 'test_namespace');
+        }, $storageName);
 
-        $this->assertSame(345, $sut->loadState(\stdClass::class, self::STATE_ID, 'test_namespace')->someValue);
+        $this->assertSame(345, $sut->loadState(\stdClass::class, self::STATE_ID, $storageName, $namespace)->someValue);
     }
 
     public function test_invalid_updater_callback()
@@ -75,6 +77,30 @@ class InMemoryStateManagerTest extends \PHPUnit_Framework_TestCase
         $sut->createStorage();
         $sut->clearAllStates('test_namespace');
 
-        $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID, 'test_namespace'));
+        $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID, 'test_namespace', ''));
+    }
+
+    public function test_moveStateToNamespace()
+    {
+        $sut = new InMemoryStateManager();
+        $sourceNamespace = 'src';
+        $destinationNamespace = 'dst';
+        $storageName = 'test_namespace';
+        $sut->createStorage($storageName, $sourceNamespace);
+        $sut->createStorage($storageName, $destinationNamespace);
+
+        $updater = function (\stdClass $state = null) {
+            if (!$state) {
+                $state = new \stdClass();
+            }
+            $state->someValue = 345;
+            return 345;
+        };
+        $sut->updateState(self::STATE_ID, $updater, $storageName, $sourceNamespace);
+        $this->assertTrue($sut->hasState(\stdClass::class, self::STATE_ID, $storageName, $sourceNamespace));
+        $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID, $storageName, $destinationNamespace));
+        $sut->moveStorageToNamespace($sourceNamespace, $destinationNamespace);
+        $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID, $storageName, $sourceNamespace));
+        $this->assertTrue($sut->hasState(\stdClass::class, self::STATE_ID, $storageName, $destinationNamespace));
     }
 }

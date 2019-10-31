@@ -8,5 +8,5 @@ namespace Dudulina\Saga\State;
 
 interface ProcessStateLoader
 {
-    public function loadState(string $stateClass, $stateId, string $namespace);
+    public function loadState(string $stateClass, $stateId, string $storageName, string $namespace = '');
 }
