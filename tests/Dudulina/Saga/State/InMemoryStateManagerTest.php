@@ -28,6 +28,34 @@ class InMemoryStateManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(345, $sut->loadState(\stdClass::class, self::STATE_ID, 'test_namespace')->someValue);
     }
 
+    public function test_updateIfExists()
+    {
+        $sut = new InMemoryStateManager();
+
+        $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID, 'test_namespace', ''));
+        $this->assertNull($sut->loadState(\stdClass::class, self::STATE_ID, 'test_namespace', ''));
+
+        $sut->updateStateIfExists(self::STATE_ID, function (\stdClass $state) {
+            $state->someValue = 345;
+            return $state;
+        }, 'test_namespace');
+
+        $this->assertNull($sut->loadState(\stdClass::class, self::STATE_ID, 'test_namespace', ''));
+
+        //put something in there
+        $sut->updateState(self::STATE_ID, function (\stdClass $state) {
+            $state->someValue = 345;
+            return $state;
+        }, 'test_namespace');
+
+        //now the update show work
+        $sut->updateStateIfExists(self::STATE_ID, function (\stdClass $state) {
+            $state->someValue = 999;
+            return $state;
+        }, 'test_namespace');
+        $this->assertSame(999, $sut->loadState(\stdClass::class, self::STATE_ID, 'test_namespace')->someValue);
+    }
+
     public function test_defaultState()
     {
         $sut = new InMemoryStateManager();
