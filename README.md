@@ -39,8 +39,8 @@ class DoSomethingImportantCommand implements Command
 
     public function __construct($idOfTheAggregate, $someDataInTheCommand)
     {
-        $this->idOfTheAggregate = $this->idOfTheAggregate;
-        $this->someDataInTheCommand = $this->someDataInTheCommand;
+        $this->idOfTheAggregate = $idOfTheAggregate;
+        $this->someDataInTheCommand = $someDataInTheCommand;
     }
 
     public function getAggregateId()
@@ -172,7 +172,7 @@ The Askers ask question to the `\Dudulina\Query\Asker` and the can receive the a
  The Answerers answer questions at the `$this->whenAskedXXX` or `@QueryHandler` marked methods. 
  They can also answer a question when they know that the answer has changed and all the askers are notified, by calling `\Dudulina\Query\Answerer::answer()`.
 
-## CQRS bindinds
+## CQRS bindings
 How does the library know what command handler to call when a command is dispatched? 
 Or what read models to notify when a new event is published? The answer to all these questions is CQRS bindings.
 
