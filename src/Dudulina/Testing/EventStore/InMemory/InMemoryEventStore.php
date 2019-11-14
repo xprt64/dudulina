@@ -1,7 +1,9 @@
 <?php
+/**
+ * Copyright (c) 2019 Constantin Galbenu <xprt64@gmail.com>
+ */
 
-
-namespace Dudulina\EventStore\InMemory;
+namespace Dudulina\Testing\EventStore\InMemory;
 
 
 use Dudulina\Aggregate\AggregateDescriptor;
@@ -10,6 +12,9 @@ use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
 use Dudulina\EventStore\AggregateEventStream;
 use Dudulina\EventStore\Exception\ConcurrentModificationException;
+use Dudulina\Testing\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
+use Dudulina\Testing\EventStore\InMemory\InMemoryAggregateEventStream;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventsCommit;
 use Dudulina\EventStore\SeekableEventStream;
 use Gica\Iterator\IteratorTransformer\IteratorExpander;
 

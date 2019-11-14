@@ -1,7 +1,9 @@
 <?php
+/**
+ * Copyright (c) 2019 Constantin Galbenu <xprt64@gmail.com>
+ */
 
-
-namespace Dudulina\EventStore\InMemory;
+namespace Dudulina\Testing\EventStore\InMemory;
 
 
 use Dudulina\EventStore\AggregateEventStream;

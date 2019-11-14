@@ -5,11 +5,12 @@ namespace tests\Dudulina\Event\EventDispatcher;
 
 
 use Dudulina\Event;
+use Dudulina\Event\EventDispatcher\ErrorReporter;
 use Dudulina\Event\EventDispatcher\EventDispatcherBySubscriber;
 use Dudulina\Event\EventSubscriber;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
-use Psr\Log\LoggerInterface;
+use Throwable;
 
 
 class EventDispatcherBySubscriberTest extends \PHPUnit_Framework_TestCase
@@ -40,7 +41,13 @@ class EventDispatcherBySubscriberTest extends \PHPUnit_Framework_TestCase
 
         /** @var  EventSubscriber $eventSubscriber */
         $sut = new EventDispatcherBySubscriber(
-            $eventSubscriber
+            $eventSubscriber,
+            new class implements ErrorReporter{
+                public function reportEventDispatchError(callable $listener, EventWithMetaData $eventWithMetadata, Throwable $exception):void
+                {
+                    //nothing to do
+                }
+            }
         );
 
         $sut->dispatchEvent($eventWithMetaData);
@@ -60,10 +67,11 @@ class EventDispatcherBySubscriberTest extends \PHPUnit_Framework_TestCase
             ->willThrowException(new \Exception("test exception"))
             ->method('onEvent1');
 
-        $logger = $this->getMockBuilder(LoggerInterface::class)
+        $logger = $this->getMockBuilder(ErrorReporter::class)
             ->getMock();
         $logger->expects($this->once())
-            ->method('error');
+            ->method('reportEventDispatchError');
+        /** @var ErrorReporter $logger */
 
 
         $eventSubscriber = $this->getMockBuilder(EventSubscriber::class)

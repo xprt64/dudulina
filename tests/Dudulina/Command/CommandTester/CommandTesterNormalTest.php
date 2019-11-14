@@ -16,7 +16,7 @@ use Dudulina\Command\MetadataFactory\DefaultMetadataWrapper;
 use Dudulina\Event;
 use Dudulina\Event\EventsApplier\EventsApplierOnAggregate;
 use Dudulina\Event\MetadataFactory\DefaultMetadataFactory;
-use Dudulina\EventStore\InMemory\InMemoryEventStore;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventStore;
 
 class CommandTesterNormalTest extends \PHPUnit_Framework_TestCase
 {

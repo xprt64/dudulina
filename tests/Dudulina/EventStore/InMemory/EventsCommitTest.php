@@ -3,13 +3,13 @@
  * Copyright (c) 2018 Constantin Galbenu <xprt64@gmail.com>
  */
 
-namespace tests\Dudulina\EventStore\InMemory;
+namespace tests\Dudulina\Testing\EventStore\InMemory;
 
 
 use Dudulina\Event;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
-use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventsCommit;
 
 
 class EventsCommitTest extends \PHPUnit_Framework_TestCase

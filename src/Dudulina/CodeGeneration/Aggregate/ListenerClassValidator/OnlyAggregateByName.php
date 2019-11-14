@@ -3,7 +3,7 @@
  * Copyright (c) 2017 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Dudulina\Aggregate\CodeAnalysis\ListenerClassValidator;
+namespace Dudulina\CodeGeneration\Aggregate\ListenerClassValidator;
 
 
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator;

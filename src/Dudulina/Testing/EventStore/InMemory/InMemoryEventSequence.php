@@ -1,12 +1,14 @@
 <?php
 /**
- * Copyright (c) 2018 Constantin Galbenu <xprt64@gmail.com>
+ * Copyright (c) 2019 Constantin Galbenu <xprt64@gmail.com>
  */
 
-namespace Dudulina\EventStore\InMemory;
+namespace Dudulina\Testing\EventStore\InMemory;
 
 
-class EventSequence
+use Dudulina\EventStore\EventSequence;
+
+class InMemoryEventSequence implements EventSequence
 {
 
     /**
@@ -25,25 +27,6 @@ class EventSequence
     {
         $this->indexInsideCommit = $indexInsideCommit;
         $this->commitSequence = $commitSequence;
-    }
-
-    public function __toString()
-    {
-        return $this->commitSequence . ';' . $this->indexInsideCommit;
-    }
-
-    public static function fromString(string $str): self
-    {
-        if (!self::isValidString($str)) {
-            throw new \InvalidArgumentException("Not a valid sequence (int,int): $str");
-        }
-        list($timestampStr, $indexStr) = explode(';', $str);
-        return new static((int)$timestampStr, (int)$indexStr);
-    }
-
-    public static function isValidString(string $str): bool
-    {
-        return preg_match('#[\d+,\d+]#ims', $str);
     }
 
     public function isBefore(self $other): bool

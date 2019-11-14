@@ -21,7 +21,7 @@ use Dudulina\Event\EventDispatcher\EventDispatcherBySubscriber;
 use Dudulina\Event\EventsApplier\EventsApplierOnAggregate;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetadataFactory\DefaultMetadataFactory;
-use Dudulina\EventStore\InMemory\InMemoryEventStore;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventStore;
 use Dudulina\Scheduling\ScheduledCommand;
 
 class CommandDispatcherScheduledCommandsTest extends \PHPUnit_Framework_TestCase

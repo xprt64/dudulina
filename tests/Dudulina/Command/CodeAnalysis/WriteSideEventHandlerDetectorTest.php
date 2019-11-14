@@ -1,10 +1,10 @@
 <?php
 
 
-namespace tests\Dudulina\Command\CodeAnalysis\WriteSideEventHandlerDetectorTest;
+namespace tests\Dudulina\CodeGeneration\Command\WriteSideEventHandlerDetectorTest;
 
 
-use Dudulina\Command\CodeAnalysis\WriteSideEventHandlerDetector;
+use Dudulina\CodeGeneration\Command\WriteSideEventHandlerDetector;
 use Dudulina\Event;
 
 

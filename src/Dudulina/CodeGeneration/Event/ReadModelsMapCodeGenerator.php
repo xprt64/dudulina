@@ -5,7 +5,7 @@
 
 namespace Dudulina\CodeGeneration\Event;
 
-use Dudulina\Command\CodeAnalysis\ReadModelEventHandlerDetector;
+use Dudulina\CodeGeneration\Command\ReadModelEventHandlerDetector;
 use Dudulina\ReadModel\ListenerClassValidator\OnlyReadModels;
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\MapCodeGenerator;

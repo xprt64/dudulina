@@ -5,7 +5,7 @@
 
 namespace Dudulina\ReadModel\ReadModelEventApplier;
 
-use Dudulina\Command\CodeAnalysis\ReadModelEventHandlerDetector;
+use Dudulina\CodeGeneration\Command\ReadModelEventHandlerDetector;
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerMethod;

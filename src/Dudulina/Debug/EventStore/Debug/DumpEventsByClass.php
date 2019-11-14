@@ -3,7 +3,7 @@
  * Copyright (c) 2017 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Dudulina\EventStore\Debug;
+namespace Dudulina\Debug\EventStore\Debug;
 
 
 use Dudulina\EventStore;

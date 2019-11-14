@@ -1,11 +1,11 @@
 <?php
 
 
-namespace tests\Dudulina\Command\CodeAnalysis\AggregateCommandValidatorDetectorTest;
+namespace tests\Dudulina\CodeGeneration\Command\AggregateCommandValidatorDetectorTest;
 
 
 use Dudulina\Command;
-use Dudulina\Command\CodeAnalysis\AggregateCommandValidatorDetector;
+use Dudulina\CodeGeneration\Command\AggregateCommandValidatorDetector;
 
 
 class AggregateCommandValidatorDetectorTest extends \PHPUnit_Framework_TestCase

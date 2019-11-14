@@ -7,6 +7,7 @@ namespace Dudulina\ReadModel;
 
 
 use Dudulina\Event\EventWithMetaData;
+use Dudulina\ReadModel\ReadModelEventApplier\ErrorReporter;
 use Dudulina\ReadModel\ReadModelEventApplier\ReadModelReflector;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerMethod;
 use Psr\Log\LoggerInterface;
@@ -16,22 +17,22 @@ class ReadModelEventApplier
     /** @var OnlyOnceTracker */
     private $onlyOnceTracker;
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
      * @var ReadModelReflector
      */
     private $readModelReflector;
+    /**
+     * @var ErrorReporter
+     */
+    private $errorReporter;
 
     public function __construct(
-        LoggerInterface $logger,
+        ErrorReporter $errorReporter,
         ReadModelReflector $readModelReflector
     )
     {
         $this->onlyOnceTracker = new OnlyOnceTracker();
-        $this->logger = $logger;
         $this->readModelReflector = $readModelReflector;
+        $this->errorReporter = $errorReporter;
     }
 
     public function applyEventOnlyOnce($readModel, EventWithMetaData $eventWithMetadata): void
@@ -57,14 +58,20 @@ class ReadModelEventApplier
         try {
             $readModel->{$method->getMethodName()}($eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
         } catch (\Throwable $exception) {
-            $this->logger->error($exception->getMessage(), [
-                'model'          => \get_class($readModel),
-                'eventId'        => $eventWithMetadata->getMetaData()->getEventId(),
-                'aggregateId'    => $eventWithMetadata->getMetaData()->getAggregateId(),
-                'aggregateClass' => $eventWithMetadata->getMetaData()->getAggregateClass(),
-                'file'           => $exception->getFile(),
-                'line'           => $exception->getLine(),
-            ]);
+            $this->errorReporter->reportEventApplyError(
+                $readModel,
+                $method->getMethodName(),
+                $eventWithMetadata,
+                $exception
+            );
+//            $this->logger->error($exception->getMessage(), [
+//                'model'          => \get_class($readModel),
+//                'eventId'        => $eventWithMetadata->getMetaData()->getEventId(),
+//                'aggregateId'    => $eventWithMetadata->getMetaData()->getAggregateId(),
+//                'aggregateClass' => $eventWithMetadata->getMetaData()->getAggregateClass(),
+//                'file'           => $exception->getFile(),
+//                'line'           => $exception->getLine(),
+//            ]);
         }
     }
 }

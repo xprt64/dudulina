@@ -11,7 +11,7 @@ use Dudulina\Event\MetaData;
 use Dudulina\EventStore\AggregateEventStream;
 use Dudulina\EventStore\EventStream;
 use Dudulina\EventStore\Exception\ConcurrentModificationException;
-use Dudulina\EventStore\InMemory\InMemoryEventStore;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventStore;
 
 
 class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase

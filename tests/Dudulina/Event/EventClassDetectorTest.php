@@ -5,7 +5,7 @@ namespace tests\Dudulina\Event;
 
 
 use Dudulina\Event;
-use Dudulina\Event\CodeAnalysis\EventClassDetector;
+use Dudulina\CodeGeneration\Event\EventClassDetector;
 
 
 class EventClassDetectorTest extends \PHPUnit_Framework_TestCase

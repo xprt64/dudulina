@@ -7,6 +7,7 @@ namespace Dudulina\Event;
 
 
 use Dudulina\Command\CommandMetadata;
+use Dudulina\EventStore\EventSequence;
 
 class MetaData
 {
@@ -30,7 +31,7 @@ class MetaData
 
     /**
      * The sequence/timestamp. It is always increasing
-     * @var mixed
+     * @var EventSequence
      */
     private $sequence = null;
 
@@ -85,7 +86,7 @@ class MetaData
             ($dateCreated->setTimezone(new \DateTimeZone('Europe/Bucharest')) ?: $dateCreated);
     }
 
-    public function getSequence()
+    public function getSequence():?EventSequence
     {
         return $this->sequence;
     }
@@ -97,7 +98,7 @@ class MetaData
         return $other;
     }
 
-    public function withSequence($ts): self
+    public function withSequence(EventSequence $ts): self
     {
         $other = clone $this;
         $other->sequence = $ts;

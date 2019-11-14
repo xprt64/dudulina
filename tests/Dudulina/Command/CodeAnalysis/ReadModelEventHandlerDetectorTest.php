@@ -1,10 +1,10 @@
 <?php
 
 
-namespace tests\Dudulina\Command\CodeAnalysis;
+namespace tests\Dudulina\CodeGeneration\Command;
 
 
-use Dudulina\Command\CodeAnalysis\ReadModelEventHandlerDetector;
+use Dudulina\CodeGeneration\Command\ReadModelEventHandlerDetector;
 use Dudulina\Event;
 
 

@@ -5,8 +5,8 @@
 
 namespace Dudulina\CodeGeneration\Event;
 
-use Dudulina\Command\CodeAnalysis\AggregateCommandValidatorDetector;
-use Dudulina\Command\CodeAnalysis\ReadModelEventHandlerDetector;
+use Dudulina\CodeGeneration\Command\AggregateCommandValidatorDetector;
+use Dudulina\CodeGeneration\Command\ReadModelEventHandlerDetector;
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
 use Gica\CodeAnalysis\MethodListenerDiscovery\MapCodeGenerator;

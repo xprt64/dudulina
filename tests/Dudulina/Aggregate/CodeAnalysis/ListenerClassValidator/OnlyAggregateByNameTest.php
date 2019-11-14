@@ -4,7 +4,7 @@
 namespace tests\Dudulina\Aggregate\CodeAnalysis\ListenerClassValidator;
 
 
-use Dudulina\Aggregate\CodeAnalysis\ListenerClassValidator\OnlyAggregateByName;
+use Dudulina\CodeGeneration\Aggregate\ListenerClassValidator\OnlyAggregateByName;
 
 
 class OnlyAggregateByNameTest extends \PHPUnit_Framework_TestCase

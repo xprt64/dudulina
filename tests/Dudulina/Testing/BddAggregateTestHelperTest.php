@@ -6,6 +6,7 @@ namespace tests\Dudulina\Testing;
 
 use Dudulina\Command;
 use Dudulina\Command\CommandSubscriber;
+use Dudulina\Command\Exception\CommandHandlerNotFound;
 use Dudulina\Command\ValueObject\CommandHandlerDescriptor;
 use Dudulina\Event;
 use Dudulina\Event\EventsApplier\EventsApplierOnAggregate;
@@ -27,6 +28,7 @@ class BddAggregateTestHelperTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $command->method('getAggregateId')
             ->willReturn(123);
+        /** @var Command $command */
 
         /** @var Event $event1 */
         $event1 = $this->getMockBuilder(Event::class)
@@ -346,12 +348,10 @@ class BddAggregateTestHelperTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         /** @var \Exception $expectedException */
-        $expectedException = new class extends \Exception
-        {
+        $expectedException = new class extends \Exception {
         };
         /** @var \Exception $thrownException */
-        $thrownException = new class extends \Exception
-        {
+        $thrownException = new class extends \Exception {
         };
 
         $aggregate->method($aggregateCommandHandlerName)

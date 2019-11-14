@@ -17,7 +17,7 @@ use Dudulina\Command\MetadataFactory\DefaultMetadataWrapper;
 use Dudulina\Event\EventDispatcher\EventDispatcherBySubscriber;
 use Dudulina\Event\EventsApplier\EventsApplierOnAggregate;
 use Dudulina\Event\MetadataFactory\DefaultMetadataFactory;
-use Dudulina\EventStore\InMemory\InMemoryEventStore;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventStore;
 
 class CommandDispatcherCommandNotAcceptedTest extends \PHPUnit_Framework_TestCase
 {

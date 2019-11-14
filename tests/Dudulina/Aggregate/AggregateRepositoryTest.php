@@ -14,7 +14,7 @@ use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
 use Dudulina\EventStore\AggregateEventStream;
-use Dudulina\EventStore\InMemory\InMemoryAggregateEventStream;
+use Dudulina\Testing\EventStore\InMemory\InMemoryAggregateEventStream;
 
 
 class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase

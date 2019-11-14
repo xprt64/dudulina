@@ -9,10 +9,12 @@ use Dudulina\Event;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
-use Dudulina\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
-use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
+use Dudulina\EventStore\EventSequence;
+use Dudulina\Testing\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventsCommit;
 use Dudulina\EventStore\TailableEventStream;
 use Dudulina\ProgressReporting\TaskProgressReporter;
+use Dudulina\ReadModel\ReadModelEventApplier\ErrorReporter;
 use Dudulina\ReadModel\ReadModelEventApplier;
 use Dudulina\ReadModel\ReadModelEventApplier\ReadModelReflector;
 use Dudulina\ReadModel\ReadModelInterface;
@@ -61,19 +63,22 @@ class ReadModelTailTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->getMock();
 
+        /** @var ErrorReporter $errorReporter */
+        $errorReporter = $this->getMockBuilder(ErrorReporter::class)
+            ->getMock();
+
         $eventStore->expects($this->once())
             ->method('loadEventsByClassNames')
             ->with([Event1::class, Event2::class, Event3::class, Event4::class])
             ->willReturn($eventStream);
 
         /** @var EventStore $eventStore */
-
         $sut = new ReadModelTail(
             $eventStore,
             $logger,
             $this->factoryTail($tailEvents),
             new ReadModelEventApplier(
-                $logger,
+                $errorReporter,
                 new ReadModelReflector()
             ),
             new ReadModelReflector()
@@ -100,7 +105,7 @@ class ReadModelTailTest extends \PHPUnit_Framework_TestCase
                 $this->tailEvents = $tailEvents;
             }
 
-            public function tail(callable $callback, $eventClasses = [], string $afterSequence = null): void
+            public function tail(callable $callback, $eventClasses = [], EventSequence $afterSequence = null): void
             {
                 foreach ($this->tailEvents as $event) {
                     $callback($event);

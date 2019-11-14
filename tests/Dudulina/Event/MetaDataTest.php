@@ -6,6 +6,7 @@ namespace tests\Dudulina\Event;
 
 use Dudulina\Command\CommandMetadata;
 use Dudulina\Event\MetaData;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventSequence;
 use Gica\Types\Guid;
 
 
@@ -35,7 +36,8 @@ class MetaDataTest extends \PHPUnit_Framework_TestCase
         $metaData2 = $metaData->withEventId('234');
         $this->assertSame('234', $metaData2->getEventId());
 
-        $metaData3 = $metaData->withSequence('100');
-        $this->assertSame('100', $metaData3->getSequence());
+        $ts = new InMemoryEventSequence(1, 2);
+        $metaData3 = $metaData->withSequence($ts);
+        $this->assertSame($ts, $metaData3->getSequence());
     }
 }

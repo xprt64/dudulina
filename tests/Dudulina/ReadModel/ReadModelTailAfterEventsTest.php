@@ -10,11 +10,13 @@ use Dudulina\Event;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
-use Dudulina\EventStore\InMemory\EventSequence;
-use Dudulina\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
-use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
+use Dudulina\EventStore\EventSequence;
+use Dudulina\Testing\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventsCommit;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventSequence;
 use Dudulina\EventStore\TailableEventStream;
 use Dudulina\ReadModel\ReadModelEventApplier;
+use Dudulina\ReadModel\ReadModelEventApplier\ErrorReporter;
 use Dudulina\ReadModel\ReadModelEventApplier\ReadModelReflector;
 use Dudulina\ReadModel\ReadModelInterface;
 use Dudulina\ReadModel\ReadModelTail;
@@ -39,21 +41,25 @@ class ReadModelTailAfterEventsTest extends \PHPUnit_Framework_TestCase
 
         /** @var EventWithMetaData[] $events */
         $events = [
-            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withSequence(new EventSequence(100, 0))),
-            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withSequence(new EventSequence(100, 0))),
-            new EventWithMetaData(new Event2, $metadata->withEventId(2)->withSequence(new EventSequence(100, 1))),
+            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withSequence(new InMemoryEventSequence(100, 0))),
+            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withSequence(new InMemoryEventSequence(100, 0))),
+            new EventWithMetaData(new Event2, $metadata->withEventId(2)->withSequence(new InMemoryEventSequence(100, 1))),
         ];
 
         /** @var EventWithMetaData[] $tailEvents */
         $tailEvents = [
-            new EventWithMetaData(new Event3, $metadata->withEventId(3)->withSequence(new EventSequence(200, 0))),
-            new EventWithMetaData(new Event4, $metadata->withEventId(4)->withSequence(new EventSequence(200, 1))),
+            new EventWithMetaData(new Event3, $metadata->withEventId(3)->withSequence(new InMemoryEventSequence(200, 0))),
+            new EventWithMetaData(new Event4, $metadata->withEventId(4)->withSequence(new InMemoryEventSequence(200, 1))),
         ];
 
         $eventStream = new FilteredRawEventStreamGroupedByCommit([new InMemoryEventsCommit(100, 0, $events)]);
 
         /** @var LoggerInterface $logger */
         $logger = $this->getMockBuilder(LoggerInterface::class)
+            ->getMock();
+
+        /** @var ErrorReporter $errorReporter */
+        $errorReporter = $this->getMockBuilder(ErrorReporter::class)
             ->getMock();
 
         $eventStore->expects($this->once())
@@ -68,7 +74,7 @@ class ReadModelTailAfterEventsTest extends \PHPUnit_Framework_TestCase
             $logger,
             $this->factoryTail($tailEvents),
             new ReadModelEventApplier(
-                $logger,
+                $errorReporter,
                 new ReadModelReflector()
             ),
             new ReadModelReflector()
@@ -76,7 +82,7 @@ class ReadModelTailAfterEventsTest extends \PHPUnit_Framework_TestCase
 
         $readModel = new ReadModel();
 
-        $sut->tailRead($readModel, new EventSequence(100, 0));
+        $sut->tailRead($readModel, new InMemoryEventSequence(100, 0));
 
         $this->assertSame(0, $readModel->onEvent1Called);
         $this->assertSame(1, $readModel->onEvent2Called);
@@ -95,7 +101,7 @@ class ReadModelTailAfterEventsTest extends \PHPUnit_Framework_TestCase
                 $this->tailEvents = $tailEvents;
             }
 
-            public function tail(callable $callback, $eventClasses = [], string $afterSequence = null): void
+            public function tail(callable $callback, $eventClasses, EventSequence $afterSequence): void
             {
                 foreach ($this->tailEvents as $event) {
                     $callback($event);

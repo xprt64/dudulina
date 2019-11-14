@@ -1,15 +1,15 @@
 <?php
 
 
-namespace tests\Dudulina\EventStore\InMemory\RawEventStreamTest;
+namespace tests\Dudulina\Testing\EventStore\InMemory\RawEventStreamTest;
 
 
 use Dudulina\Event;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
-use Dudulina\EventStore\InMemory\EventSequence;
-use Dudulina\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
-use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventSequence;
+use Dudulina\Testing\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventsCommit;
 
 
 class RawEventStreamTest extends \PHPUnit_Framework_TestCase
@@ -103,22 +103,22 @@ class RawEventStreamTest extends \PHPUnit_Framework_TestCase
                 100,
                 1,
                 [
-                    $this->wrapEventInMetadata($event1, new EventSequence(100, 0)),
-                    $this->wrapEventInMetadata($event2, new EventSequence(100, 1))
+                    $this->wrapEventInMetadata($event1, new InMemoryEventSequence(100, 0)),
+                    $this->wrapEventInMetadata($event2, new InMemoryEventSequence(100, 1))
                 ]
             ),
             new InMemoryEventsCommit(
                 200,
                 2,
                 [
-                    $this->wrapEventInMetadata($event3, new EventSequence(200, 0)),
-                    $this->wrapEventInMetadata($event4, new EventSequence(200, 1))
+                    $this->wrapEventInMetadata($event3, new InMemoryEventSequence(200, 0)),
+                    $this->wrapEventInMetadata($event4, new InMemoryEventSequence(200, 1))
                 ]
             ),
         ];
 
         $sut = new FilteredRawEventStreamGroupedByCommit($eventCommits, []);
-        $sut->afterSequence(new EventSequence(200, 0));//after the first event from the second commit
+        $sut->afterSequence(new InMemoryEventSequence(200, 0));//after the first event from the second commit
         $this->assertEquals(1, $sut->count());
         /** @var EventWithMetaData[] $events */
         $events = iterator_to_array($sut, false);
@@ -126,7 +126,7 @@ class RawEventStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($event4, $events[0]->getEvent());
 
         $sut = new FilteredRawEventStreamGroupedByCommit($eventCommits, []);
-        $sut->beforeSequence(new EventSequence(100, 1));//after the first event from the second commit
+        $sut->beforeSequence(new InMemoryEventSequence(100, 1));//after the first event from the second commit
         $this->assertEquals(1, $sut->count());
         /** @var EventWithMetaData[] $events */
         $events = iterator_to_array($sut, false);
@@ -134,7 +134,7 @@ class RawEventStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($event1, $events[0]->getEvent());
     }
 
-    private function wrapEventInMetadata($event, EventSequence $eventSequence = null): EventWithMetaData
+    private function wrapEventInMetadata($event, InMemoryEventSequence $eventSequence = null): EventWithMetaData
     {
         /** @var MetaData $metaData */
         $metaData = new MetaData(

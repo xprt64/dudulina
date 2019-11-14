@@ -9,7 +9,7 @@ namespace Dudulina\Saga;
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerMethod;
-use Dudulina\Command\CodeAnalysis\WriteSideEventHandlerDetector;
+use Dudulina\CodeGeneration\Command\WriteSideEventHandlerDetector;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\EventProcessing\ConcurentEventProcessingException;
 use Dudulina\EventStore;

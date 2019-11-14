@@ -6,7 +6,7 @@
 namespace Dudulina\CodeGeneration;
 
 use Gica\CodeAnalysis\AggregateEventHandlersValidator;
-use Dudulina\Aggregate\CodeAnalysis\ListenerClassValidator\OnlyAggregateByName;
+use Dudulina\CodeGeneration\Aggregate\ListenerClassValidator\OnlyAggregateByName;
 use Psr\Log\LoggerInterface;
 
 class AggregateEventApplyHandlerValidator

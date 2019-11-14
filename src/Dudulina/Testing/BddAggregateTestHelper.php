@@ -6,15 +6,12 @@
 namespace Dudulina\Testing;
 
 
-use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
 use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
 use Dudulina\Command\CommandSubscriber;
 use Dudulina\Event;
 use Dudulina\Event\EventDispatcher;
-use Dudulina\Event\EventDispatcher\EventDispatcherBySubscriber;
 use Dudulina\Event\EventsApplier\EventsApplierOnAggregate;
-use Dudulina\Event\EventSubscriber\ManualEventSubscriber;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\Testing\Exceptions\ExpectedEventNotYielded;
@@ -23,6 +20,7 @@ use Dudulina\Testing\Exceptions\TooManyEventsFired;
 use Dudulina\Testing\Exceptions\WrongEventClassYielded;
 use Dudulina\Testing\Exceptions\WrongExceptionClassThrown;
 use Dudulina\Testing\Exceptions\WrongExceptionMessageWasThrown;
+use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
 
 class BddAggregateTestHelper
 {
@@ -49,10 +47,8 @@ class BddAggregateTestHelper
 
     public function __construct(
         CommandSubscriber $commandSubscriber
-    )
-    {
+    ) {
         $this->commandSubscriber = $commandSubscriber;
-        $this->eventDispatcher = new EventDispatcherBySubscriber(new ManualEventSubscriber());
         $this->eventsApplierOnAggregate = new EventsApplierOnAggregate();
         $this->commandApplier = new CommandApplier();
 
@@ -126,10 +122,6 @@ class BddAggregateTestHelper
 
             $eventsWithMetaData[] = $eventWithMetaData;
             $newEvents[] = $event;
-        }
-
-        foreach ($eventsWithMetaData as $eventWithMetaData) {
-            $this->eventDispatcher->dispatchEvent($eventWithMetaData);
         }
 
         return $newEvents;

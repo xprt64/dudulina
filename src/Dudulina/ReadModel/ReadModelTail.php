@@ -7,6 +7,7 @@ namespace Dudulina\ReadModel;
 
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\EventStore;
+use Dudulina\EventStore\EventSequence;
 use Dudulina\EventStore\TailableEventStream;
 use Dudulina\ReadModel\ReadModelEventApplier\ReadModelReflector;
 use Dudulina\ReadModel\ReadModelTail\EventProcessedNotifier;
@@ -41,8 +42,7 @@ class ReadModelTail
         TailableEventStream $tailableEventStream,
         ReadModelEventApplier $readModelEventApplier,
         ReadModelReflector $readModelReflector
-    )
-    {
+    ) {
         $this->eventStore = $eventStore;
         $this->logger = $logger;
         $this->tailableEventStream = $tailableEventStream;
@@ -50,7 +50,7 @@ class ReadModelTail
         $this->readModelReflector = $readModelReflector;
     }
 
-    public function tailRead(ReadModelInterface $readModel, string $after = null, EventProcessedNotifier $eventProcessedNotifier = null)
+    public function tailRead(ReadModelInterface $readModel, EventSequence $after = null, EventProcessedNotifier $eventProcessedNotifier = null)
     {
         $eventClasses = $this->readModelReflector->getEventClassesFromReadModel($readModel);
 
@@ -75,10 +75,14 @@ class ReadModelTail
 
         $this->logger->info('tailing events...');
 
-        $this->tailableEventStream->tail(function (EventWithMetaData $eventWithMetadata) use ($readModel, $eventProcessedNotifier) {
-            $this->readModelEventApplier->applyEventOnlyOnce($readModel, $eventWithMetadata);
-            $eventProcessedNotifier and $eventProcessedNotifier->onEventProcessed($eventWithMetadata);
-        }, $eventClasses, $lastSequence);
+        $this->tailableEventStream->tail(
+            function (EventWithMetaData $eventWithMetadata) use ($readModel, $eventProcessedNotifier) {
+                $this->readModelEventApplier->applyEventOnlyOnce($readModel, $eventWithMetadata);
+                $eventProcessedNotifier and $eventProcessedNotifier->onEventProcessed($eventWithMetadata);
+            },
+            $eventClasses,
+            $lastSequence
+        );
     }
 
 }

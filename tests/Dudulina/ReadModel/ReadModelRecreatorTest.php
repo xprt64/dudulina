@@ -8,10 +8,11 @@ use Dudulina\Event;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
-use Dudulina\EventStore\InMemory\EventSequence;
-use Dudulina\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
-use Dudulina\EventStore\InMemory\InMemoryEventsCommit;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventSequence;
+use Dudulina\Testing\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventsCommit;
 use Dudulina\ProgressReporting\TaskProgressReporter;
+use Dudulina\ReadModel\ReadModelEventApplier\ErrorReporter;
 use Dudulina\ReadModel\ReadModelEventApplier;
 use Dudulina\ReadModel\ReadModelEventApplier\ReadModelReflector;
 use Dudulina\ReadModel\ReadModelInterface;
@@ -51,18 +52,21 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->getMock();
 
+        /** @var ErrorReporter $errorReporter */
+        $errorReporter = $this->getMockBuilder(ErrorReporter::class)
+            ->getMock();
+
         $eventStore->expects($this->once())
             ->method('loadEventsByClassNames')
             ->with([Event1::class, Event2::class])
             ->willReturn($eventStream);
 
         /** @var EventStore $eventStore */
-
         $sut = new ReadModelRecreator(
             $eventStore,
             $logger,
             new ReadModelEventApplier(
-                $logger,
+                $errorReporter,
                 new ReadModelReflector()
             ),
             new ReadModelReflector()
@@ -93,8 +97,8 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
 
         /** @var EventWithMetaData[] $events */
         $events = [
-            new EventWithMetaData(new Event1, $metadata->withSequence(new EventSequence(100, 0))),
-            new EventWithMetaData(new Event2, $metadata->withSequence(new EventSequence(100, 1))),
+            new EventWithMetaData(new Event1, $metadata->withSequence(new InMemoryEventSequence(100, 0))),
+            new EventWithMetaData(new Event2, $metadata->withSequence(new InMemoryEventSequence(100, 1))),
         ];
 
         $eventStream = new FilteredRawEventStreamGroupedByCommit([new InMemoryEventsCommit(100, 1, $events)]);
@@ -107,18 +111,21 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->getMock();
 
+        /** @var ErrorReporter $errorReporter */
+        $errorReporter = $this->getMockBuilder(ErrorReporter::class)
+            ->getMock();
+
         $eventStore->expects($this->once())
             ->method('loadEventsByClassNames')
             ->with([Event1::class, Event2::class])
             ->willReturn($eventStream);
 
         /** @var EventStore $eventStore */
-
         $sut = new ReadModelRecreator(
             $eventStore,
             $logger,
             new ReadModelEventApplier(
-                $logger,
+                $errorReporter,
                 new ReadModelReflector()
             ),
             new ReadModelReflector()
@@ -128,7 +135,7 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
 
         $readModel = new ReadModel();
 
-        $sut->pollAndApplyEvents($readModel, new EventSequence(100, 0));
+        $sut->pollAndApplyEvents($readModel, new InMemoryEventSequence(100, 0));
 
         $this->assertSame(0, $readModel->onEvent1Called);
         $this->assertSame(1, $readModel->onEvent2Called);
@@ -149,8 +156,8 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
 
         /** @var EventWithMetaData[] $events */
         $events = [
-            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withSequence(new EventSequence(100, 0))),
-            new EventWithMetaData(new Event2, $metadata->withEventId(2)->withSequence(new EventSequence(100, 1))),
+            new EventWithMetaData(new Event1, $metadata->withEventId(1)->withSequence(new InMemoryEventSequence(100, 0))),
+            new EventWithMetaData(new Event2, $metadata->withEventId(2)->withSequence(new InMemoryEventSequence(100, 1))),
         ];
 
         $eventStream = new FilteredRawEventStreamGroupedByCommit([new InMemoryEventsCommit(100, 1, $events)]);
@@ -163,18 +170,21 @@ class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)
             ->getMock();
 
+        /** @var ErrorReporter $errorReporter */
+        $errorReporter = $this->getMockBuilder(ErrorReporter::class)
+            ->getMock();
+
         $eventStore->expects($this->once())
             ->method('loadEventsByClassNames')
             ->with([Event1::class, Event2::class])
             ->willReturn($eventStream);
 
         /** @var EventStore $eventStore */
-
         $sut = new ReadModelRecreator(
             $eventStore,
             $logger,
             new ReadModelEventApplier(
-                $logger,
+                $errorReporter,
                 new ReadModelReflector()
             ),
             new ReadModelReflector()

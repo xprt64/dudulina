@@ -5,7 +5,7 @@
 
 namespace Dudulina\CodeGeneration\Command;
 
-use Dudulina\Command\CodeAnalysis\AggregateCommandHandlerDetector;
+use Dudulina\CodeGeneration\Command\AggregateCommandHandlerDetector;
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
 use Gica\CodeAnalysis\MethodListenerDiscovery\MapCodeGenerator;

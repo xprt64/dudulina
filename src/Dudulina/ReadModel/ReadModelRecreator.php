@@ -7,6 +7,7 @@ namespace Dudulina\ReadModel;
 
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\EventStore;
+use Dudulina\EventStore\EventSequence;
 use Dudulina\ProgressReporting\TaskProgressCalculator;
 use Dudulina\ProgressReporting\TaskProgressReporter;
 use Dudulina\ReadModel\ReadModelEventApplier\ReadModelReflector;
@@ -83,10 +84,10 @@ class ReadModelRecreator
 
     /**
      * @param ReadModelInterface $readModel
-     * @param string $afterSequence only the events strictly after this sequence are applied
-     * @return string The last timestamp processed
+     * @param EventSequence $afterSequence only the events strictly after this sequence are applied
+     * @return EventSequence The last timestamp processed
      */
-    public function pollAndApplyEvents(ReadModelInterface $readModel, string $afterSequence = null)
+    public function pollAndApplyEvents(ReadModelInterface $readModel, EventSequence $afterSequence = null)
     {
         $eventClasses = $this->readModelReflector->getEventClassesFromReadModel($readModel);
 

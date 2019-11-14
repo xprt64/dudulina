@@ -3,7 +3,7 @@
  * Copyright (c) 2017 Constantin Galbenu <gica.galbenu@gmail.com>             *
  ******************************************************************************/
 
-namespace Dudulina\Command\CodeAnalysis;
+namespace Dudulina\CodeGeneration\Command;
 
 
 class AggregateEventHandlersValidator extends \Gica\CodeAnalysis\AggregateEventHandlersValidator

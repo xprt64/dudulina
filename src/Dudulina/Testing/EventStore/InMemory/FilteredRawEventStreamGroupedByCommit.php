@@ -1,11 +1,12 @@
 <?php
 /**
- * Copyright (c) 2018 Constantin Galbenu <xprt64@gmail.com>
+ * Copyright (c) 2019 Constantin Galbenu <xprt64@gmail.com>
  */
 
-namespace Dudulina\EventStore\InMemory;
+namespace Dudulina\Testing\EventStore\InMemory;
 
 use Dudulina\Event\EventWithMetaData;
+use Dudulina\EventStore\EventSequence;
 use Dudulina\EventStore\SeekableEventStream;
 use Gica\Iterator\IteratorTransformer\IteratorExpander;
 use Gica\Iterator\IteratorTransformer\IteratorFilter;
@@ -25,9 +26,9 @@ class FilteredRawEventStreamGroupedByCommit implements SeekableEventStream
      */
     private $eventClasses;
 
-    /** @var EventSequence|null */
+    /** @var InMemoryEventSequence|null */
     private $afterSequence;
-    /** @var EventSequence|null */
+    /** @var InMemoryEventSequence|null */
     private $beforeSequence;
     private $ascending = true;
 
@@ -54,7 +55,7 @@ class FilteredRawEventStreamGroupedByCommit implements SeekableEventStream
 
         if ($this->afterSequence) {
             $filter = new IteratorFilter(function (EventWithMetaData $eventWithMetaData) {
-                /** @var EventSequence $eventSequence */
+                /** @var InMemoryEventSequence $eventSequence */
                 $eventSequence = $eventWithMetaData->getMetaData()->getSequence();
                 return $eventSequence->isAfter($this->afterSequence);
             });
@@ -63,7 +64,7 @@ class FilteredRawEventStreamGroupedByCommit implements SeekableEventStream
 
         if ($this->beforeSequence) {
             $filter = new IteratorFilter(function (EventWithMetaData $eventWithMetaData) {
-                /** @var EventSequence $eventSequence */
+                /** @var InMemoryEventSequence $eventSequence */
                 $eventSequence = $eventWithMetaData->getMetaData()->getSequence();
                 return $eventSequence->isBefore($this->beforeSequence);
             });
@@ -140,14 +141,14 @@ class FilteredRawEventStreamGroupedByCommit implements SeekableEventStream
         return \count(\iterator_to_array($this->getIterator(), false));
     }
 
-    public function afterSequence(string $after)
+    public function afterSequence(EventSequence $after)
     {
-        $this->afterSequence = EventSequence::fromString($after);
+        $this->afterSequence = $after;
     }
 
-    public function beforeSequence(string $before)
+    public function beforeSequence(EventSequence $before)
     {
-        $this->beforeSequence = EventSequence::fromString($before);
+        $this->beforeSequence = $before;
     }
 
     public function sort(bool $chronological)

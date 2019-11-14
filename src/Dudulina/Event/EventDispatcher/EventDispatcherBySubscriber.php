@@ -9,23 +9,22 @@ namespace Dudulina\Event\EventDispatcher;
 use Dudulina\Event\EventDispatcher;
 use Dudulina\Event\EventSubscriber;
 use Dudulina\Event\EventWithMetaData;
-use Psr\Log\LoggerInterface;
 
 class EventDispatcherBySubscriber implements EventDispatcher
 {
     /** @var EventSubscriber */
     private $eventSubscriber;
-
-    /** @var LoggerInterface|null */
-    private $logger;
+    /**
+     * @var ErrorReporter
+     */
+    private $errorReporter;
 
     public function __construct(
         EventSubscriber $eventSubscriber,
-        LoggerInterface $logger = null
-    )
-    {
+        ErrorReporter $errorReporter
+    ) {
         $this->eventSubscriber = $eventSubscriber;
-        $this->logger = $logger;
+        $this->errorReporter = $errorReporter;
     }
 
     public function dispatchEvent(EventWithMetaData $eventWithMetadata)
@@ -36,22 +35,11 @@ class EventDispatcherBySubscriber implements EventDispatcher
             try {
                 \call_user_func($listener, $eventWithMetadata->getEvent(), $eventWithMetadata->getMetaData());
             } catch (\Throwable $exception) {
-                if ($this->logger) {
-                    $this->logger->error(
-                        sprintf(
-                            "Dispatch event of type %s to %s failed on %s:%d: %s",
-                            \get_class($eventWithMetadata->getEvent()),
-                            \get_class($listener[0]),
-                            $exception->getFile(),
-                            $exception->getLine(),
-                            $exception->getMessage()),
-                        [
-                            'eventId'    => $eventWithMetadata->getMetaData()->getEventId(),
-                            'eventClass' => \get_class($eventWithMetadata->getEvent()),
-                            'listener'   => \get_class($listener[0]),
-                            'trace'      => $exception->getTraceAsString(),
-                        ]);
-                }
+                $this->errorReporter->reportEventDispatchError(
+                    $listener,
+                    $eventWithMetadata,
+                    $exception
+                );
             }
         }
     }

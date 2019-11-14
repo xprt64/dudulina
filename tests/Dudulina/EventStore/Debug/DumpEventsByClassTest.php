@@ -8,7 +8,7 @@ use Dudulina\Event;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
-use Dudulina\EventStore\Debug\DumpEventsByClass;
+use Dudulina\Debug\EventStore\Debug\DumpEventsByClass;
 use Dudulina\EventStore\EventStream;
 use Dudulina\EventStore\SeekableEventStream;
 use Psr\Log\LoggerInterface;
