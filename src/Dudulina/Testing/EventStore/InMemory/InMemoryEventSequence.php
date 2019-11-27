@@ -23,13 +23,12 @@ class InMemoryEventSequence implements EventSequence
     public function __construct(
         int $commitSequence,
         int $indexInsideCommit
-    )
-    {
+    ) {
         $this->indexInsideCommit = $indexInsideCommit;
         $this->commitSequence = $commitSequence;
     }
 
-    public function isBefore(self $other): bool
+    public function isBefore(EventSequence $other): bool
     {
         return $this->commitSequence < $other->commitSequence || ($this->commitSequence === $other->commitSequence && $this->indexInsideCommit < $other->indexInsideCommit);
     }

@@ -8,5 +8,5 @@ namespace Dudulina\EventStore;
 
 interface EventSequence
 {
-
+    public function isBefore(self $other): bool;
 }
