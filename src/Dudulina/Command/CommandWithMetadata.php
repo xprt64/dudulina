@@ -15,6 +15,8 @@ class CommandWithMetadata
      * @var Command
      */
     private $command;
+
+    /** @var array|null */
     private $metadata;
 
     public function __construct(
