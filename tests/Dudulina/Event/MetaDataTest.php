@@ -4,10 +4,8 @@
 namespace tests\Dudulina\Event;
 
 
-use Dudulina\Command\CommandMetadata;
 use Dudulina\Event\MetaData;
 use Dudulina\Testing\EventStore\InMemory\InMemoryEventSequence;
-use Gica\Types\Guid;
 
 
 class MetaDataTest extends \PHPUnit_Framework_TestCase
@@ -17,7 +15,7 @@ class MetaDataTest extends \PHPUnit_Framework_TestCase
     {
         $dateCreated = new \DateTimeImmutable();
 
-        $commandMetadata = (new CommandMetadata())->withCommandId(Guid::generate());
+        $commandMetadata = new \stdClass();
 
         $metaData = new MetaData(
             123,

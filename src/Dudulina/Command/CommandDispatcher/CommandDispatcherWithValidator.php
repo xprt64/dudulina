@@ -6,7 +6,6 @@ namespace Dudulina\Command\CommandDispatcher;
 
 use Dudulina\Command;
 use Dudulina\Command\CommandDispatcher;
-use Dudulina\Command\CommandMetadata;
 use Dudulina\Command\CommandValidator;
 use Dudulina\Command\Exception\CommandValidationFailed;
 
@@ -32,7 +31,7 @@ class CommandDispatcherWithValidator implements CommandDispatcher
         $this->commandValidator = $commandValidator;
     }
 
-    public function dispatchCommand(Command $command, CommandMetadata $metadata = null)
+    public function dispatchCommand(Command $command, $metadata = null)
     {
         $errors = $this->commandValidator->validateCommand($command);
 

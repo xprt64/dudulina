@@ -10,5 +10,5 @@ use Dudulina\Command;
 
 interface MetadataWrapper
 {
-    public function wrapCommandWithMetadata(Command $command, CommandMetadata $metadata = null): CommandWithMetadata;
+    public function wrapCommandWithMetadata(Command $command, $metadata = null): CommandWithMetadata;
 }

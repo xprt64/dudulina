@@ -13,7 +13,6 @@ use Dudulina\Command\CommandApplier;
 use Dudulina\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
 use Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher;
 use Dudulina\Command\CommandDispatcher\SideEffectsDispatcher\DefaultSideEffectsDispatcher;
-use Dudulina\Command\CommandMetadata;
 use Dudulina\Command\CommandSubscriber;
 use Dudulina\Command\MetadataFactory\DefaultMetadataWrapper;
 use Dudulina\Event;
@@ -73,7 +72,7 @@ class CommandDispatcherNormalTest extends \PHPUnit_Framework_TestCase
             new DefaultSideEffectsDispatcher($eventDispatcher)
         );
 
-        $metadata = (new CommandMetadata());
+        $metadata = [];
 
         $commandDispatcher->dispatchCommand($command, $metadata);
 

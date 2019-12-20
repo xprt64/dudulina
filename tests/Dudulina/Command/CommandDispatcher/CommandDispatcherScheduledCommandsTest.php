@@ -13,7 +13,6 @@ use Dudulina\Command\CommandApplier;
 use Dudulina\Command\CommandDispatcher\ConcurrentProofFunctionCaller;
 use Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher;
 use Dudulina\Command\CommandDispatcher\SideEffectsDispatcher\DefaultSideEffectsDispatcher;
-use Dudulina\Command\CommandMetadata;
 use Dudulina\Command\CommandSubscriber;
 use Dudulina\Command\MetadataFactory\DefaultMetadataWrapper;
 use Dudulina\Event;
@@ -21,8 +20,8 @@ use Dudulina\Event\EventDispatcher\EventDispatcherBySubscriber;
 use Dudulina\Event\EventsApplier\EventsApplierOnAggregate;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetadataFactory\DefaultMetadataFactory;
-use Dudulina\Testing\EventStore\InMemory\InMemoryEventStore;
 use Dudulina\Scheduling\ScheduledCommand;
+use Dudulina\Testing\EventStore\InMemory\InMemoryEventStore;
 
 class CommandDispatcherScheduledCommandsTest extends \PHPUnit_Framework_TestCase
 {
@@ -128,7 +127,7 @@ class StubScheduledCommandStore implements \Dudulina\Scheduling\CommandScheduler
         return $this->commands;
     }
 
-    public function scheduleCommand(ScheduledCommand $scheduledCommand, AggregateDescriptor $aggregateDescriptor, CommandMetadata $commandMetadata = null)
+    public function scheduleCommand(ScheduledCommand $scheduledCommand, AggregateDescriptor $aggregateDescriptor, $commandMetadata = null)
     {
         $this->commands[] = $scheduledCommand;
     }

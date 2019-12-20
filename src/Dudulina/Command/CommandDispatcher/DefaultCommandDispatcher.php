@@ -11,8 +11,6 @@ use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
 use Dudulina\Command\CommandDispatcher;
 use Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher\SideEffects;
-use Dudulina\Command\CommandDispatcher\SideEffectsDispatcher\DefaultSideEffectsDispatcher;
-use Dudulina\Command\CommandMetadata;
 use Dudulina\Command\CommandSubscriber;
 use Dudulina\Command\CommandWithMetadata;
 use Dudulina\Command\MetadataWrapper as CommandMetadataFactory;
@@ -80,7 +78,7 @@ class DefaultCommandDispatcher implements CommandDispatcher
         $this->sideEffectsDispatcher = $sideEffectsDispatcher;
     }
 
-    public function dispatchCommand(Command $command, CommandMetadata $metadata = null)
+    public function dispatchCommand(Command $command, $metadata = null)
     {
         $sideEffects = $this->dispatchCommandAndSaveAggregate(
             $this->commandMetadataFactory->wrapCommandWithMetadata($command, $metadata)

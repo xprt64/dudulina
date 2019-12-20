@@ -7,14 +7,13 @@ namespace Dudulina\Command\MetadataFactory;
 
 
 use Dudulina\Command;
-use Dudulina\Command\CommandMetadata;
 use Dudulina\Command\CommandWithMetadata;
 use Dudulina\Command\MetadataWrapper;
 
 class DefaultMetadataWrapper implements MetadataWrapper
 {
 
-    public function wrapCommandWithMetadata(Command $command, CommandMetadata $metadata = null): CommandWithMetadata
+    public function wrapCommandWithMetadata(Command $command, $metadata = null): CommandWithMetadata
     {
         return new CommandWithMetadata($command, $metadata);
     }

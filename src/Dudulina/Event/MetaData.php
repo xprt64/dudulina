@@ -6,7 +6,6 @@
 namespace Dudulina\Event;
 
 
-use Dudulina\Command\CommandMetadata;
 use Dudulina\EventStore\EventSequence;
 
 class MetaData
@@ -23,7 +22,7 @@ class MetaData
     /* @var string */
     private $aggregateClass;
 
-    /** @var CommandMetadata|null */
+    /** @var mixed|null */
     private $commandMetadata;
 
     /** @var int */
@@ -45,7 +44,7 @@ class MetaData
         string $aggregateClass,
         \DateTimeImmutable $dateCreated,
         $authenticatedUserId = null,
-        CommandMetadata $commandMetadata = null
+        $commandMetadata = null
     )
     {
         $this->dateCreated = $this->addTimeZone($dateCreated);
@@ -75,7 +74,7 @@ class MetaData
         return $this->authenticatedUserId;
     }
 
-    public function getCommandMetadata():?CommandMetadata
+    public function getCommandMetadata()
     {
         return $this->commandMetadata;
     }

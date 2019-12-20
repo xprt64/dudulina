@@ -7,7 +7,6 @@ namespace Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher;
 
 
 use Dudulina\Aggregate\AggregateDescriptor;
-use Dudulina\Command\CommandMetadata;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Scheduling\ScheduledCommand;
 
@@ -22,7 +21,6 @@ class SideEffects
     /** @var AggregateDescriptor */
     private $aggregateDescriptor;
 
-    /** @var CommandMetadata */
     private $commandMetadata;
 
     /**
@@ -56,14 +54,14 @@ class SideEffects
         return $other;
     }
 
-    public function withCommandMetadata(?CommandMetadata $commandMetadata): self
+    public function withCommandMetadata($commandMetadata): self
     {
         $other = clone $this;
         $other->commandMetadata = $commandMetadata;
         return $other;
     }
 
-    public function getCommandMetadata(): ?CommandMetadata
+    public function getCommandMetadata()
     {
         return $this->commandMetadata;
     }
