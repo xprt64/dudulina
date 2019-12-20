@@ -31,7 +31,7 @@ class CommandDispatcherWithValidator implements CommandDispatcher
         $this->commandValidator = $commandValidator;
     }
 
-    public function dispatchCommand(Command $command, $metadata = null)
+    public function dispatchCommand(Command $command, array $metadata = null)
     {
         $errors = $this->commandValidator->validateCommand($command);
 

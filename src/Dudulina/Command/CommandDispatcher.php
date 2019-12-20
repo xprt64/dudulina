@@ -10,5 +10,5 @@ use Dudulina\Command;
 
 interface CommandDispatcher
 {
-    public function dispatchCommand(Command $command, $metadata = null);
+    public function dispatchCommand(Command $command, array $metadata = null);
 }
