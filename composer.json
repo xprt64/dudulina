@@ -23,9 +23,8 @@
     "psr/container": "^1.0",
     "xprt64/types": "^1.0",
     "xprt64/iterator": "^1.0",
-    "xprt64/filesystem": "^1.0.1",
     "psr/log": "^1.0",
-    "xprt64/code-analysis": "^1.1.14",
+    "xprt64/code-analysis": "^1.1.15",
     "xprt64/selector": "^0.0.3"
   },
   "require-dev": {
