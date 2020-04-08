@@ -56,11 +56,12 @@ class ScheduledCommandsDispatcher
         $this->logger->error(
             'Scheduled command exception',
             [
-                'exceptionClass' => \get_class($exception),
-                'trace'          => $exception->getTrace(),
-                'dueDate'        => $scheduledCommand->getFireDate()->format('c'),
-                'commandClass'   => \get_class($scheduledCommand),
-                'commandDump'    => print_r($scheduledCommand, true),
+                'exceptionClass'   => \get_class($exception),
+                'exceptionMessage' => $exception->getMessage(),
+                'trace'            => $exception->getTraceAsString(),
+                'dueDate'          => $scheduledCommand->getFireDate()->format('c'),
+                'commandClass'     => \get_class($scheduledCommand),
+                'commandDump'      => print_r($scheduledCommand, true),
             ]
         );
     }
