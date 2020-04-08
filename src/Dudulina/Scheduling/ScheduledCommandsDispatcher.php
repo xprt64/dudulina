@@ -27,8 +27,7 @@ class ScheduledCommandsDispatcher
     public function __construct(
         ScheduledCommandStore $store,
         CommandDispatcher $dispatcher
-    )
-    {
+    ) {
         $this->store = $store;
         $this->dispatcher = $dispatcher;
     }
@@ -57,15 +56,12 @@ class ScheduledCommandsDispatcher
         $this->logger->error(
             'Scheduled command exception',
             [
-                'exception' => [
-                    'class' => \get_class($exception),
-                    'trace' => $exception->getTrace(),
-                ],
-                'dueDate'   => $scheduledCommand->getFireDate()->format('c'),
-                'commands'  => [
-                    'class' => \get_class($scheduledCommand),
-                    'dump'  => \serialize($scheduledCommand),
-                ],
-            ]);
+                'exceptionClass' => \get_class($exception),
+                'trace'          => $exception->getTrace(),
+                'dueDate'        => $scheduledCommand->getFireDate()->format('c'),
+                'commandClass'   => \get_class($scheduledCommand),
+                'commandDump'    => print_r($scheduledCommand, true),
+            ]
+        );
     }
 }
