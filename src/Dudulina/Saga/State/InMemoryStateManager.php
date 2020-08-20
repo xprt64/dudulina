@@ -46,6 +46,12 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
         $this->states[$namespace][$storageName][$key] = $newState;
     }
 
+    public function deleteState($stateId,string $stateClass,  string $storageName = 'default', string $namespace = '')
+    {
+        $key = $stateClass . $stateId;
+        unset($this->states[$namespace][$storageName][$key]);
+    }
+
     public function updateStateIfExists($stateId, callable $updater, string $storageName = 'default', string $namespace = '')
     {
         list($stateClass, $isOptional) = $this->getStateClass($updater);

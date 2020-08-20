@@ -90,6 +90,7 @@ class InMemoryStateManagerTest extends \PHPUnit_Framework_TestCase
     public function test_clearAllStates()
     {
         $sut = new InMemoryStateManager();
+        $sut->createStorage();
 
         $sut->updateState(self::STATE_ID, function (\stdClass $state = null) {
 
@@ -102,10 +103,32 @@ class InMemoryStateManagerTest extends \PHPUnit_Framework_TestCase
             return $state;
         }, 'test_namespace');
 
-        $sut->createStorage();
         $sut->clearAllStates('test_namespace');
 
         $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID, 'test_namespace', ''));
+    }
+
+    public function test_deleteState()
+    {
+        $sut = new InMemoryStateManager();
+        $sut->createStorage();
+
+        $sut->updateState('id1', function (\stdClass $_ = null) {
+            $state = new \stdClass();
+            $state->someValue = 1;
+            return $state;
+        }, 'storage_name');
+
+        $sut->updateState('id2', function (\stdClass $_ = null) {
+            $state = new \stdClass();
+            $state->someValue = 2;
+            return $state;
+        }, 'storage_name');
+
+        $sut->deleteState('id2', \stdClass::class, 'storage_name');
+
+        $this->assertTrue($sut->hasState(\stdClass::class, 'id1', 'storage_name', ''));
+        $this->assertFalse($sut->hasState(\stdClass::class, 'id2', 'storage_name', ''));
     }
 
     public function test_moveStateToNamespace()
