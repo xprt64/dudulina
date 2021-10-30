@@ -5,6 +5,8 @@
 
 namespace Dudulina\CodeGeneration\Query;
 
+use Dudulina\Attributes\QueryHandler;
+use Dudulina\CodeGeneration\AttributeDetector;
 use Gica\CodeAnalysis\MethodListenerDiscovery\MessageClassDetector;
 
 class QueryHandlerDetector implements MessageClassDetector
@@ -16,7 +18,10 @@ class QueryHandlerDetector implements MessageClassDetector
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod): bool
     {
+        if (AttributeDetector::hasAttribute($reflectionMethod, QueryHandler::class)) {
+            return true;
+        }
         return 0 === stripos($reflectionMethod->name, 'whenAsked') ||
-            false !== stripos($reflectionMethod->getDocComment(), '@QueryHandler');
+               false !== stripos($reflectionMethod->getDocComment(), '@QueryHandler');
     }
 }

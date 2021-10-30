@@ -6,9 +6,11 @@
 namespace Dudulina\CodeGeneration\Command;
 
 
+use Dudulina\Attributes\EventListener;
+use Dudulina\CodeGeneration\AttributeDetector;
+use Dudulina\Event;
 use Gica\CodeAnalysis\MethodListenerDiscovery\MessageClassDetector;
 use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
-use Dudulina\Event;
 
 class ReadModelEventHandlerDetector implements MessageClassDetector
 {
@@ -19,6 +21,9 @@ class ReadModelEventHandlerDetector implements MessageClassDetector
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod): bool
     {
+        if (AttributeDetector::hasAttribute($reflectionMethod, EventListener::class)) {
+            return true;
+        }
         return 0 === stripos($reflectionMethod->name, 'on') ||
             false !== stripos($reflectionMethod->getDocComment(), '@EventListener');
     }

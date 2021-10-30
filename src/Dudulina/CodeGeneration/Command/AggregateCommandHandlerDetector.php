@@ -6,9 +6,11 @@
 namespace Dudulina\CodeGeneration\Command;
 
 
+use Dudulina\Attributes\AggregateCommandHandler;
+use Dudulina\CodeGeneration\AttributeDetector;
+use Dudulina\Command;
 use Gica\CodeAnalysis\MethodListenerDiscovery\MessageClassDetector;
 use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
-use Dudulina\Command;
 
 class AggregateCommandHandlerDetector implements MessageClassDetector
 {
@@ -19,6 +21,9 @@ class AggregateCommandHandlerDetector implements MessageClassDetector
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod):bool
     {
+        if (AttributeDetector::hasAttribute($reflectionMethod, AggregateCommandHandler::class)) {
+            return true;
+        }
         return 0 === stripos($reflectionMethod->name, 'handle') ||
             false !== stripos($reflectionMethod->getDocComment(), '@AggregateCommandHandler');
     }
