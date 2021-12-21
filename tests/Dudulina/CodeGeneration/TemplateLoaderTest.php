@@ -8,7 +8,7 @@ namespace tests\Dudulina\CodeGeneration;
 use Dudulina\CodeGeneration\TemplateLoader;
 
 
-class TemplateLoaderTest extends \PHPUnit_Framework_TestCase
+class TemplateLoaderTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()
@@ -39,7 +39,7 @@ TAG;
             $input, 'QueryAskersMapTemplate', 'Dudulina\CodeGeneration\Event', 'SomeClass', 'Some\\Namespace'
         );
 
-        $this->assertContains('class SomeClass', $generated);
-        $this->assertContains('namespace Some\\Namespace;', $generated);
+        $this->assertStringContainsString('class SomeClass', $generated);
+        $this->assertStringContainsString('namespace Some\\Namespace;', $generated);
     }
 }

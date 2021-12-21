@@ -14,7 +14,7 @@ use Dudulina\EventStore\Exception\ConcurrentModificationException;
 use Dudulina\Testing\EventStore\InMemory\InMemoryEventStore;
 
 
-class InMemoryEventStoreTest extends \PHPUnit_Framework_TestCase
+class InMemoryEventStoreTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test_appendEventsForAggregate()

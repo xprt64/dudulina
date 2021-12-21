@@ -9,7 +9,7 @@ use Dudulina\Command\Exception\TooManyCommandExecutionRetries;
 use Dudulina\EventStore\Exception\ConcurrentModificationException;
 
 
-class ConcurrentProofFunctionCallerTest extends \PHPUnit_Framework_TestCase
+class ConcurrentProofFunctionCallerTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testExecuteFunctionWithNoConcurency()

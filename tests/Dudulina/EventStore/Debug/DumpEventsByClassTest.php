@@ -14,7 +14,7 @@ use Dudulina\EventStore\SeekableEventStream;
 use Psr\Log\LoggerInterface;
 
 
-class DumpEventsByClassTest extends \PHPUnit_Framework_TestCase
+class DumpEventsByClassTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()

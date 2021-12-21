@@ -23,7 +23,7 @@ use Dudulina\ReadModel\ReadModelTail;
 use Psr\Log\LoggerInterface;
 
 
-class ReadModelTailAfterEventsTest extends \PHPUnit_Framework_TestCase
+class ReadModelTailAfterEventsTest extends \PHPUnit\Framework\TestCase
 {
     public function testAfterSomeEvent()
     {

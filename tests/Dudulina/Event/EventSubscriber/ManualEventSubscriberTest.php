@@ -8,7 +8,7 @@ use Dudulina\Event;
 use Dudulina\Event\EventSubscriber\ManualEventSubscriber;
 
 
-class ManualEventSubscriberTest extends \PHPUnit_Framework_TestCase
+class ManualEventSubscriberTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()

@@ -5,9 +5,9 @@ namespace tests\Dudulina\Aggregate\CodeAnalysis\ListenerClassValidator;
 
 
 use Dudulina\CodeGeneration\Aggregate\ListenerClassValidator\OnlyAggregateByName;
+use PHPUnit\Framework\TestCase;
 
-
-class OnlyAggregateByNameTest extends \PHPUnit_Framework_TestCase
+class OnlyAggregateByNameTest extends TestCase
 {
 
     public function testOnlyAggregateByNameTrue()

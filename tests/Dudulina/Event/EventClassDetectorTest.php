@@ -8,7 +8,7 @@ use Dudulina\Event;
 use Dudulina\CodeGeneration\Event\EventClassDetector;
 
 
-class EventClassDetectorTest extends \PHPUnit_Framework_TestCase
+class EventClassDetectorTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()

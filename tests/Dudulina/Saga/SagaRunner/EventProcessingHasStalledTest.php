@@ -8,7 +8,7 @@ namespace tests\Dudulina\Saga\SagaRunner;
 use Dudulina\Event\EventWithMetaData;
 use Dudulina\Saga\SagaRunner\EventProcessingHasStalled;
 
-class EventProcessingHasStalledTest extends \PHPUnit_Framework_TestCase
+class EventProcessingHasStalledTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()

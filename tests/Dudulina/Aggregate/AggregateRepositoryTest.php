@@ -15,9 +15,9 @@ use Dudulina\Event\MetaData;
 use Dudulina\EventStore;
 use Dudulina\EventStore\AggregateEventStream;
 use Dudulina\Testing\EventStore\InMemory\InMemoryAggregateEventStream;
+use PHPUnit\Framework\TestCase;
 
-
-class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
+class AggregateRepositoryTest extends TestCase
 {
 
     const AGGREGATE_ID = '123';
@@ -33,7 +33,7 @@ class AggregateRepositoryTest extends \PHPUnit_Framework_TestCase
     private $firstEventWithMetadata;
     private $secondEventWithMetadata;
 
-    protected function setUp()
+    protected function setUp():void
     {
         $this->firstEventWithMetadata = new EventWithMetaData(1, new MetaData('', '', new \DateTimeImmutable()));
         $this->secondEventWithMetadata = new EventWithMetaData(2, new MetaData('', '', new \DateTimeImmutable()));

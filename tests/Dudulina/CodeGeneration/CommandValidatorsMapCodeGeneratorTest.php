@@ -11,7 +11,7 @@ use tests\Dudulina\CodeGeneration\CommandValidatorsMapCodeGeneratorData\Validato
 use tests\Dudulina\CodeGeneration\CommandValidatorsMapCodeGeneratorData\ValidatorForCommand2;
 
 
-class CommandValidatorsMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
+class CommandValidatorsMapCodeGeneratorTest extends \PHPUnit\Framework\TestCase
 {
 
     const EXPECTED_MAP = [

@@ -6,6 +6,7 @@ namespace Dudulina\Command\CommandDispatcher;
 
 use Dudulina\Command;
 use Dudulina\Command\CommandDispatcher;
+use Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher\SideEffects;
 use Dudulina\Command\CommandValidator;
 use Dudulina\Command\Exception\CommandValidationFailed;
 
@@ -31,7 +32,7 @@ class CommandDispatcherWithValidator implements CommandDispatcher
         $this->commandValidator = $commandValidator;
     }
 
-    public function dispatchCommand(Command $command, array $metadata = null)
+    public function dispatchCommand(Command $command, array $metadata = null): SideEffects
     {
         $errors = $this->commandValidator->validateCommand($command);
 
@@ -39,6 +40,6 @@ class CommandDispatcherWithValidator implements CommandDispatcher
             throw new CommandValidationFailed($errors);
         }
 
-        $this->commandDispatcher->dispatchCommand($command, $metadata);
+        return $this->commandDispatcher->dispatchCommand($command, $metadata);
     }
 }

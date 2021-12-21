@@ -7,7 +7,7 @@ namespace tests\Dudulina\Saga\State;
 
 use Dudulina\Saga\State\InMemoryStateManager;
 
-class InMemoryStateManagerTest extends \PHPUnit_Framework_TestCase
+class InMemoryStateManagerTest extends \PHPUnit\Framework\TestCase
 {
 
     const STATE_ID = 123;

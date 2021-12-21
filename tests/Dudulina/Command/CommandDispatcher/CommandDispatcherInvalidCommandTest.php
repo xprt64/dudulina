@@ -12,7 +12,7 @@ use Dudulina\Command\CommandDispatcher\CommandDispatcherWithValidator;
 use Dudulina\Command\CommandValidator;
 use Dudulina\Command\Exception\CommandValidationFailed;
 
-class CommandDispatcherInvalidCommandTest extends \PHPUnit_Framework_TestCase
+class CommandDispatcherInvalidCommandTest extends \PHPUnit\Framework\TestCase
 {
 
     const AGGREGATE_ID = 123;
@@ -20,7 +20,7 @@ class CommandDispatcherInvalidCommandTest extends \PHPUnit_Framework_TestCase
     /** @var Command */
     private $command;
 
-    protected function setUp()
+    protected function setUp():void
     {
         $this->command = $this->getMockBuilder(Command::class)
             ->disableOriginalConstructor()
@@ -87,5 +87,7 @@ class CommandDispatcherInvalidCommandTest extends \PHPUnit_Framework_TestCase
             $commandDispatcher, $commandValidator);
 
         $commandDispatcherWithValidator->dispatchCommand($this->command);
+
+        $this->assertTrue(true);
     }
 }

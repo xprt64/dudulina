@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace test\Dudulina\Query\AnswererResolver;
 
-class AnswererResolverTest extends \PHPUnit_Framework_TestCase
+class AnswererResolverTest extends \PHPUnit\Framework\TestCase
 {
     public function test_answer()
     {

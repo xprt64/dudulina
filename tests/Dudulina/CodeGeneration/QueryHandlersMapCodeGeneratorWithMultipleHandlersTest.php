@@ -9,7 +9,7 @@ require_once __DIR__ . '/QueryHandlersWithMultipleHandlersMapCodeGeneratorData/Q
 require_once __DIR__ . '/QueryHandlersWithMultipleHandlersMapCodeGeneratorData/ReadModel1.php';
 require_once __DIR__ . '/QueryHandlersWithMultipleHandlersMapCodeGeneratorData/ReadModel2.php';
 
-class QueryHandlersMapCodeGeneratorWithMultipleHandlersTest extends \PHPUnit_Framework_TestCase
+class QueryHandlersMapCodeGeneratorWithMultipleHandlersTest extends \PHPUnit\Framework\TestCase
 {
 
 
@@ -18,7 +18,7 @@ class QueryHandlersMapCodeGeneratorWithMultipleHandlersTest extends \PHPUnit_Fra
         $template = '';
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageRegExp('#multiple handlers exists for query#ims');
+        $this->expectExceptionMessageMatches('#multiple handlers exists for query#ims');
 
         $sut = new \Dudulina\CodeGeneration\Query\QueryHandlersMapCodeGenerator();
 

@@ -8,7 +8,7 @@ use Dudulina\Command;
 use Dudulina\CodeGeneration\Command\AggregateCommandHandlerDetector;
 
 
-class AggregateCommandHandlerDetectorTest extends \PHPUnit_Framework_TestCase
+class AggregateCommandHandlerDetectorTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testAccepted()

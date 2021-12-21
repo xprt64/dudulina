@@ -12,7 +12,7 @@ use Dudulina\Testing\EventStore\InMemory\FilteredRawEventStreamGroupedByCommit;
 use Dudulina\Testing\EventStore\InMemory\InMemoryEventsCommit;
 
 
-class RawEventStreamTest extends \PHPUnit_Framework_TestCase
+class RawEventStreamTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()

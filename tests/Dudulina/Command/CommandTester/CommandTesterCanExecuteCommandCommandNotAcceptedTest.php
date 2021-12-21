@@ -17,7 +17,7 @@ use Dudulina\Event\EventsApplier\EventsApplierOnAggregate;
 use Dudulina\Event\MetadataFactory\DefaultMetadataFactory;
 use Dudulina\Testing\EventStore\InMemory\InMemoryEventStore;
 
-class CommandTesterCanExecuteCommandCommandNotAcceptedTest extends \PHPUnit_Framework_TestCase
+class CommandTesterCanExecuteCommandCommandNotAcceptedTest extends \PHPUnit\Framework\TestCase
 {
 
     const AGGREGATE_ID = 123;
@@ -25,7 +25,7 @@ class CommandTesterCanExecuteCommandCommandNotAcceptedTest extends \PHPUnit_Fram
     /** @var Command */
     private $command;
 
-    protected function setUp()
+    protected function setUp():void
     {
         $this->command = $this->getMockBuilder(Command::class)
             ->disableOriginalConstructor()

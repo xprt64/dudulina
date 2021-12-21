@@ -11,7 +11,7 @@ use Dudulina\Event\EventWithMetaData;
 interface EventStream extends \IteratorAggregate, \Countable
 {
     /**
-     * @return \Iterator|EventWithMetaData[]
+     * @return \Iterator|EventWithMetaData[]|\Traversable
      */
     public function getIterator();
 }

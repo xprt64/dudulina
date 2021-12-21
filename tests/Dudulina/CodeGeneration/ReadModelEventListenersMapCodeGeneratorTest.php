@@ -13,7 +13,7 @@ use tests\Dudulina\CodeGeneration\ReadModelEventListenersMapCodeGeneratorData\Re
 use tests\Dudulina\CodeGeneration\ReadModelEventListenersMapCodeGeneratorData\ReadModelMap;
 
 
-class ReadModelEventListenersMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
+class ReadModelEventListenersMapCodeGeneratorTest extends \PHPUnit\Framework\TestCase
 {
 
     const EXPECTED_MAP = [

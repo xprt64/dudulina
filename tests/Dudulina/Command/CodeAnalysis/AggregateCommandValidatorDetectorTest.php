@@ -8,7 +8,7 @@ use Dudulina\Command;
 use Dudulina\CodeGeneration\Command\AggregateCommandValidatorDetector;
 
 
-class AggregateCommandValidatorDetectorTest extends \PHPUnit_Framework_TestCase
+class AggregateCommandValidatorDetectorTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testAccepted()

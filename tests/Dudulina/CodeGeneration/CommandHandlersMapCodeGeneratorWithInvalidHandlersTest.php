@@ -5,14 +5,14 @@
 
 namespace tests\Dudulina\CodeGeneration\CommandHandlersMapCodeGeneratorWithInvalidHandlersTest;
 
-class CommandHandlersMapCodeGeneratorWithInvalidHandlersTest extends \PHPUnit_Framework_TestCase
+class CommandHandlersMapCodeGeneratorWithInvalidHandlersTest extends \PHPUnit\Framework\TestCase
 {
     public function test()
     {
         $sut = new \Dudulina\CodeGeneration\Command\CommandHandlersMapCodeGenerator();
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageRegExp('#multiple handlers exists for command#ims');
+        $this->expectExceptionMessageMatches('#multiple handlers exists for command#ims');
 
         $template = file_get_contents(__DIR__ . '/../../../src/Dudulina/CodeGeneration/Command/CommandHandlersMapTemplate.php');
 

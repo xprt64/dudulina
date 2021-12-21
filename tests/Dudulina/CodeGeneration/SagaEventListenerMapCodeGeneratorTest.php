@@ -13,7 +13,7 @@ use tests\Dudulina\CodeGeneration\SagaEventListenerMapCodeGeneratorData\SagaEven
 use tests\Dudulina\CodeGeneration\SagaEventListenerMapCodeGeneratorData\SagaEventProcessorsMapTemplate;
 
 
-class SagaEventListenerMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
+class SagaEventListenerMapCodeGeneratorTest extends \PHPUnit\Framework\TestCase
 {
 
     const EXPECTED_MAP = [

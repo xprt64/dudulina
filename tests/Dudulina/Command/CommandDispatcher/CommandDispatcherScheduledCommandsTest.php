@@ -23,7 +23,7 @@ use Dudulina\Event\MetadataFactory\DefaultMetadataFactory;
 use Dudulina\Scheduling\ScheduledCommand;
 use Dudulina\Testing\EventStore\InMemory\InMemoryEventStore;
 
-class CommandDispatcherScheduledCommandsTest extends \PHPUnit_Framework_TestCase
+class CommandDispatcherScheduledCommandsTest extends \PHPUnit\Framework\TestCase
 {
 
     const AGGREGATE_ID = 123;

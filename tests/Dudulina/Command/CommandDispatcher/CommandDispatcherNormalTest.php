@@ -22,7 +22,7 @@ use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetadataFactory\DefaultMetadataFactory;
 use Dudulina\Testing\EventStore\InMemory\InMemoryEventStore;
 
-class CommandDispatcherNormalTest extends \PHPUnit_Framework_TestCase
+class CommandDispatcherNormalTest extends \PHPUnit\Framework\TestCase
 {
     const AGGREGATE_ID = 123;
 
@@ -74,12 +74,14 @@ class CommandDispatcherNormalTest extends \PHPUnit_Framework_TestCase
 
         $metadata = [];
 
-        $commandDispatcher->dispatchCommand($command, $metadata);
+        $ret = $commandDispatcher->dispatchCommand($command, $metadata);
 
         $this->assertEquals(2, Aggregate1::$state);
         $this->assertCount(2, $eventStore->loadEventsForAggregate($this->factoryAggregateDescriptor()));
 
         $this->assertCount(2, $eventStore->loadEventsForAggregate($this->factoryAggregateDescriptor()));
+
+        $this->assertCount(1, $ret->getEventsForNow());
     }
 
     private function mockCommand(): Command

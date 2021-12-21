@@ -8,7 +8,7 @@ use Dudulina\ReadModel\ValueObject\ListSerializer;
 use Gica\Types\SerializableInterface;
 
 
-class ListSerializerTest extends \PHPUnit_Framework_TestCase
+class ListSerializerTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test_serializeList()
@@ -47,7 +47,7 @@ class ListSerializerTest extends \PHPUnit_Framework_TestCase
         $result = ListSerializer::deserializeList(SomeObject::class, $data);
 
         $this->assertCount(0, $result);
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray( $result);
     }
 
     public function dataForEmptyList()

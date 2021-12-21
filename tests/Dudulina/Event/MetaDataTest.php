@@ -8,7 +8,7 @@ use Dudulina\Event\MetaData;
 use Dudulina\Testing\EventStore\InMemory\InMemoryEventSequence;
 
 
-class MetaDataTest extends \PHPUnit_Framework_TestCase
+class MetaDataTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()

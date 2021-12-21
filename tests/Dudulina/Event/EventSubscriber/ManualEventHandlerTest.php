@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Dudulina\Event\EventSubscriber;
 
 
-class ManualEventHandlerTest extends \PHPUnit_Framework_TestCase
+class ManualEventHandlerTest extends \PHPUnit\Framework\TestCase
 {
     public function test_subscribeCallbackToEvent()
     {

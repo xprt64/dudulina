@@ -12,7 +12,7 @@ use Dudulina\Event\MetaData;
 use Dudulina\Testing\EventStore\InMemory\InMemoryEventsCommit;
 
 
-class EventsCommitTest extends \PHPUnit_Framework_TestCase
+class EventsCommitTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()

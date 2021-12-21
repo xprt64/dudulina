@@ -8,7 +8,7 @@ use Dudulina\CodeGeneration\Command\WriteSideEventHandlerDetector;
 use Dudulina\Event;
 
 
-class WriteSideEventHandlerDetectorTest extends \PHPUnit_Framework_TestCase
+class WriteSideEventHandlerDetectorTest extends \PHPUnit\Framework\TestCase
 {
     public function testAccepted()
     {

@@ -13,7 +13,7 @@ use Dudulina\Event\MetaData;
 use Throwable;
 
 
-class EventDispatcherBySubscriberTest extends \PHPUnit_Framework_TestCase
+class EventDispatcherBySubscriberTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()

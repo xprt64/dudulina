@@ -11,7 +11,7 @@ use Dudulina\Command\CommandTester;
 use Dudulina\Command\CommandTester\CommandTesterWithValidator;
 use Dudulina\Command\CommandValidator;
 
-class CommandTesterInvalidCommandTest extends \PHPUnit_Framework_TestCase
+class CommandTesterInvalidCommandTest extends \PHPUnit\Framework\TestCase
 {
 
     const AGGREGATE_ID = 123;
@@ -19,7 +19,7 @@ class CommandTesterInvalidCommandTest extends \PHPUnit_Framework_TestCase
     /** @var Command */
     private $command;
 
-    protected function setUp()
+    protected function setUp():void
     {
         $this->command = $this->getMockBuilder(Command::class)
             ->disableOriginalConstructor()

@@ -7,7 +7,7 @@ namespace tests\Dudulina\CodeGeneration\CommandHandlersMapCodeGeneratorTest;
 
 use Dudulina\CodeGeneration\Command\CommandHandlersMapCodeGenerator;
 
-class CommandHandlersMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
+class CommandHandlersMapCodeGeneratorTest extends \PHPUnit\Framework\TestCase
 {
 
     const EXPECTED_MAP = [

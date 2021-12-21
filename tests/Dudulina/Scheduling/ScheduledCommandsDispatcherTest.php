@@ -11,7 +11,7 @@ use Dudulina\Scheduling\ScheduledCommandsDispatcher;
 use Psr\Log\LoggerInterface;
 
 
-class ScheduledCommandsDispatcherTest extends \PHPUnit_Framework_TestCase
+class ScheduledCommandsDispatcherTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()

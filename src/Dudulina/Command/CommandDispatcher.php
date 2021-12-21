@@ -7,8 +7,9 @@ namespace Dudulina\Command;
 
 
 use Dudulina\Command;
+use Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher\SideEffects;
 
 interface CommandDispatcher
 {
-    public function dispatchCommand(Command $command, array $metadata = null);
+    public function dispatchCommand(Command $command, array $metadata = null): SideEffects;
 }

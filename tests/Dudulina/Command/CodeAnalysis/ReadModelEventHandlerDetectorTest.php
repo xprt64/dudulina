@@ -8,7 +8,7 @@ use Dudulina\CodeGeneration\Command\ReadModelEventHandlerDetector;
 use Dudulina\Event;
 
 
-class ReadModelEventHandlerDetectorTest extends \PHPUnit_Framework_TestCase
+class ReadModelEventHandlerDetectorTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testAccepted()

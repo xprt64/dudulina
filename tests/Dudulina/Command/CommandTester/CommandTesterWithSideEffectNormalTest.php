@@ -18,7 +18,7 @@ use Dudulina\Event\EventsApplier\EventsApplierOnAggregate;
 use Dudulina\Event\MetadataFactory\DefaultMetadataFactory;
 use Dudulina\Testing\EventStore\InMemory\InMemoryEventStore;
 
-class CommandTesterWithSideEffectNormalTest extends \PHPUnit_Framework_TestCase
+class CommandTesterWithSideEffectNormalTest extends \PHPUnit\Framework\TestCase
 {
 
     const AGGREGATE_ID = 123;

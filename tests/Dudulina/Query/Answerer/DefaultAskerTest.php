@@ -11,7 +11,7 @@ use Dudulina\Query\Answerer\DefaultAnswerer;
 use Dudulina\Query\AskerResolver;
 use Psr\Container\ContainerInterface;
 
-class DefaultAnswererTest extends \PHPUnit_Framework_TestCase
+class DefaultAskerTest extends \PHPUnit\Framework\TestCase
 {
     public function test_answer()
     {

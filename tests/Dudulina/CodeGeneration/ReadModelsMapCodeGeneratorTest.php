@@ -9,7 +9,7 @@ use Dudulina\CodeGeneration\Event\ReadModelsMapCodeGenerator;
 use Dudulina\CodeGeneration\Event\ReadModelsMapTemplate;
 
 
-class ReadModelsMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
+class ReadModelsMapCodeGeneratorTest extends \PHPUnit\Framework\TestCase
 {
 
     const EXPECTED_MAP = [

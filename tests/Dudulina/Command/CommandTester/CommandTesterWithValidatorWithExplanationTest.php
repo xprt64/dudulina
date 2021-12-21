@@ -12,7 +12,7 @@ use Dudulina\Command\CommandTester\CommandTesterWithValidator;
 use Dudulina\Command\CommandTesterWithExplanation;
 use Dudulina\Command\CommandValidator;
 
-class CommandTesterWithValidatorWithExplanationTest extends \PHPUnit_Framework_TestCase
+class CommandTesterWithValidatorWithExplanationTest extends \PHPUnit\Framework\TestCase
 {
 
     const AGGREGATE_ID = 123;
@@ -20,7 +20,7 @@ class CommandTesterWithValidatorWithExplanationTest extends \PHPUnit_Framework_T
     /** @var Command */
     private $command;
 
-    protected function setUp()
+    protected function setUp():void
     {
         $this->command = $this->getMockBuilder(Command::class)
             ->disableOriginalConstructor()

@@ -11,7 +11,7 @@ use Dudulina\Command;
 use Dudulina\Command\CommandApplier;
 
 
-class CommandApplierTest extends \PHPUnit_Framework_TestCase
+class CommandApplierTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testApplyCommand()

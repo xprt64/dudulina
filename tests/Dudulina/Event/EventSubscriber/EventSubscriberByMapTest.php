@@ -10,7 +10,7 @@ use Dudulina\Event\EventSubscriber\EventSubscriberByMap;
 use Psr\Container\ContainerInterface;
 
 
-class EventSubscriberByMapTest extends \PHPUnit_Framework_TestCase
+class EventSubscriberByMapTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()

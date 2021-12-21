@@ -24,66 +24,27 @@ use Gica\Types\Guid;
 
 class DefaultCommandDispatcher implements CommandDispatcher
 {
-    /**
-     * @var CommandSubscriber
-     */
-    private $commandSubscriber;
-    /**
-     * @var CommandApplier
-     */
-    private $commandApplier;
-    /**
-     * @var AggregateRepository
-     */
-    private $aggregateRepository;
-    /**
-     * @var ConcurrentProofFunctionCaller
-     */
-    private $concurrentProofFunctionCaller;
-    /**
-     * @var EventsApplierOnAggregate
-     */
-    private $eventsApplierOnAggregate;
-    /**
-     * @var EventMetadataFactory
-     */
-    private $eventMetadataFactory;
-    /**
-     * @var CommandMetadataFactory
-     */
-    private $commandMetadataFactory;
-    /**
-     * @var SideEffectsDispatcher
-     */
-    private $sideEffectsDispatcher;
-
     public function __construct(
-        CommandSubscriber $commandSubscriber,
-        CommandApplier $commandApplier,
-        AggregateRepository $aggregateRepository,
-        ConcurrentProofFunctionCaller $functionCaller,
-        EventsApplierOnAggregate $eventsApplier,
-        EventMetadataFactory $eventMetadataFactory,
-        CommandMetadataFactory $commandMetadataFactory,
-        SideEffectsDispatcher $sideEffectsDispatcher
+        private CommandSubscriber $commandSubscriber,
+        private CommandApplier $commandApplier,
+        private AggregateRepository $aggregateRepository,
+        private ConcurrentProofFunctionCaller $concurrentProofFunctionCaller,
+        private EventsApplierOnAggregate $eventsApplierOnAggregate,
+        private EventMetadataFactory $eventMetadataFactory,
+        private CommandMetadataFactory $commandMetadataFactory,
+        private SideEffectsDispatcher $sideEffectsDispatcher
     )
     {
-        $this->commandSubscriber = $commandSubscriber;
-        $this->commandApplier = $commandApplier;
-        $this->aggregateRepository = $aggregateRepository;
-        $this->concurrentProofFunctionCaller = $functionCaller;
-        $this->eventsApplierOnAggregate = $eventsApplier;
-        $this->eventMetadataFactory = $eventMetadataFactory;
-        $this->commandMetadataFactory = $commandMetadataFactory;
-        $this->sideEffectsDispatcher = $sideEffectsDispatcher;
     }
 
-    public function dispatchCommand(Command $command, array $metadata = null)
+    public function dispatchCommand(Command $command, array $metadata = null): SideEffects
     {
         $sideEffects = $this->dispatchCommandAndSaveAggregate(
             $this->commandMetadataFactory->wrapCommandWithMetadata($command, $metadata)
-        );
-        $this->sideEffectsDispatcher->dispatchSideEffects($sideEffects->withCommandMetadata($metadata));
+        )
+            ->withCommandMetadata($metadata);
+        $this->sideEffectsDispatcher->dispatchSideEffects($sideEffects);
+        return $sideEffects;
     }
 
     private function tryDispatchCommandAndSaveAggregate(CommandWithMetadata $command)

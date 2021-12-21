@@ -18,7 +18,7 @@ use Dudulina\Saga\SagaRunner\EventProcessingHasStalled;
 use Gica\Types\Guid;
 use Psr\Log\LoggerInterface;
 
-class SagaRunnerTest extends \PHPUnit_Framework_TestCase
+class SagaRunnerTest extends \PHPUnit\Framework\TestCase
 {
     private function factoryMetadata(string $eventId, int $version = null)
     {

@@ -13,7 +13,7 @@ use Dudulina\Command\ValueObject\CommandHandlerDescriptor;
 use Psr\Container\ContainerInterface;
 
 
-class CommandValidatorBySubscriberTest extends \PHPUnit_Framework_TestCase
+class CommandValidatorBySubscriberTest extends \PHPUnit\Framework\TestCase
 {
     /** @var Command */
     private $command;

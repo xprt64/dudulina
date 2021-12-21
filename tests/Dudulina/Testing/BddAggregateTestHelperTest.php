@@ -19,7 +19,7 @@ use Dudulina\Testing\Exceptions\WrongExceptionClassThrown;
 use Dudulina\Testing\Exceptions\WrongExceptionMessageWasThrown;
 
 
-class BddAggregateTestHelperTest extends \PHPUnit_Framework_TestCase
+class BddAggregateTestHelperTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()
@@ -72,6 +72,8 @@ class BddAggregateTestHelperTest extends \PHPUnit_Framework_TestCase
         $sut->given($event1);
         $sut->when($command);
         $sut->then($event2);
+
+        $this->assertTrue(true);
     }
 
     private function generateRandomEvent()
@@ -277,6 +279,8 @@ class BddAggregateTestHelperTest extends \PHPUnit_Framework_TestCase
         $sut->given($event1);
         $sut->when($command);
         $sut->thenShouldFailWith(get_class($expectedException), $expectedException->getMessage());
+
+        $this->assertTrue(true);
     }
 
     public function testWithExceptionWithWrongMessage()

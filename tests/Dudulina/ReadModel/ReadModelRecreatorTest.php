@@ -20,7 +20,7 @@ use Dudulina\ReadModel\ReadModelRecreator;
 use Psr\Log\LoggerInterface;
 
 
-class ReadModelRecreatorTest extends \PHPUnit_Framework_TestCase
+class ReadModelRecreatorTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()

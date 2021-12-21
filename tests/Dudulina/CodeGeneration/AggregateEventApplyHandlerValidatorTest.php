@@ -8,7 +8,7 @@ use Dudulina\CodeGeneration\AggregateEventApplyHandlerValidator;
 use Psr\Log\LoggerInterface;
 
 
-class AggregateEventApplyHandlerValidatorTest extends \PHPUnit_Framework_TestCase
+class AggregateEventApplyHandlerValidatorTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()
@@ -21,5 +21,7 @@ class AggregateEventApplyHandlerValidatorTest extends \PHPUnit_Framework_TestCas
         );
 
         $sut->validate(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . '/AggregateEventApplyHandlerValidatorData/Valid')));
+
+        $this->assertTrue(true);
     }
 }

@@ -11,7 +11,7 @@ use tests\Dudulina\CodeGeneration\QueryHandlersMapCodeGeneratorData\WhatIsTheAns
 use tests\Dudulina\CodeGeneration\QueryHandlersMapCodeGeneratorData\WhatIsTheAnswerToOnePlusOne;
 
 
-class QueryHandlersMapCodeGeneratorTest extends \PHPUnit_Framework_TestCase
+class QueryHandlersMapCodeGeneratorTest extends \PHPUnit\Framework\TestCase
 {
 
     const EXPECTED_MAP = [

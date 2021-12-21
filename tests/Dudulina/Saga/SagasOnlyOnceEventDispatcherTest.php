@@ -13,7 +13,7 @@ use Dudulina\Saga\SagaEventTrackerRepository;
 use Dudulina\Saga\SagasOnlyOnceEventDispatcher;
 use Psr\Log\LoggerInterface;
 
-class SagasOnlyOnceEventDispatcherTest extends \PHPUnit_Framework_TestCase
+class SagasOnlyOnceEventDispatcherTest extends \PHPUnit\Framework\TestCase
 {
 
     const SAGA_ID = 'sagaId';

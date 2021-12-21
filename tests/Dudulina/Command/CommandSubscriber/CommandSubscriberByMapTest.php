@@ -10,7 +10,7 @@ use Dudulina\Command\Exception\CommandHandlerNotFound;
 use Dudulina\Command\ValueObject\CommandHandlerDescriptor;
 
 
-class CommandSubscriberByMapTest extends \PHPUnit_Framework_TestCase
+class CommandSubscriberByMapTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testGetHandlerForCommand()

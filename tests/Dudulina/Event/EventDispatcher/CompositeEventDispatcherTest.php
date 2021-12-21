@@ -11,7 +11,7 @@ use Dudulina\Event\EventWithMetaData;
 use Dudulina\Event\MetaData;
 
 
-class CompositeEventDispatcherTest extends \PHPUnit_Framework_TestCase
+class CompositeEventDispatcherTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test()

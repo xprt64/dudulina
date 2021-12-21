@@ -9,7 +9,7 @@ use Dudulina\Command\CommandValidation\CommandValidatorSubscriberByMap;
 use Dudulina\Command\ValueObject\CommandHandlerDescriptor;
 
 
-class CommandValidatorSubscriberByMapTest extends \PHPUnit_Framework_TestCase
+class CommandValidatorSubscriberByMapTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testGetHandlersForCommand()
@@ -51,7 +51,7 @@ class CommandValidatorSubscriberByMapTest extends \PHPUnit_Framework_TestCase
 
         $handlers = $sut->getHandlersForCommand($command);
 
-        $this->assertInternalType('array', $handlers);
+        $this->assertIsArray($handlers);
         $this->assertCount(0, $handlers);
     }
 }
