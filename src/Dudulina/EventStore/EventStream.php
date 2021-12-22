@@ -13,5 +13,5 @@ interface EventStream extends \IteratorAggregate, \Countable
     /**
      * @return \Iterator|EventWithMetaData[]|\Traversable
      */
-    public function getIterator();
+    public function getIterator(): \Traversable;
 }

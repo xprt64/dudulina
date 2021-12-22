@@ -43,7 +43,7 @@ class FilteredRawEventStreamGroupedByCommit implements SeekableEventStream
         $this->sort(true);
     }
 
-    public function getIterator()
+    public function getIterator():\Traversable
     {
         $commits = $this->fetchCommits();
 

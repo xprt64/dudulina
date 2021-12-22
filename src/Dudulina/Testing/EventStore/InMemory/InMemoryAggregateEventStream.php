@@ -35,7 +35,7 @@ class InMemoryAggregateEventStream implements AggregateEventStream
         $this->sequence = $sequence;
     }
 
-    public function getIterator()
+    public function getIterator():\Traversable
     {
         return new \ArrayIterator($this->eventsArray);
     }
