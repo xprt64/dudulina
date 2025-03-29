@@ -16,4 +16,17 @@ class AttributeDetector
         }
         return false;
     }
+
+    /**
+     * @param \ReflectionMethod $reflectionMethod
+     * @param string $attributeClass
+     * @return \ReflectionAttribute[]
+     */
+    public static function getAttributes(\ReflectionMethod $reflectionMethod, string $attributeClass)
+    {
+        if (version_compare(PHP_VERSION, '8', '>=')) {
+            return $reflectionMethod->getAttributes($attributeClass);
+        }
+        return [];
+    }
 }

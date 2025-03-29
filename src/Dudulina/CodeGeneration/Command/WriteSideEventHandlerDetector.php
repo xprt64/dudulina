@@ -14,6 +14,13 @@ use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
 
 class WriteSideEventHandlerDetector implements MessageClassDetector
 {
+
+    public function __construct(
+        private ?string $processGroup = null
+    )
+    {
+    }
+
     public function isMessageClass(\ReflectionClass $typeHintedClass): bool
     {
         return (new SubclassComparator())->isASubClassButNoSameClass($typeHintedClass->name, Event::class);
@@ -21,9 +28,17 @@ class WriteSideEventHandlerDetector implements MessageClassDetector
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod): bool
     {
-        if (AttributeDetector::hasAttribute($reflectionMethod, EventProcessor::class)) {
-            return true;
+        if (version_compare(PHP_VERSION, '8', '>=')) {
+            $attributes =  $reflectionMethod->getAttributes($reflectionMethod, EventProcessor::class);
+            if($attributes){
+                foreach ($attributes as $attribute) {
+                    if($attribute->getArguments()['processGroup'] === $this->processGroup){
+                        return true;
+                    }
+                }
+            }
         }
+
         return 0 === stripos($reflectionMethod->name, 'process') || false !== stripos($reflectionMethod->getDocComment(), '@EventProcessor');
     }
 }
