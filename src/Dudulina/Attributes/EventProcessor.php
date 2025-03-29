@@ -7,5 +7,11 @@ namespace Dudulina\Attributes;
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
 class EventProcessor
+
 {
+    public function __construct(
+        public ?string $processGroup = null
+    )
+    {
+    }
 }
