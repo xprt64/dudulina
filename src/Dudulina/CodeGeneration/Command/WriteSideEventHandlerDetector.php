@@ -29,7 +29,7 @@ class WriteSideEventHandlerDetector implements MessageClassDetector
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod): bool
     {
         if (version_compare(PHP_VERSION, '8', '>=')) {
-            $attributes =  $reflectionMethod->getAttributes($reflectionMethod, EventProcessor::class);
+            $attributes =  $reflectionMethod->getAttributes( EventProcessor::class);
             if($attributes){
                 foreach ($attributes as $attribute) {
                     if($attribute->getArguments()['processGroup'] === $this->processGroup){
