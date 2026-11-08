@@ -64,7 +64,7 @@ class InMemoryAggregateEventStream implements AggregateEventStream
         return $other;
     }
 
-    public function count()
+    public function count(): int
     {
         return \count($this->eventsArray);
     }

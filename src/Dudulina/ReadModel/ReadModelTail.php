@@ -50,7 +50,7 @@ class ReadModelTail
         $this->readModelReflector = $readModelReflector;
     }
 
-    public function tailRead(ReadModelInterface $readModel, EventSequence $after = null, EventProcessedNotifier $eventProcessedNotifier = null)
+    public function tailRead(ReadModelInterface $readModel, ?EventSequence $after = null, ?EventProcessedNotifier $eventProcessedNotifier = null)
     {
         $eventClasses = $this->readModelReflector->getEventClassesFromReadModel($readModel);
 

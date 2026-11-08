@@ -20,7 +20,7 @@ use Psr\Log\LoggerInterface;
 
 class SagaRunnerTest extends \PHPUnit\Framework\TestCase
 {
-    private function factoryMetadata(string $eventId, int $version = null)
+    private function factoryMetadata(string $eventId, ?int $version = null)
     {
         $metaData = (new MetaData('', '', new \DateTimeImmutable('2017-01-01 00:00:00')))
             ->withEventId($eventId);
@@ -35,7 +35,7 @@ class SagaRunnerTest extends \PHPUnit\Framework\TestCase
     public function test()
     {
         $eventStore = $this->getMockBuilder(EventStore::class)
-            //->setMethods(['loadEventsByClassNames'])
+            //->onlyMethods(['loadEventsByClassNames'])
             ->getMock();
 
         $logger = $this->getMockBuilder(LoggerInterface::class)
@@ -102,7 +102,7 @@ class SagaRunnerTest extends \PHPUnit\Framework\TestCase
         $eventId2 = "2";
 
         $eventStore = $this->getMockBuilder(EventStore::class)
-            //->setMethods(['loadEventsByClassNames'])
+            //->onlyMethods(['loadEventsByClassNames'])
             ->getMock();
 
         $logger = $this->getMockBuilder(LoggerInterface::class)
@@ -165,7 +165,7 @@ class SagaRunnerTest extends \PHPUnit\Framework\TestCase
     public function test_EventProcessingHasStalled()
     {
         $eventStore = $this->getMockBuilder(EventStore::class)
-            //->setMethods(['loadEventsByClassNames'])
+            //->onlyMethods(['loadEventsByClassNames'])
             ->getMock();
 
         $logger = $this->getMockBuilder(LoggerInterface::class)

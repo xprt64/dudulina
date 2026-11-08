@@ -11,5 +11,5 @@ use Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher\SideEffects;
 
 interface CommandDispatcher
 {
-    public function dispatchCommand(Command $command, array $metadata = null): SideEffects;
+    public function dispatchCommand(Command $command, ?array $metadata = null): SideEffects;
 }

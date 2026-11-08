@@ -65,7 +65,7 @@ class InMemoryStateManagerTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($sut->hasState(\stdClass::class, self::STATE_ID, $storageName, $namespace));
         $this->assertNull($sut->loadState(\stdClass::class, self::STATE_ID, $storageName, $namespace));
 
-        $sut->updateState(self::STATE_ID, function (\stdClass $state = null) {
+        $sut->updateState(self::STATE_ID, function (?\stdClass $state = null) {
 
             $state = new \stdClass();
             $state->someValue = 345;
@@ -92,7 +92,7 @@ class InMemoryStateManagerTest extends \PHPUnit\Framework\TestCase
         $sut = new InMemoryStateManager();
         $sut->createStorage();
 
-        $sut->updateState(self::STATE_ID, function (\stdClass $state = null) {
+        $sut->updateState(self::STATE_ID, function (?\stdClass $state = null) {
 
             if (!$state) {
                 $state = new \stdClass();
@@ -113,13 +113,13 @@ class InMemoryStateManagerTest extends \PHPUnit\Framework\TestCase
         $sut = new InMemoryStateManager();
         $sut->createStorage();
 
-        $sut->updateState('id1', function (\stdClass $_ = null) {
+        $sut->updateState('id1', function (?\stdClass $_ = null) {
             $state = new \stdClass();
             $state->someValue = 1;
             return $state;
         }, 'storage_name');
 
-        $sut->updateState('id2', function (\stdClass $_ = null) {
+        $sut->updateState('id2', function (?\stdClass $_ = null) {
             $state = new \stdClass();
             $state->someValue = 2;
             return $state;
@@ -140,7 +140,7 @@ class InMemoryStateManagerTest extends \PHPUnit\Framework\TestCase
         $sut->createStorage($storageName, $sourceNamespace);
         $sut->createStorage($storageName, $destinationNamespace);
 
-        $updater = function (\stdClass $state = null) {
+        $updater = function (?\stdClass $state = null) {
             if (!$state) {
                 $state = new \stdClass();
             }

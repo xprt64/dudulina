@@ -30,9 +30,7 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit\Framework\TestCase
         /** @var MetaData $metadata */
         $eventWithMetadata = new EventWithMetaData('event', $metadata);
 
-        $saga = $this->getMockBuilder(\stdClass::class)
-            ->setMethods(['someListenerMethod'])
-            ->getMock();
+        $saga = $this->createMock(\tests\Dudulina\Doubles\TestListener::class);
 
         $saga->expects($this->once())
             ->method('someListenerMethod');
@@ -75,9 +73,7 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit\Framework\TestCase
         /** @var MetaData $metadata */
         $eventWithMetadata = new EventWithMetaData('event', $metadata);
 
-        $saga = $this->getMockBuilder(\stdClass::class)
-            ->setMethods(['someListenerMethod'])
-            ->getMock();
+        $saga = $this->createMock(\tests\Dudulina\Doubles\TestListener::class);
 
         $saga->expects($this->never())
             ->method('someListenerMethod');
@@ -124,9 +120,7 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit\Framework\TestCase
         /** @var MetaData $metadata */
         $eventWithMetadata = new EventWithMetaData('event', $metadata);
 
-        $saga = $this->getMockBuilder(\stdClass::class)
-            ->setMethods(['someListenerMethod'])
-            ->getMock();
+        $saga = $this->createMock(\tests\Dudulina\Doubles\TestListener::class);
 
         $saga->expects($this->never())
             ->method('someListenerMethod');
@@ -175,9 +169,7 @@ class SagasOnlyOnceEventDispatcherTest extends \PHPUnit\Framework\TestCase
         /** @var MetaData $metadata */
         $eventWithMetadata = new EventWithMetaData(new \stdClass(), $metadata);
 
-        $saga = $this->getMockBuilder(\stdClass::class)
-            ->setMethods(['someListenerMethod'])
-            ->getMock();
+        $saga = $this->createMock(\tests\Dudulina\Doubles\TestListener::class);
 
         $saga->expects($this->once())
             ->method('someListenerMethod')

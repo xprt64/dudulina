@@ -107,12 +107,12 @@ class AggregateRepositoryTest extends TestCase
             $this->aggregateEventStream
                 ->expects($this->any())
                 ->method('getVersion')
-                ->will($this->returnValue(self::AGGREGATE_VERSION));
+                ->willReturn(self::AGGREGATE_VERSION);
 
             $this->aggregateEventStream
                 ->expects($this->any())
                 ->method('getSequence')
-                ->will($this->returnValue(self::EVENTS_SEQUENCE));
+                ->willReturn(self::EVENTS_SEQUENCE);
         }
 
         return $this->aggregateEventStream;

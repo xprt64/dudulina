@@ -78,7 +78,12 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
 
         $parameter = $reflection->getParameters()[0];
 
-        return [$parameter->getClass()->name, $parameter->isOptional()];
+        $type = $parameter->getType();
+        if (!$type instanceof \ReflectionNamedType || $type->isBuiltin()) {
+            throw new \Exception("Updater callback must have one type-hinted parameter");
+        }
+
+        return [$type->getName(), $parameter->isOptional()];
     }
 
     public function clearAllStates(string $storageName = 'default', string $namespace = '')

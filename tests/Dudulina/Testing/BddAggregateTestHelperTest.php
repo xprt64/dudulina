@@ -40,9 +40,7 @@ class BddAggregateTestHelperTest extends \PHPUnit\Framework\TestCase
 
         $aggregateCommandHandlerName = 'handle' . get_class($command);
 
-        $aggregate = $this->getMockBuilder(\stdClass::class)
-            ->setMethods([$aggregateCommandHandlerName, $this->getApplyEventMethodName($event1)])
-            ->getMock();
+        $aggregate = new \tests\Dudulina\Doubles\DynamicAggregate();
 
         $aggregate->method($aggregateCommandHandlerName)
             ->with($command)
@@ -98,9 +96,7 @@ class BddAggregateTestHelperTest extends \PHPUnit\Framework\TestCase
 
         $aggregateCommandHandlerName = 'handle' . get_class($command);
 
-        $aggregate = $this->getMockBuilder(\stdClass::class)
-            ->setMethods([$aggregateCommandHandlerName, $this->getApplyEventMethodName($event1)])
-            ->getMock();
+        $aggregate = new \tests\Dudulina\Doubles\DynamicAggregate();
 
         $aggregate->method($aggregateCommandHandlerName)
             ->with($command)
@@ -147,9 +143,7 @@ class BddAggregateTestHelperTest extends \PHPUnit\Framework\TestCase
 
         $aggregateCommandHandlerName = 'handle' . get_class($command);
 
-        $aggregate = $this->getMockBuilder(\stdClass::class)
-            ->setMethods([$aggregateCommandHandlerName, $this->getApplyEventMethodName($event1)])
-            ->getMock();
+        $aggregate = new \tests\Dudulina\Doubles\DynamicAggregate();
 
         $aggregate->method($aggregateCommandHandlerName)
             ->with($command)
@@ -196,9 +190,7 @@ class BddAggregateTestHelperTest extends \PHPUnit\Framework\TestCase
 
         $aggregateCommandHandlerName = 'handle' . get_class($command);
 
-        $aggregate = $this->getMockBuilder(\stdClass::class)
-            ->setMethods([$aggregateCommandHandlerName, $this->getApplyEventMethodName($event1)])
-            ->getMock();
+        $aggregate = new \tests\Dudulina\Doubles\DynamicAggregate();
 
         $aggregate->method($aggregateCommandHandlerName)
             ->with($command)
@@ -245,9 +237,7 @@ class BddAggregateTestHelperTest extends \PHPUnit\Framework\TestCase
 
         $aggregateCommandHandlerName = 'handle' . get_class($command);
 
-        $aggregate = $this->getMockBuilder(\stdClass::class)
-            ->setMethods([$aggregateCommandHandlerName, $this->getApplyEventMethodName($event1)])
-            ->getMock();
+        $aggregate = new \tests\Dudulina\Doubles\DynamicAggregate();
 
         $expectedException = new \Exception("a test message");
 
@@ -296,9 +286,7 @@ class BddAggregateTestHelperTest extends \PHPUnit\Framework\TestCase
 
         $aggregateCommandHandlerName = 'handle' . get_class($command);
 
-        $aggregate = $this->getMockBuilder(\stdClass::class)
-            ->setMethods([$aggregateCommandHandlerName, $this->getApplyEventMethodName($event1)])
-            ->getMock();
+        $aggregate = new \tests\Dudulina\Doubles\DynamicAggregate();
 
         $expectedException = new \Exception("a test message");
 
@@ -347,9 +335,7 @@ class BddAggregateTestHelperTest extends \PHPUnit\Framework\TestCase
 
         $aggregateCommandHandlerName = 'handle' . get_class($command);
 
-        $aggregate = $this->getMockBuilder(\stdClass::class)
-            ->setMethods([$aggregateCommandHandlerName, $this->getApplyEventMethodName($event1)])
-            ->getMock();
+        $aggregate = new \tests\Dudulina\Doubles\DynamicAggregate();
 
         /** @var \Exception $expectedException */
         $expectedException = new class extends \Exception {
@@ -407,9 +393,7 @@ class BddAggregateTestHelperTest extends \PHPUnit\Framework\TestCase
 
         $aggregateCommandHandlerName = 'handle' . get_class($command);
 
-        $aggregate = $this->getMockBuilder(\stdClass::class)
-            ->setMethods([$aggregateCommandHandlerName, $this->getApplyEventMethodName($event1)])
-            ->getMock();
+        $aggregate = new \tests\Dudulina\Doubles\DynamicAggregate();
 
         $expectedException = new \Exception("a test message");
 
@@ -462,9 +446,7 @@ class BddAggregateTestHelperTest extends \PHPUnit\Framework\TestCase
 
         $aggregateCommandHandlerName = 'handle' . get_class($command);
 
-        $aggregate = $this->getMockBuilder(\stdClass::class)
-            ->setMethods([$aggregateCommandHandlerName, $this->getApplyEventMethodName($event1)])
-            ->getMock();
+        $aggregate = new \tests\Dudulina\Doubles\DynamicAggregate();
 
         $expectedException = new \Exception("a test message");
 

@@ -13,6 +13,7 @@ class ReadModelReflectionCached extends ReadModelReflection
     private $readObject;
 
     private $methodsByEventClassCache;
+    private $eventClassesCache;
 
     public function __construct(ReadModelReflection $readObject)
     {

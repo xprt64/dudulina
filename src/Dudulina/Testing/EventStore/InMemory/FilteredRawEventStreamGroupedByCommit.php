@@ -136,7 +136,7 @@ class FilteredRawEventStreamGroupedByCommit implements SeekableEventStream
         return $this->filterCommits($this->eventCommits);
     }
 
-    public function count()
+    public function count(): int
     {
         return \count(\iterator_to_array($this->getIterator(), false));
     }

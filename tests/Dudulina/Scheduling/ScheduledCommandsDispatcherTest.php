@@ -21,7 +21,7 @@ class ScheduledCommandsDispatcherTest extends \PHPUnit\Framework\TestCase
 
         $commandDispacther = $this->getMockBuilder(CommandDispatcher::class)
             ->disableOriginalConstructor()
-            ->setMethods(['dispatchCommand', 'canExecuteCommand'])
+            ->onlyMethods(['dispatchCommand'])
             ->getMock();
 
         $commandDispacther->expects($this->once())
@@ -52,7 +52,7 @@ class ScheduledCommandsDispatcherTest extends \PHPUnit\Framework\TestCase
 
         $commandDispacther = $this->getMockBuilder(CommandDispatcher::class)
             ->disableOriginalConstructor()
-            ->setMethods(['dispatchCommand', 'canExecuteCommand'])
+            ->onlyMethods(['dispatchCommand'])
             ->getMock();
 
         $commandDispacther->expects($this->once())
@@ -93,7 +93,7 @@ class ScheduledCommandsDispatcherTest extends \PHPUnit\Framework\TestCase
 
         $commandDispacther = $this->getMockBuilder(CommandDispatcher::class)
             ->disableOriginalConstructor()
-            ->setMethods(['dispatchCommand', 'canExecuteCommand'])
+            ->onlyMethods(['dispatchCommand'])
             ->getMock();
 
         $commandDispacther->expects($this->once())

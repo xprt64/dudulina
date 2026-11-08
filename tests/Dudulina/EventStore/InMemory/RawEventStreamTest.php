@@ -134,7 +134,7 @@ class RawEventStreamTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($event1, $events[0]->getEvent());
     }
 
-    private function wrapEventInMetadata($event, InMemoryEventSequence $eventSequence = null): EventWithMetaData
+    private function wrapEventInMetadata($event, ?InMemoryEventSequence $eventSequence = null): EventWithMetaData
     {
         /** @var MetaData $metaData */
         $metaData = new MetaData(
@@ -156,10 +156,10 @@ class RawEventStreamTest extends \PHPUnit\Framework\TestCase
 
 class MyEvent implements Event
 {
-
+    public $prop;
 }
 
 class MyEvent2 implements Event
 {
-
+    public $prop;
 }

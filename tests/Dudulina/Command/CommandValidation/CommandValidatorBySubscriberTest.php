@@ -32,9 +32,7 @@ class CommandValidatorBySubscriberTest extends \PHPUnit\Framework\TestCase
     private function mockValidator()
     {
         if (!$this->validator) {
-            $this->validator = $this->getMockBuilder(\stdClass::class)
-                ->setMethods(['validateTheCommand'])
-                ->getMock();
+            $this->validator = $this->createMock(\tests\Dudulina\Doubles\TestListener::class);
             $this->validator->expects($this->once())
                 ->method('validateTheCommand')
                 ->with($this->mockCommand())

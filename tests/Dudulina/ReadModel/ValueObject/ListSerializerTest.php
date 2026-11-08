@@ -40,7 +40,9 @@ class ListSerializerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @param $data
-     * @dataProvider dataForEmptyList
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('dataForEmptyList')]
+    /**
      */
     public function test_deserializeEmptyList($data)
     {
@@ -50,7 +52,7 @@ class ListSerializerTest extends \PHPUnit\Framework\TestCase
         $this->assertIsArray( $result);
     }
 
-    public function dataForEmptyList()
+    public static function dataForEmptyList()
     {
         return [
             [[]],

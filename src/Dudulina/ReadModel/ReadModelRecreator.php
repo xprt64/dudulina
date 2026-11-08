@@ -87,7 +87,7 @@ class ReadModelRecreator
      * @param EventSequence $afterSequence only the events strictly after this sequence are applied
      * @return EventSequence The last timestamp processed
      */
-    public function pollAndApplyEvents(ReadModelInterface $readModel, EventSequence $afterSequence = null)
+    public function pollAndApplyEvents(ReadModelInterface $readModel, ?EventSequence $afterSequence = null)
     {
         $eventClasses = $this->readModelReflector->getEventClassesFromReadModel($readModel);
 

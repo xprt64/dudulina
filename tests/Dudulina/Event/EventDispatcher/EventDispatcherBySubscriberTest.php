@@ -23,9 +23,7 @@ class EventDispatcherBySubscriberTest extends \PHPUnit\Framework\TestCase
             $this->mockMetadata()
         );
 
-        $listener = $this->getMockBuilder(\stdClass::class)
-            ->setMethods(['onEvent1'])
-            ->getMock();
+        $listener = $this->createMock(\tests\Dudulina\Doubles\TestListener::class);
         $listener->expects($this->once())
             ->method('onEvent1');
 
@@ -60,9 +58,7 @@ class EventDispatcherBySubscriberTest extends \PHPUnit\Framework\TestCase
             $this->mockMetadata()
         );
 
-        $listener = $this->getMockBuilder(\stdClass::class)
-            ->setMethods(['onEvent1'])
-            ->getMock();
+        $listener = $this->createMock(\tests\Dudulina\Doubles\TestListener::class);
         $listener->expects($this->once())
             ->willThrowException(new \Exception("test exception"))
             ->method('onEvent1');

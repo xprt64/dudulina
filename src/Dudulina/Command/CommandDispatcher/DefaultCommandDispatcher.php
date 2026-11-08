@@ -37,7 +37,7 @@ class DefaultCommandDispatcher implements CommandDispatcher
     {
     }
 
-    public function dispatchCommand(Command $command, array $metadata = null): SideEffects
+    public function dispatchCommand(Command $command, ?array $metadata = null): SideEffects
     {
         $sideEffects = $this->dispatchCommandAndSaveAggregate(
             $this->commandMetadataFactory->wrapCommandWithMetadata($command, $metadata)

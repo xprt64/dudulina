@@ -17,7 +17,7 @@ class AggregateEventApplyHandlerValidator
     private $logger;
 
     public function __construct(
-        LoggerInterface $logger = null
+        ?LoggerInterface $logger = null
     )
     {
         $this->logger = $logger;
