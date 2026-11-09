@@ -6,25 +6,41 @@
 namespace Dudulina\Event\EventsApplier;
 
 
-use Dudulina\Attributes\AggregateEventApplier;
 use Dudulina\Event\EventWithMetaData;
 
 /**
  * Applies events on an aggregate. The method that applies an event is found, in this order:
- *  1. the public method marked with #[AggregateEventApplier] whose first parameter is typed with the event class (any method name);
+ *  1. the method marked with #[AggregateEventApplier] whose first parameter is typed with the event class (any method name):
+ *     taken from the pre-generated $appliersMap (see AggregateEventAppliersMapCodeGenerator) or, when there is no map,
+ *     found once per aggregate class by reflection;
  *  2. unless $attributeOnly, the public method named apply<EventShortName> (the original naming convention).
  * An event without applier is ignored.
+ *
+ * Applying events is on the hot path (every command replays the aggregate's events), so everything that can be known before running
+ * is computed before: with a generated map and $attributeOnly the work per event is two array lookups and the method call, with no
+ * reflection, string building or is_callable().
  */
 class EventsApplierOnAggregate
 {
-    /** @var array<class-string, array<class-string, string>> aggregate class => event class => applier method name */
-    private static array $markedAppliersByAggregateClass = [];
+    /**
+     * @var array<class-string, array<class-string, string|false>> aggregate class => event class => applier method name, or false = none;
+     *      starts from the generated map and remembers the answers found at run time
+     */
+    private array $appliers = [];
+
+    /** @var array<class-string, array<class-string, string>> */
+    private array $markedAppliersFoundByReflection = [];
 
     /**
      * @param bool $attributeOnly when true only the methods marked with #[AggregateEventApplier] apply events
      *        and the apply<EventShortName> naming convention is ignored
+     * @param array<class-string, array<class-string, string>>|null $appliersMap aggregate class => event class => method name, as generated
+     *        into AggregateEventAppliersMap; null = find the marked methods by reflection at run time
      */
-    public function __construct(private bool $attributeOnly = false)
+    public function __construct(
+        private bool $attributeOnly = false,
+        private ?array $appliersMap = null
+    )
     {
     }
 
@@ -34,36 +50,23 @@ class EventsApplierOnAggregate
      */
     public function applyEventsOnAggregate($aggregate, $priorEvents)
     {
-        foreach ($priorEvents as $event) {
-            $this->applyEvent($aggregate, $event);
+        $aggregateClass = \get_class($aggregate);
+        $appliers = $this->appliers[$aggregateClass] ??= $this->appliersMap[$aggregateClass] ?? [];
+
+        foreach ($priorEvents as $eventWithMetaData) {
+            $event = $eventWithMetaData->getEvent();
+            $eventClass = \get_class($event);
+
+            $methodName = $appliers[$eventClass] ?? null;
+
+            if (null === $methodName) {
+                $methodName = $this->appliers[$aggregateClass][$eventClass] = $appliers[$eventClass] = $this->findApplier($aggregate, $aggregateClass, $event, $eventClass);
+            }
+
+            if (false !== $methodName) {
+                $aggregate->$methodName($event, $eventWithMetaData->getMetaData());
+            }
         }
-    }
-
-    private function applyEvent($aggregate, EventWithMetaData $eventWithMetaData)
-    {
-        $event = $eventWithMetaData->getEvent();
-        $methodName = $this->findApplierMethodName($aggregate, $event);
-
-        if (null !== $methodName) {
-            $aggregate->$methodName($event, $eventWithMetaData->getMetaData());
-        }
-    }
-
-    private function findApplierMethodName($aggregate, $event): ?string
-    {
-        $markedMethodName = self::markedAppliersOf(\get_class($aggregate))[\get_class($event)] ?? null;
-
-        if (null !== $markedMethodName) {
-            return $markedMethodName;
-        }
-
-        if ($this->attributeOnly) {
-            return null;
-        }
-
-        $conventionMethodName = self::getMethodName($event);
-
-        return \is_callable([$aggregate, $conventionMethodName]) ? $conventionMethodName : null;
     }
 
     public static function getMethodName($event)
@@ -72,53 +75,23 @@ class EventsApplierOnAggregate
         return 'apply' . end($parts);
     }
 
-    /** @return array<class-string, string> event class => applier method name */
-    private static function markedAppliersOf(string $aggregateClass): array
+    /** the slow path, taken once for each aggregate class and event class: @return string|false the applier's method name, false = none */
+    private function findApplier($aggregate, string $aggregateClass, $event, string $eventClass)
     {
-        return self::$markedAppliersByAggregateClass[$aggregateClass] ??= self::findMarkedAppliers($aggregateClass);
-    }
+        if (null === $this->appliersMap) {
+            $marked = ($this->markedAppliersFoundByReflection[$aggregateClass] ??= (new MarkedAppliersFinder())->findIn($aggregateClass))[$eventClass] ?? null;
 
-    private static function findMarkedAppliers(string $aggregateClass): array
-    {
-        $appliers = [];
-
-        foreach ((new \ReflectionClass($aggregateClass))->getMethods() as $method) {
-            if (!$method->getAttributes(AggregateEventApplier::class)) {
-                continue;
-            }
-
-            if (!$method->isPublic()) {
-                throw new \LogicException(sprintf('%s::%s is marked with #[AggregateEventApplier] but it is not public', $aggregateClass, $method->getName()));
-            }
-
-            foreach (self::eventClassesOf($method) as $eventClass) {
-                if (isset($appliers[$eventClass])) {
-                    throw new \LogicException(sprintf('%s::%s and %s::%s both apply the event %s', $aggregateClass, $appliers[$eventClass], $aggregateClass, $method->getName(), $eventClass));
-                }
-                $appliers[$eventClass] = $method->getName();
+            if (null !== $marked) {
+                return $marked;
             }
         }
 
-        return $appliers;
-    }
-
-    /** @return string[] the event classes the first parameter of the method is typed with */
-    private static function eventClassesOf(\ReflectionMethod $method): array
-    {
-        $type = ($method->getParameters()[0] ?? null)?->getType();
-        $types = $type instanceof \ReflectionUnionType ? $type->getTypes() : [$type];
-
-        $classes = [];
-        foreach ($types as $singleType) {
-            if ($singleType instanceof \ReflectionNamedType && !$singleType->isBuiltin() && !\in_array($singleType->getName(), ['self', 'static'], true)) {
-                $classes[] = $singleType->getName();
-            }
+        if ($this->attributeOnly) {
+            return false;
         }
 
-        if (!$classes) {
-            throw new \LogicException(sprintf('%s::%s is marked with #[AggregateEventApplier] but its first parameter is not typed with an event class', $method->getDeclaringClass()->getName(), $method->getName()));
-        }
+        $conventionMethodName = self::getMethodName($event);
 
-        return $classes;
+        return \is_callable([$aggregate, $conventionMethodName]) ? $conventionMethodName : false;
     }
 }

@@ -89,6 +89,65 @@ class EventsApplierOnAggregateTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(['whenSomethingHappened'], $aggregate->calls);
     }
 
+    public function testWithAMapTheAppliersAreTakenFromTheMapAndNotFoundByReflection()
+    {
+        $aggregate = new MarkedAggregate();
+        // the map is authoritative: it names a method the attribute does not mark, so reflection is certainly not used
+        $map = [MarkedAggregate::class => [SomethingHappened::class => 'mappedMethod']];
+
+        (new EventsApplierOnAggregate(attributeOnly: true, appliersMap: $map))->applyEventsOnAggregate($aggregate, [$this->wrap(new SomethingHappened())]);
+
+        $this->assertSame(['mappedMethod'], $aggregate->calls);
+    }
+
+    public function testWithAMapAnAggregateOrEventThatIsNotInTheMapGetsNoApplierInAttributeOnlyMode()
+    {
+        $marked = new MarkedAggregate();
+        $conventional = new ConventionAggregate();
+        $map = [MarkedAggregate::class => [SomethingElseHappened::class => 'mappedMethod']];
+
+        $sut = new EventsApplierOnAggregate(attributeOnly: true, appliersMap: $map);
+        $sut->applyEventsOnAggregate($marked, [$this->wrap(new SomethingHappened())]);
+        $sut->applyEventsOnAggregate($conventional, [$this->wrap(new SomethingHappened())]);
+
+        $this->assertSame([], $marked->calls, 'a marked method that is not in the (stale) map is not used: regenerate the map');
+        $this->assertSame([], $conventional->calls);
+    }
+
+    public function testWithAMapTheNamingConventionIsTheFallbackUnlessAttributeOnly()
+    {
+        $aggregate = new ConventionAggregate();
+
+        (new EventsApplierOnAggregate(appliersMap: []))->applyEventsOnAggregate($aggregate, [$this->wrap(new SomethingHappened())]);
+
+        $this->assertSame(['applySomethingHappened'], $aggregate->calls);
+    }
+
+    public function testTheAnswersAreRememberedAcrossCalls()
+    {
+        $aggregate = new ConventionAggregate();
+        $sut = new EventsApplierOnAggregate();
+
+        $sut->applyEventsOnAggregate($aggregate, [$this->wrap(new SomethingHappened()), $this->wrap(new SomethingElseHappened())]);
+        $sut->applyEventsOnAggregate($aggregate, [$this->wrap(new SomethingHappened()), $this->wrap(new SomethingElseHappened())]);
+
+        $this->assertSame(['applySomethingHappened', 'applySomethingHappened'], $aggregate->calls, 'events without applier are ignored every time');
+    }
+
+    public function testManyEventsOfDifferentAggregateClassesKeepTheirOwnAppliers()
+    {
+        $marked = new MarkedAggregate();
+        $conventional = new ConventionAggregate();
+        $sut = new EventsApplierOnAggregate();
+
+        $sut->applyEventsOnAggregate($marked, [$this->wrap(new SomethingHappened())]);
+        $sut->applyEventsOnAggregate($conventional, [$this->wrap(new SomethingHappened())]);
+        $sut->applyEventsOnAggregate($marked, [$this->wrap(new SomethingHappened())]);
+
+        $this->assertSame(['whenSomethingHappened', 'whenSomethingHappened'], $marked->calls);
+        $this->assertSame(['applySomethingHappened'], $conventional->calls);
+    }
+
     public function testAMarkedMethodMustBePublic()
     {
         $this->expectException(\LogicException::class);
@@ -132,6 +191,11 @@ class MarkedAggregate
     {
         $this->calls[] = 'whenSomethingHappened';
         $this->metaData = $metaData;
+    }
+
+    public function mappedMethod(SomethingHappened $event)
+    {
+        $this->calls[] = 'mappedMethod';
     }
 }
 

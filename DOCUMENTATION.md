@@ -86,11 +86,32 @@ An example of an apply method is this:
 The `Metadata` is optional and contains the Aggregate's ID, Aggregate's class name, the date of the event creation and the authenticated used id
 
 The method can also be marked with the `#[Dudulina\Attributes\AggregateEventApplier]` attribute and then it can have any name: it must be
-public and its first parameter must be typed with the event class (or a union of event classes). An attributed method is preferred to the
-`apply<EventShortName>` one. `EventsApplierOnAggregate` takes an `attributeOnly` constructor argument: with
-`new EventsApplierOnAggregate(attributeOnly: true)` the naming convention is ignored and only the attributed methods apply events, so a
-misspelled method name cannot silently skip an event. Two attributed methods for the same event, a non-public one, or one whose first
-parameter is not an event class throw a `LogicException` the first time the aggregate class is used.
+public and its first parameter must be typed with the event class (or a union of event classes).
+
+Applying events is on the hot path (every command rebuilds the aggregate from its events), so everything that can be known before running is
+worked out when the code is generated. `AggregateEventAppliersMapCodeGenerator` writes a map, `AggregateEventAppliersMap`, with the applier
+of every event of every aggregate (`[Aggregate::class => [SomethingHappened::class => 'whenSomethingHappened']]`), and
+`EventsApplierOnAggregate` takes it in its constructor:
+
+```php
+new EventsApplierOnAggregate(attributeOnly: true, appliersMap: \AggregateEventAppliersMap::getMap());
+```
+
+With the map and `attributeOnly`, applying an event costs two array lookups and the method call: no reflection, no string building and no
+`is_callable()`. `attributeOnly` ignores the `apply<EventShortName>` naming convention, so a misspelled method name cannot silently skip an
+event. Without a map the marked methods are found by reflection, once per aggregate class, and the naming convention is used for the other
+methods (the original behaviour).
+
+The generator fails, instead of the problem showing up while the application runs, when
+* a marked method is not public, or its first parameter is not typed with an event class, or two methods apply the same event;
+* **an aggregate yields an event that it has no applier for.** `YieldedEventsFinder` reads the source of the aggregate's command handlers
+  (also the helpers they delegate to with `yield from $this->helper()`) and resolves what they yield: `yield new X(...)`, a fluent
+  `yield (new X(...))->withY($y)` (when `withY()` is declared to return `self`/`static`), `yield $event` after `$event = new X(...)`, or a
+  call of a method whose return type is the event class. A yield it cannot resolve is an error too, so no event is skipped silently.
+  An event that changes no state still needs an applier: an empty one says so explicitly.
+
+The command handlers are found with the `AggregateCommandHandlerDetector` given to the generator
+(`new AggregateEventAppliersMapCodeGenerator(commandHandlerDetector: new AggregateCommandHandlerDetector(attributeOnly: true))`).
 
 ## The Read Models = The Projections ##
 After the Aggregate generates events, these events are sent to the subscribed Read Models.
@@ -246,7 +267,7 @@ Every kind of handler can be marked with an attribute from `Dudulina\Attributes`
 | query asker | `#[QueryAsker]` | `whenAnswered*` | `@QueryAsker` |
 | saga event processor | `#[EventProcessor]` | `process*` | `@EventProcessor` |
 | saga event handler of a process group | `#[EventHandler(processGroup: '...')]` | none (attribute only) | none |
-| aggregate event applier | `#[AggregateEventApplier]` | `apply<EventShortName>` (checked at run time by `EventsApplierOnAggregate`) | none |
+| aggregate event applier | `#[AggregateEventApplier]` | `apply<EventShortName>` (looked up at run time by `EventsApplierOnAggregate`) | none |
 
 By default the generators and detectors still accept the name and the docblock conventions, so old code keeps working.
 A misspelled name silently drops a handler though (dangerous for authorizers), so a project can switch to attributes only:
