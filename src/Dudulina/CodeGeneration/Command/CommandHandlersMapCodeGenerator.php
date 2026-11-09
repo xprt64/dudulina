@@ -14,6 +14,11 @@ use Gica\CodeAnalysis\MethodListenerDiscovery\MapGrouper\GrouperByEvent;
 
 class CommandHandlersMapCodeGenerator implements \Dudulina\CodeGeneration\CodeGenerator
 {
+    /** @param bool $attributeOnly accept only methods marked with the attribute (ignore the name / docblock conventions) */
+    public function __construct(private bool $attributeOnly = false)
+    {
+    }
+
     public function generateClass(string $template, \Iterator $filesToSearchForHandlers): string
     {
         $map = $this->getListenerDiscovery()->discoverListeners($filesToSearchForHandlers);
@@ -24,7 +29,7 @@ class CommandHandlersMapCodeGenerator implements \Dudulina\CodeGeneration\CodeGe
     private function getListenerDiscovery(): MethodListenerDiscovery
     {
         return new MethodListenerDiscovery(
-            new AggregateCommandHandlerDetector(),
+            new AggregateCommandHandlerDetector($this->attributeOnly),
             new AnyPhpClassIsAccepted);
     }
 

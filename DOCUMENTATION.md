@@ -226,6 +226,36 @@ There is possibility that more than one command handler exists for a Command. Th
 
 You could implement your own `CommandSubscriber`, the `CommandDispatcher` does not care.
 
+## Marking handlers: attributes or conventions ##
+
+Every kind of handler can be marked with an attribute from `Dudulina\Attributes`, whatever the method is named:
+
+| Handler | Attribute | Name convention (default) | Docblock tag (default) |
+|---|---|---|---|
+| aggregate command handler | `#[AggregateCommandHandler]` | `handle*` | `@AggregateCommandHandler` |
+| command validator | `#[AggregateCommandValidator]` | `validate*` | `@AggregateCommandValidator` |
+| read model event listener | `#[EventListener]` | `on*` | `@EventListener` |
+| query handler | `#[QueryHandler]` | `whenAsked*` | `@QueryHandler` |
+| query asker | `#[QueryAsker]` | `whenAnswered*` | `@QueryAsker` |
+| saga event processor | `#[EventProcessor]` | `process*` | `@EventProcessor` |
+| saga event handler of a process group | `#[EventHandler(processGroup: '...')]` | none (attribute only) | none |
+
+By default the generators and detectors still accept the name and the docblock conventions, so old code keeps working.
+A misspelled name silently drops a handler though (dangerous for authorizers), so a project can switch to attributes only:
+
+```php
+new CommandHandlersMapCodeGenerator(attributeOnly: true);
+new EventListenersMapCodeGenerator(attributeOnly: true);
+new ReadModelsMapCodeGenerator(attributeOnly: true);
+new QueryHandlersMapCodeGenerator(attributeOnly: true);
+new QueryAskersMapCodeGenerator(attributeOnly: true);
+new SagaEventProcessorsMapCodeGenerator(attributeOnly: true);
+new CommandValidatorsMapCodeGenerator(new AttributeOnlyAggregateCommandValidatorDetector());
+```
+
+The detectors (`AggregateCommandHandlerDetector`, `ReadModelEventHandlerDetector`, `QueryHandlerDetector`, `QueryAskerDetector`,
+`WriteSideEventHandlerDetector`) take the same `attributeOnly` constructor argument.
+
 ## Command validation ##
 
 Before the `CommandDispatcher` actually dispatches a command to the aggregate, it asks the `CommandValidator` to validate the command.

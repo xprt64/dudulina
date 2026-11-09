@@ -14,6 +14,14 @@ use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
 
 class AggregateCommandHandlerDetector implements MessageClassDetector
 {
+    /**
+     * @param bool $attributeOnly when true only methods marked with #[AggregateCommandHandler] are accepted;
+     *        the method-name and docblock conventions are ignored (default: they are accepted too)
+     */
+    public function __construct(private bool $attributeOnly = false)
+    {
+    }
+
     public function isMessageClass(\ReflectionClass $typeHintedClass):bool
     {
         return (new SubclassComparator())->isASubClassButNoSameClass($typeHintedClass->name, Command::class);
@@ -23,6 +31,10 @@ class AggregateCommandHandlerDetector implements MessageClassDetector
     {
         if (AttributeDetector::hasAttribute($reflectionMethod, AggregateCommandHandler::class)) {
             return true;
+        }
+
+        if ($this->attributeOnly) {
+            return false;
         }
         return 0 === stripos($reflectionMethod->name, 'handle') ||
             false !== stripos($reflectionMethod->getDocComment(), '@AggregateCommandHandler');

@@ -11,6 +11,14 @@ use Gica\CodeAnalysis\MethodListenerDiscovery\MessageClassDetector;
 
 class QueryAskerDetector implements MessageClassDetector
 {
+    /**
+     * @param bool $attributeOnly when true only methods marked with #[QueryAsker] are accepted;
+     *        the method-name and docblock conventions are ignored (default: they are accepted too)
+     */
+    public function __construct(private bool $attributeOnly = false)
+    {
+    }
+
     public function isMessageClass(\ReflectionClass $typeHintedClass): bool
     {
         return true;
@@ -20,6 +28,10 @@ class QueryAskerDetector implements MessageClassDetector
     {
         if (AttributeDetector::hasAttribute($reflectionMethod, QueryAsker::class)) {
             return true;
+        }
+
+        if ($this->attributeOnly) {
+            return false;
         }
         return 0 === stripos($reflectionMethod->name, 'whenAnswered') ||
                false !== stripos($reflectionMethod->getDocComment(), '@QueryAsker');
