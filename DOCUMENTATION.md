@@ -238,6 +238,15 @@ Command validators are classes that have methods with this signature:
 public function validateSomeCommand(SomeCommand $command);
 ```
 
+A validator method can also be marked with the `#[Dudulina\Attributes\AggregateCommandValidator]` attribute (any method name, and
+valid whether or not the command is handled by an aggregate). By default the generator accepts the attribute, the `validate*` name
+and the `@AggregateCommandValidator` docblock. To accept the attribute only (so a misspelled name can never silently drop a validator,
+which matters for authorizers), pass the strict detector:
+
+```php
+new CommandValidatorsMapCodeGenerator(new AttributeOnlyAggregateCommandValidatorDetector());
+```
+
 These command validators must return an array with zero or more validation errors.
 
 ## Event handler subscription ##

@@ -8,11 +8,23 @@ namespace Dudulina\CodeGeneration\Command;
 use Dudulina\CodeGeneration\Command\AggregateCommandValidatorDetector;
 use Gica\CodeAnalysis\MethodListenerDiscovery;
 use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator\AnyPhpClassIsAccepted;
+use Gica\CodeAnalysis\MethodListenerDiscovery\MessageClassDetector;
 use Gica\CodeAnalysis\MethodListenerDiscovery\MapCodeGenerator;
 use Gica\CodeAnalysis\MethodListenerDiscovery\MapCodeGenerator\GroupedByEventMapCodeGenerator;
 
 class CommandValidatorsMapCodeGenerator implements \Dudulina\CodeGeneration\CodeGenerator
 {
+    private MessageClassDetector $detector;
+
+    /**
+     * @param MessageClassDetector|null $detector defaults to {@see AggregateCommandValidatorDetector} (attribute, `validate*` name or docblock);
+     *        pass {@see AttributeOnlyAggregateCommandValidatorDetector} to accept the attribute only.
+     */
+    public function __construct(?MessageClassDetector $detector = null)
+    {
+        $this->detector = $detector ?? new AggregateCommandValidatorDetector();
+    }
+
     public function generateClass(string $template, \Iterator $filesToSearchForHandlers): string
     {
         $map = $this->getListenerDiscovery()->discoverListeners($filesToSearchForHandlers);
@@ -22,7 +34,7 @@ class CommandValidatorsMapCodeGenerator implements \Dudulina\CodeGeneration\Code
     private function getListenerDiscovery(): MethodListenerDiscovery
     {
         return new MethodListenerDiscovery(
-            new AggregateCommandValidatorDetector(),
+            $this->detector,
             new AnyPhpClassIsAccepted);
     }
 
