@@ -85,6 +85,13 @@ An example of an apply method is this:
 ```
 The `Metadata` is optional and contains the Aggregate's ID, Aggregate's class name, the date of the event creation and the authenticated used id
 
+The method can also be marked with the `#[Dudulina\Attributes\AggregateEventApplier]` attribute and then it can have any name: it must be
+public and its first parameter must be typed with the event class (or a union of event classes). An attributed method is preferred to the
+`apply<EventShortName>` one. `EventsApplierOnAggregate` takes an `attributeOnly` constructor argument: with
+`new EventsApplierOnAggregate(attributeOnly: true)` the naming convention is ignored and only the attributed methods apply events, so a
+misspelled method name cannot silently skip an event. Two attributed methods for the same event, a non-public one, or one whose first
+parameter is not an event class throw a `LogicException` the first time the aggregate class is used.
+
 ## The Read Models = The Projections ##
 After the Aggregate generates events, these events are sent to the subscribed Read Models.
 The Read Models are classes that listen on the events and update themselves accordingly. They have one or more event handler methods.
@@ -239,6 +246,7 @@ Every kind of handler can be marked with an attribute from `Dudulina\Attributes`
 | query asker | `#[QueryAsker]` | `whenAnswered*` | `@QueryAsker` |
 | saga event processor | `#[EventProcessor]` | `process*` | `@EventProcessor` |
 | saga event handler of a process group | `#[EventHandler(processGroup: '...')]` | none (attribute only) | none |
+| aggregate event applier | `#[AggregateEventApplier]` | `apply<EventShortName>` (checked at run time by `EventsApplierOnAggregate`) | none |
 
 By default the generators and detectors still accept the name and the docblock conventions, so old code keeps working.
 A misspelled name silently drops a handler though (dangerous for authorizers), so a project can switch to attributes only:
