@@ -27,6 +27,7 @@ class DefaultCommandTesterWithSideEffect implements CommandTesterWithSideEffect
     {
     }
 
+    #[\Override]
     public function shouldExecuteCommand(Command $command): bool
     {
         $command = $this->commandMetadataFactory->wrapCommandWithMetadata($command, null);

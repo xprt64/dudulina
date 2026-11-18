@@ -18,6 +18,7 @@ class ReadModelsMapCodeGenerator implements \Dudulina\CodeGeneration\CodeGenerat
     {
     }
 
+    #[\Override]
     public function generateClass(string $template, \Iterator $filesToSearchForHandlers): string
     {
         $map = $this->getListenerDiscovery()->discoverListeners($filesToSearchForHandlers);

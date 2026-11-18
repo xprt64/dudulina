@@ -25,6 +25,7 @@ class ByMap implements \Dudulina\Query\AskerResolver
      * @param $question
      * @return MethodDescriptor[]
      */
+    #[\Override]
     public function findAskers($question): array
     {
         $questionClass = $question::class;
@@ -34,6 +35,7 @@ class ByMap implements \Dudulina\Query\AskerResolver
         return array_map(fn($row) => new MethodDescriptor($row[0], $row[1]), $this->map[$questionClass]);
     }
 
+    #[\Override]
     public function findAskerNotifyMethod($asker, $question): MethodDescriptor
     {
         $needleClass = $asker::class;

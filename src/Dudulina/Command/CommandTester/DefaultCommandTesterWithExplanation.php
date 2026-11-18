@@ -26,6 +26,7 @@ class DefaultCommandTesterWithExplanation implements Command\CommandTesterWithEx
     {
     }
 
+    #[\Override]
     public function whyCantExecuteCommand(Command $command)
     {
         try {
@@ -60,7 +61,7 @@ class DefaultCommandTesterWithExplanation implements Command\CommandTesterWithEx
      * @param CommandHandlerAndAggregate $handlerAndAggregate
      * @return void
      */
-    private function applyCommand(CommandWithMetadata $command, CommandHandlerAndAggregate $handlerAndAggregate)
+    private function applyCommand(CommandWithMetadata $command, CommandHandlerAndAggregate $handlerAndAggregate): void
     {
         $aggregate = $handlerAndAggregate->getAggregate();
         $handler = $handlerAndAggregate->getCommandHandler();

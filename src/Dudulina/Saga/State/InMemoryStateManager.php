@@ -10,6 +10,7 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
 {
     private $states = [];
 
+    #[\Override]
     public function loadState(string $stateClass, $stateId, string $storageName = 'default', string $namespace = '')
     {
         $key = $stateClass . $stateId;
@@ -28,6 +29,7 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
         return isset($this->states[$namespace][$storageName][$key]);
     }
 
+    #[\Override]
     public function updateState($stateId, callable $updater, string $storageName = 'default', string $namespace = '')
     {
         [$stateClass, $isOptional] = $this->getStateClass($updater);
@@ -46,12 +48,14 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
         $this->states[$namespace][$storageName][$key] = $newState;
     }
 
+    #[\Override]
     public function deleteState($stateId,string $stateClass,  string $storageName = 'default', string $namespace = '')
     {
         $key = $stateClass . $stateId;
         unset($this->states[$namespace][$storageName][$key]);
     }
 
+    #[\Override]
     public function updateStateIfExists($stateId, callable $updater, string $storageName = 'default', string $namespace = '')
     {
         [$stateClass, $isOptional] = $this->getStateClass($updater);
@@ -86,16 +90,19 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
         return [$type->getName(), $parameter->isOptional()];
     }
 
+    #[\Override]
     public function clearAllStates(string $storageName = 'default', string $namespace = '')
     {
         $this->states[$namespace][$storageName] = [];
     }
 
+    #[\Override]
     public function createStorage(string $storageName = 'default', string $namespace = '')
     {
         $this->states[$namespace][$storageName] = [];
     }
 
+    #[\Override]
     public function moveEntireNamespace(string $sourceNamespace, string $destinationNamespace)
     {
         $this->states[$destinationNamespace] = $this->states[$sourceNamespace];

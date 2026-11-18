@@ -26,11 +26,13 @@ class InMemoryAggregateEventStream implements AggregateEventStream
         $this->eventsArray = $eventsArray;
     }
 
+    #[\Override]
     public function getIterator():\Traversable
     {
         return new \ArrayIterator($this->eventsArray);
     }
 
+    #[\Override]
     public function getVersion(): int
     {
         return $this->version;
@@ -55,6 +57,7 @@ class InMemoryAggregateEventStream implements AggregateEventStream
         return $other;
     }
 
+    #[\Override]
     public function count(): int
     {
         return \count($this->eventsArray);

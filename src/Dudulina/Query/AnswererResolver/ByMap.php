@@ -21,6 +21,7 @@ class ByMap implements \Dudulina\Query\AnswererResolver
     {
     }
 
+    #[\Override]
     public function findAnswerer($question): MethodDescriptor
     {
         $questionClass = $question::class;

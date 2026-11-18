@@ -19,6 +19,7 @@ class CommandHandlersMapCodeGenerator implements \Dudulina\CodeGeneration\CodeGe
     {
     }
 
+    #[\Override]
     public function generateClass(string $template, \Iterator $filesToSearchForHandlers): string
     {
         $map = $this->getListenerDiscovery()->discoverListeners($filesToSearchForHandlers);
@@ -33,7 +34,7 @@ class CommandHandlersMapCodeGenerator implements \Dudulina\CodeGeneration\CodeGe
             new AnyPhpClassIsAccepted);
     }
 
-    private function validateMap(array $map)
+    private function validateMap(array $map): void
     {
         foreach ($map as $command => $commandHandlers) {
             if (\count($commandHandlers) > 1) {

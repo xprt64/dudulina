@@ -51,7 +51,7 @@ class InMemoryEventsCommit
         return $other;
     }
 
-    private function eventHasAnyOfThisClasses($event, array $eventClasses)
+    private function eventHasAnyOfThisClasses($event, array $eventClasses): bool
     {
         foreach ($eventClasses as $eventClass) {
 

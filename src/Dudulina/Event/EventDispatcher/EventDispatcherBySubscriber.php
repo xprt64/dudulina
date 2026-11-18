@@ -16,6 +16,7 @@ class EventDispatcherBySubscriber implements EventDispatcher
     {
     }
 
+    #[\Override]
     public function dispatchEvent(EventWithMetaData $eventWithMetadata)
     {
         $listeners = $this->eventSubscriber->getListenersForEvent($eventWithMetadata->getEvent());

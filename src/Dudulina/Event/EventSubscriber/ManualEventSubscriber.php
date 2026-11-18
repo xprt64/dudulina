@@ -20,6 +20,7 @@ class ManualEventSubscriber implements EventSubscriber
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function getListenersForEvent($event)
     {
         $result = [];

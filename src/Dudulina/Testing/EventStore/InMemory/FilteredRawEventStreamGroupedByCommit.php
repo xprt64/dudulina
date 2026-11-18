@@ -31,6 +31,7 @@ class FilteredRawEventStreamGroupedByCommit implements SeekableEventStream
         $this->sort(true);
     }
 
+    #[\Override]
     public function getIterator():\Traversable
     {
         $commits = $this->fetchCommits();
@@ -90,7 +91,7 @@ class FilteredRawEventStreamGroupedByCommit implements SeekableEventStream
      * @param InMemoryEventsCommit[] $eventCommits
      * @return InMemoryEventsCommit[]
      */
-    private function sortCommits(array $eventCommits)
+    private function sortCommits(array $eventCommits): array
     {
         usort($eventCommits, function (InMemoryEventsCommit $first, InMemoryEventsCommit $second) {
             $order = $first->getCommitSequence() <=> $second->getCommitSequence();
@@ -124,21 +125,25 @@ class FilteredRawEventStreamGroupedByCommit implements SeekableEventStream
         return $this->filterCommits($this->eventCommits);
     }
 
+    #[\Override]
     public function count(): int
     {
         return \count(\iterator_to_array($this->getIterator(), false));
     }
 
+    #[\Override]
     public function afterSequence(EventSequence $after)
     {
         $this->afterSequence = $after;
     }
 
+    #[\Override]
     public function beforeSequence(EventSequence $before)
     {
         $this->beforeSequence = $before;
     }
 
+    #[\Override]
     public function sort(bool $chronological)
     {
         $this->ascending = $chronological;

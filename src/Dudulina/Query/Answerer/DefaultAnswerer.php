@@ -18,6 +18,7 @@ class DefaultAnswerer implements Answerer
     {
     }
 
+    #[\Override]
     public function answer($answeredQuestion):void
     {
         foreach ($this->resolver->findAskers($answeredQuestion) as $asker) {

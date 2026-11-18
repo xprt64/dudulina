@@ -12,11 +12,13 @@ use Dudulina\Event;
 
 class EventClassDetector implements MessageClassDetector
 {
+    #[\Override]
     public function isMessageClass(\ReflectionClass $typeHintedClass):bool
     {
         return new SubclassComparator()->isASubClassButNoSameClass($typeHintedClass->name, Event::class);
     }
 
+    #[\Override]
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod):bool
     {
         return true;

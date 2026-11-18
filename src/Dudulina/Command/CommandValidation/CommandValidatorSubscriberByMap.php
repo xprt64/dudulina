@@ -18,6 +18,7 @@ class CommandValidatorSubscriberByMap implements CommandValidatorSubscriber
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function getHandlersForCommand(Command $command)
     {
         $definitions = $this->map;

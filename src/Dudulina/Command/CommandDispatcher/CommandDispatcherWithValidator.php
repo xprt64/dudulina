@@ -17,6 +17,7 @@ class CommandDispatcherWithValidator implements CommandDispatcher
     {
     }
 
+    #[\Override]
     public function dispatchCommand(Command $command, ?array $metadata = null): SideEffects
     {
         $errors = $this->commandValidator->validateCommand($command);

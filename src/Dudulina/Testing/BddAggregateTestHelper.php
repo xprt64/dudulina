@@ -69,7 +69,7 @@ class BddAggregateTestHelper
      * @param Event[] $priorEvents
      * @return EventWithMetaData[]
      */
-    private function decorateEventsWithMetadata(array $priorEvents)
+    private function decorateEventsWithMetadata(array $priorEvents): array
     {
         return array_map($this->decorateEventWithMetaData(...), $priorEvents);
     }
@@ -173,7 +173,7 @@ class BddAggregateTestHelper
         $this->checkForToManyEvents(count($actualEvents) - count($expectedEvents));
     }
 
-    private function checkForToFewEvents(array $expectedEvents, array $actualEvents)
+    private function checkForToFewEvents(array $expectedEvents, array $actualEvents): void
     {
         foreach ($expectedEvents as $k => $expectedEvent) {
             if (!isset($actualEvents[$k])) {
@@ -190,7 +190,7 @@ class BddAggregateTestHelper
         }
     }
 
-    private function checkForToManyEvents(int $additionalCount)
+    private function checkForToManyEvents(int $additionalCount): void
     {
         if ($additionalCount > 0) {
             throw new TooManyEventsFired(
@@ -215,7 +215,7 @@ class BddAggregateTestHelper
         return new SubclassComparator()->isASubClassOrSameClass($childClass, $parentClass);
     }
 
-    private function checkCommand($command)
+    private function checkCommand($command): void
     {
         if (!$command instanceof Command) {
             throw new \Exception("Command is missing. Have you called method when()?");

@@ -19,11 +19,13 @@ class QueryHandlerDetector implements MessageClassDetector
     {
     }
 
+    #[\Override]
     public function isMessageClass(\ReflectionClass $typeHintedClass): bool
     {
         return true;
     }
 
+    #[\Override]
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod): bool
     {
         if (AttributeDetector::hasAttribute($reflectionMethod, QueryHandler::class)) {

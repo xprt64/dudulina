@@ -23,6 +23,7 @@ class EventSourcedAggregateRepository implements AggregateRepository
         $this->aggregateToEventStreamMap = new \SplObjectStorage();
     }
 
+    #[\Override]
     public function loadAggregate(AggregateDescriptor $aggregateDescriptor)
     {
         $aggregateClass = $aggregateDescriptor->getAggregateClass();
@@ -45,6 +46,7 @@ class EventSourcedAggregateRepository implements AggregateRepository
      * @param EventWithMetaData[] $newEventsWithMeta
      * @return EventWithMetaData[] decorated events with version and index
      */
+    #[\Override]
     public function saveAggregate($aggregateId, $aggregate, $newEventsWithMeta)
     {
         /** @var AggregateEventStream $priorEvents */

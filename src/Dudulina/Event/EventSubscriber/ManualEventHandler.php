@@ -25,6 +25,7 @@ class ManualEventHandler implements EventSubscriber
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function getListenersForEvent($event)
     {
         return $this->callbacks[$event::class] ?? [];

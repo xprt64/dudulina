@@ -38,6 +38,7 @@ class AggregateEventAppliersMapCodeGenerator implements CodeGenerator
         $this->yieldedEventsFinder ??= new YieldedEventsFinder();
     }
 
+    #[\Override]
     public function generateClass(string $template, \Iterator $filesToSearchForHandlers): string
     {
         return str_replace(self::MARKER, $this->toCode($this->findAppliers($filesToSearchForHandlers)), $template);

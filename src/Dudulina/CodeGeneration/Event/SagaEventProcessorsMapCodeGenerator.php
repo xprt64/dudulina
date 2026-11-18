@@ -20,6 +20,7 @@ class SagaEventProcessorsMapCodeGenerator implements \Dudulina\CodeGeneration\Co
     {
     }
 
+    #[\Override]
     public function generateClass(string $template, \Iterator $filesToSearchForHandlers): string
     {
         $map = $this->getListenerDiscovery()->discoverListeners($filesToSearchForHandlers);

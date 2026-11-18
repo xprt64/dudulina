@@ -17,6 +17,7 @@ class CommandTesterWithValidator implements CommandTester
     {
     }
 
+    #[\Override]
     public function canExecuteCommand(Command $command): bool
     {
         $errors = $this->commandValidator->validateCommand($command);

@@ -12,6 +12,7 @@ use Dudulina\ReadModel\ReadModelInterface;
 
 class OnlyReadModels implements ListenerClassValidator
 {
+    #[\Override]
     public function isClassAccepted(\ReflectionClass $typeHintedClass):bool
     {
         return new SubclassComparator()->isASubClassButNoSameClass($typeHintedClass->name, ReadModelInterface::class);

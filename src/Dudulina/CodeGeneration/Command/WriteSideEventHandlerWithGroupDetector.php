@@ -20,11 +20,13 @@ class WriteSideEventHandlerWithGroupDetector implements MessageClassDetector
     {
     }
 
+    #[\Override]
     public function isMessageClass(\ReflectionClass $typeHintedClass): bool
     {
         return new SubclassComparator()->isASubClassButNoSameClass($typeHintedClass->name, Event::class);
     }
 
+    #[\Override]
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod): bool
     {
         if (version_compare(PHP_VERSION, '8', '>=')) {

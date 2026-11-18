@@ -18,6 +18,7 @@ class CommandValidatorBySubscriber implements CommandValidator
     {
     }
 
+    #[\Override]
     public function validateCommand(Command $command)
     {
         $handlerDescriptors = $this->commandValidatorSubscriber->getHandlersForCommand($command);

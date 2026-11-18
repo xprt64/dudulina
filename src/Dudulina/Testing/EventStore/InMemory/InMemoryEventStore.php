@@ -24,6 +24,7 @@ class InMemoryEventStore implements EventStore
     private $versions = [];
     private $latestSequence = 0;
 
+    #[\Override]
     public function loadEventsForAggregate(AggregateDescriptor $aggregateDescriptor): AggregateEventStream
     {
         return new InMemoryAggregateEventStream(
@@ -33,6 +34,7 @@ class InMemoryEventStore implements EventStore
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function appendEventsForAggregate(AggregateDescriptor $aggregateDescriptor, $eventsWithMetaData, AggregateEventStream $expectedEventStream): void
     {
         if ($this->getAggregateVersion($aggregateDescriptor) != $expectedEventStream->getVersion()) {
@@ -69,7 +71,7 @@ class InMemoryEventStore implements EventStore
             : [];
     }
 
-    private function addEventsToArrayForAggregate(AggregateDescriptor $aggregateDescriptor, $newEvents, AggregateEventStream $expectedEventStream)
+    private function addEventsToArrayForAggregate(AggregateDescriptor $aggregateDescriptor, $newEvents, AggregateEventStream $expectedEventStream): void
     {
         /** @var InMemoryAggregateEventStream $expectedEventStream */
         $this->commitsByAggregate[$this->constructKey($aggregateDescriptor)][] = new InMemoryEventsCommit(
@@ -77,6 +79,7 @@ class InMemoryEventStore implements EventStore
         );
     }
 
+    #[\Override]
     public function loadEventsByClassNames(array $eventClasses): SeekableEventStream
     {
         $commits = iterator_to_array((new IteratorExpander(function ($aggregateCommits) {
@@ -86,7 +89,7 @@ class InMemoryEventStore implements EventStore
         return new FilteredRawEventStreamGroupedByCommit($commits, $eventClasses);
     }
 
-    private function extractEventsFromCommits(array $commits = [])
+    private function extractEventsFromCommits(array $commits = []): array
     {
         $eventsExtracter = new IteratorExpander(function (InMemoryEventsCommit $commit) {
             yield from $commit->getEventsWithMetadata();
@@ -95,6 +98,7 @@ class InMemoryEventStore implements EventStore
         return iterator_to_array($eventsExtracter($commits));
     }
 
+    #[\Override]
     public function getAggregateVersion(AggregateDescriptor $aggregateDescriptor)
     {
         $key = $this->constructKey($aggregateDescriptor);
@@ -133,6 +137,7 @@ class InMemoryEventStore implements EventStore
         return $aggregateDescriptor->getAggregateClass() . '_' . (string)$aggregateDescriptor->getAggregateId();
     }
 
+    #[\Override]
     public function findEventById(string $eventId): ?EventWithMetaData
     {
         foreach ($this->commitsByAggregate as $commits) {

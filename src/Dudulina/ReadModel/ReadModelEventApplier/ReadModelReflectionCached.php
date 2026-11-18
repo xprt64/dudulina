@@ -20,6 +20,7 @@ class ReadModelReflectionCached extends ReadModelReflection
      * @param string $eventClass
      * @return ListenerMethod[]
      */
+    #[\Override]
     public function getMethodsByEventClass(string $eventClass)
     {
         if (!isset($this->methodsByEventClassCache[$eventClass])) {
@@ -31,6 +32,7 @@ class ReadModelReflectionCached extends ReadModelReflection
     /**
      * @return string[]
      */
+    #[\Override]
     public function getEventClasses()
     {
         if (!isset($this->eventClassesCache)) {

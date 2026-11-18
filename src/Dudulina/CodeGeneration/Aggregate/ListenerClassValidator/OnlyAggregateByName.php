@@ -10,6 +10,7 @@ use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerClassValidator;
 
 class OnlyAggregateByName implements ListenerClassValidator
 {
+    #[\Override]
     public function isClassAccepted(\ReflectionClass $typeHintedClass):bool
     {
         return preg_match( '#Aggregate$#', $typeHintedClass->name);

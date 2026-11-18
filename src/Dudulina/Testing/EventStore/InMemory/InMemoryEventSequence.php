@@ -28,6 +28,7 @@ class InMemoryEventSequence implements EventSequence
         $this->commitSequence = $commitSequence;
     }
 
+    #[\Override]
     public function isBefore(EventSequence $other): bool
     {
         return $this->commitSequence < $other->commitSequence || ($this->commitSequence === $other->commitSequence && $this->indexInsideCommit < $other->indexInsideCommit);

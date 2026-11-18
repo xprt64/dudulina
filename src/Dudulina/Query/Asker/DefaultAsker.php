@@ -19,11 +19,13 @@ class DefaultAsker implements Asker
     {
     }
 
+    #[\Override]
     public function askAndReturn($question)
     {
         return $this->answerQuestion($question);
     }
 
+    #[\Override]
     public function askAndNotifyAsker($question, $asker): void
     {
         $answeredQuestion = $this->answerQuestion($question);

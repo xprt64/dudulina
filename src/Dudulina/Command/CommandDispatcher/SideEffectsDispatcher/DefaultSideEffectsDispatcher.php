@@ -17,6 +17,7 @@ class DefaultSideEffectsDispatcher implements SideEffectsDispatcher
     {
     }
 
+    #[\Override]
     public function dispatchSideEffects(SideEffects $sideEffects):void
     {
         foreach ($sideEffects->getEventsForNow() as $eventWithMetaData) {

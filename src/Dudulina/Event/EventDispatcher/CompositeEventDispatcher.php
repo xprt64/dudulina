@@ -23,6 +23,7 @@ class CompositeEventDispatcher implements EventDispatcher
         $this->eventDispatchers = $eventDispatchers;
     }
 
+    #[\Override]
     public function dispatchEvent(EventWithMetaData $eventWithMetadata)
     {
         foreach ($this->eventDispatchers as $eventDispatcher) {

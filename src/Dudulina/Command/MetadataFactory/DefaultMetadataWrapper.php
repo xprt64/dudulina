@@ -13,6 +13,7 @@ use Dudulina\Command\MetadataWrapper;
 class DefaultMetadataWrapper implements MetadataWrapper
 {
 
+    #[\Override]
     public function wrapCommandWithMetadata(Command $command, $metadata = null): CommandWithMetadata
     {
         return new CommandWithMetadata($command, $metadata);

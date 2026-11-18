@@ -19,6 +19,7 @@ class EventListenersMapCodeGenerator implements \Dudulina\CodeGeneration\CodeGen
     {
     }
 
+    #[\Override]
     public function generateClass(string $template, \Iterator $filesToSearchForHandlers): string
     {
         $map = $this->getListenerDiscovery()->discoverListeners($filesToSearchForHandlers);

@@ -22,11 +22,13 @@ class WriteSideEventHandlerDetector implements MessageClassDetector
     {
     }
 
+    #[\Override]
     public function isMessageClass(\ReflectionClass $typeHintedClass): bool
     {
         return new SubclassComparator()->isASubClassButNoSameClass($typeHintedClass->name, Event::class);
     }
 
+    #[\Override]
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod): bool
     {
         if (AttributeDetector::hasAttribute($reflectionMethod, EventProcessor::class)) {

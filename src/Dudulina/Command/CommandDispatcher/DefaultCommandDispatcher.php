@@ -37,6 +37,7 @@ class DefaultCommandDispatcher implements CommandDispatcher
     {
     }
 
+    #[\Override]
     public function dispatchCommand(Command $command, ?array $metadata = null): SideEffects
     {
         $sideEffects = $this->dispatchCommandAndSaveAggregate(
@@ -75,7 +76,7 @@ class DefaultCommandDispatcher implements CommandDispatcher
         return new EventWithMetaData($event, $metaData->withEventId(Guid::generate()));
     }
 
-    private function applyCommandAndReturnSideEffects(CommandWithMetadata $command, CommandHandlerAndAggregate $handlerAndAggregate)
+    private function applyCommandAndReturnSideEffects(CommandWithMetadata $command, CommandHandlerAndAggregate $handlerAndAggregate): \Dudulina\Command\CommandDispatcher\DefaultCommandDispatcher\SideEffects
     {
         $aggregate = $handlerAndAggregate->getAggregate();
         $handler = $handlerAndAggregate->getCommandHandler();

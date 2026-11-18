@@ -25,6 +25,7 @@ class CommandValidatorsMapCodeGenerator implements \Dudulina\CodeGeneration\Code
         $this->detector = $detector ?? new AggregateCommandValidatorDetector();
     }
 
+    #[\Override]
     public function generateClass(string $template, \Iterator $filesToSearchForHandlers): string
     {
         $map = $this->getListenerDiscovery()->discoverListeners($filesToSearchForHandlers);

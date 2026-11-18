@@ -36,7 +36,7 @@ class ScheduledCommandsDispatcher
         });
     }
 
-    private function logCommandException(ScheduledCommand $scheduledCommand, \Throwable $exception)
+    private function logCommandException(ScheduledCommand $scheduledCommand, \Throwable $exception): void
     {
         if (!$this->logger) {
             return;

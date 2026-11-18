@@ -16,6 +16,7 @@ class CommandTesterWithExplanationWithValidator implements CommandTesterWithExpl
     {
     }
 
+    #[\Override]
     public function whyCantExecuteCommand(Command $command)
     {
         $unknownErrors = $this->commandValidator->validateCommand($command);

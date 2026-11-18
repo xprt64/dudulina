@@ -20,6 +20,7 @@ class QueryHandlersMapCodeGenerator implements \Dudulina\CodeGeneration\CodeGene
     {
     }
 
+    #[\Override]
     public function generateClass(string $template, \Iterator $filesToSearchForHandlers): string
     {
         $map = $this->getListenerDiscovery()->discoverListeners($filesToSearchForHandlers);
@@ -27,7 +28,7 @@ class QueryHandlersMapCodeGenerator implements \Dudulina\CodeGeneration\CodeGene
         return $this->getCodeGenerator()->generateAndGetFileContents($map, $template);
     }
 
-    private function validateMap(array $map)
+    private function validateMap(array $map): void
     {
         foreach ($map as $command => $commandHandlers) {
             if (\count($commandHandlers) > 1) {

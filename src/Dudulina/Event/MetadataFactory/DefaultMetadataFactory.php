@@ -18,6 +18,7 @@ class DefaultMetadataFactory implements MetadataFactory
     {
     }
 
+    #[\Override]
     public function factoryEventMetadata(CommandWithMetadata $command, $aggregate): MetaData
     {
         return new MetaData(

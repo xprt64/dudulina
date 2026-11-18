@@ -22,6 +22,7 @@ class CommandSubscriberByMap implements CommandSubscriber
      * @return CommandHandlerDescriptor
      * @throws CommandHandlerNotFound
      */
+    #[\Override]
     public function getHandlerForCommand(Command $command)
     {
         $definitions = $this->map;

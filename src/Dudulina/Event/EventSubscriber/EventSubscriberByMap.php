@@ -41,6 +41,7 @@ class EventSubscriberByMap implements EventSubscriber
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function getListenersForEvent($event)
     {
         $eventClass = $event::class;

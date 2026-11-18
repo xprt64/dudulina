@@ -27,6 +27,7 @@ class DefaultCommandTester implements CommandTester
     {
     }
 
+    #[\Override]
     public function canExecuteCommand(Command $command): bool
     {
         try {
@@ -62,7 +63,7 @@ class DefaultCommandTester implements CommandTester
      * @param CommandHandlerAndAggregate $handlerAndAggregate
      * @return void
      */
-    private function applyCommand(CommandWithMetadata $command, CommandHandlerAndAggregate $handlerAndAggregate)
+    private function applyCommand(CommandWithMetadata $command, CommandHandlerAndAggregate $handlerAndAggregate): void
     {
         $aggregate = $handlerAndAggregate->getAggregate();
         $handler = $handlerAndAggregate->getCommandHandler();

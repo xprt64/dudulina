@@ -14,11 +14,13 @@ use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
 
 class AggregateCommandValidatorDetector implements MessageClassDetector
 {
+    #[\Override]
     public function isMessageClass(\ReflectionClass $typeHintedClass):bool
     {
         return new SubclassComparator()->isASubClassButNoSameClass($typeHintedClass->name, Command::class);
     }
 
+    #[\Override]
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod):bool
     {
         if (AttributeDetector::hasAttribute($reflectionMethod, AggregateCommandValidator::class)) {
