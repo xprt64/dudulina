@@ -47,7 +47,7 @@ class ReadModelEventApplier
 
     private function applyEvent($readModel, EventWithMetaData $eventWithMetadata): void
     {
-        $methods = $this->readModelReflector->getListenersForEvent($readModel, \get_class($eventWithMetadata->getEvent()));
+        $methods = $this->readModelReflector->getListenersForEvent($readModel, $eventWithMetadata->getEvent()::class);
         foreach ($methods as $method) {
             $this->executeMethod($readModel, $method, $eventWithMetadata);
         }

@@ -26,9 +26,7 @@ class ReadModelReflection
      */
     public function getMethodsByEventClass(string $eventClass)
     {
-        return array_filter($this->listenerMethods, function (ListenerMethod $listenerMethod) use ($eventClass) {
-            return $listenerMethod->getEventClassName() === $eventClass;
-        });
+        return array_filter($this->listenerMethods, fn(ListenerMethod $listenerMethod) => $listenerMethod->getEventClassName() === $eventClass);
     }
 
     /**

@@ -30,7 +30,7 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
 
     public function updateState($stateId, callable $updater, string $storageName = 'default', string $namespace = '')
     {
-        list($stateClass, $isOptional) = $this->getStateClass($updater);
+        [$stateClass, $isOptional] = $this->getStateClass($updater);
 
         $oldState = $this->loadState($stateClass, $stateId, $storageName, $namespace);
         if (!$this->hasState($stateClass, $stateId, $storageName, $namespace)) {
@@ -54,7 +54,7 @@ class InMemoryStateManager implements ProcessStateLoader, ProcessStateUpdater
 
     public function updateStateIfExists($stateId, callable $updater, string $storageName = 'default', string $namespace = '')
     {
-        list($stateClass, $isOptional) = $this->getStateClass($updater);
+        [$stateClass, $isOptional] = $this->getStateClass($updater);
 
         $oldState = $this->loadState($stateClass, $stateId, $storageName, $namespace);
         if (!$this->hasState($stateClass, $stateId, $storageName, $namespace)) {

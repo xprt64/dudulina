@@ -32,7 +32,7 @@ class YieldedEventsFinder
 
     public function __construct(?Parser $parser = null)
     {
-        $this->parser = $parser ?? (new ParserFactory())->createForNewestSupportedVersion();
+        $this->parser = $parser ?? new ParserFactory()->createForNewestSupportedVersion();
     }
 
     /**
@@ -123,7 +123,7 @@ class YieldedEventsFinder
             }
         };
 
-        (new NodeTraverser($visitor))->traverse($method->stmts ?? []);
+        new NodeTraverser($visitor)->traverse($method->stmts ?? []);
 
         return $visitor->yields;
     }
@@ -194,7 +194,7 @@ class YieldedEventsFinder
                 return null;
             }
         };
-        (new NodeTraverser($visitor))->traverse($method->stmts ?? []);
+        new NodeTraverser($visitor)->traverse($method->stmts ?? []);
 
         if (!$visitor->values) {
             return [];
@@ -222,7 +222,7 @@ class YieldedEventsFinder
                 return [];
             }
 
-            $type = (new \ReflectionMethod($target, $methodName))->getReturnType();
+            $type = new \ReflectionMethod($target, $methodName)->getReturnType();
 
             if (!$type instanceof \ReflectionNamedType || $type->isBuiltin()) {
                 return [];
@@ -230,7 +230,7 @@ class YieldedEventsFinder
 
             $class = in_array($type->getName(), ['self', 'static'], true) ? $target : $type->getName();
 
-            if (!class_exists($class) || (new \ReflectionClass($class))->isAbstract()) {
+            if (!class_exists($class) || new \ReflectionClass($class)->isAbstract()) {
                 return []; // an interface or an abstract class does not say which event it is
             }
 
@@ -273,7 +273,7 @@ class YieldedEventsFinder
             }
         };
 
-        (new NodeTraverser($visitor))->traverse($this->parse($file));
+        new NodeTraverser($visitor)->traverse($this->parse($file));
 
         return $visitor->found;
     }
@@ -283,7 +283,7 @@ class YieldedEventsFinder
     {
         if (!isset($this->sourceFiles[$file])) {
             $statements = $this->parser->parse((string)file_get_contents($file)) ?? [];
-            $this->sourceFiles[$file] = (new NodeTraverser(new NameResolver()))->traverse($statements);
+            $this->sourceFiles[$file] = new NodeTraverser(new NameResolver())->traverse($statements);
         }
 
         return $this->sourceFiles[$file];
@@ -291,6 +291,6 @@ class YieldedEventsFinder
 
     private function describe(Node\Expr $expr): string
     {
-        return strtolower(preg_replace('/(?<!^)[A-Z]/', ' $0', (new \ReflectionClass($expr))->getShortName())) . ' expression on line ' . $expr->getStartLine();
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', ' $0', new \ReflectionClass($expr)->getShortName())) . ' expression on line ' . $expr->getStartLine();
     }
 }

@@ -24,7 +24,7 @@ class AggregateCommandHandlerDetector implements MessageClassDetector
 
     public function isMessageClass(\ReflectionClass $typeHintedClass):bool
     {
-        return (new SubclassComparator())->isASubClassButNoSameClass($typeHintedClass->name, Command::class);
+        return new SubclassComparator()->isASubClassButNoSameClass($typeHintedClass->name, Command::class);
     }
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod):bool

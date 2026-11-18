@@ -17,7 +17,7 @@ class ReadModelReflector
 
     public function reflectReadModel($readModel): ReadModelReflection
     {
-        $readModelClass = \get_class($readModel);
+        $readModelClass = $readModel::class;
         if (!isset($this->cache[$readModelClass])) {
             $this->cache[$readModelClass] = $this->findReadModelReflection($readModelClass);
         }

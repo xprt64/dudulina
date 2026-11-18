@@ -24,7 +24,7 @@ class MarkedAppliersFinder
     {
         $appliers = [];
 
-        foreach ((new \ReflectionClass($aggregateClass))->getMethods() as $method) {
+        foreach (new \ReflectionClass($aggregateClass)->getMethods() as $method) {
             if (!$method->getAttributes(AggregateEventApplier::class)) {
                 continue;
             }

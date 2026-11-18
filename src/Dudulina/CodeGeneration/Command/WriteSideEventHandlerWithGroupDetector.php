@@ -22,7 +22,7 @@ class WriteSideEventHandlerWithGroupDetector implements MessageClassDetector
 
     public function isMessageClass(\ReflectionClass $typeHintedClass): bool
     {
-        return (new SubclassComparator())->isASubClassButNoSameClass($typeHintedClass->name, Event::class);
+        return new SubclassComparator()->isASubClassButNoSameClass($typeHintedClass->name, Event::class);
     }
 
     public function isMethodAccepted(\ReflectionMethod $reflectionMethod): bool

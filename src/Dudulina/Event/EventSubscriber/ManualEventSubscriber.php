@@ -39,7 +39,7 @@ class ManualEventSubscriber implements EventSubscriber
 
     private function getMethodName($event)
     {
-        $parts = explode('\\', get_class($event));
+        $parts = explode('\\', $event::class);
 
         return 'handle' . end($parts);
     }

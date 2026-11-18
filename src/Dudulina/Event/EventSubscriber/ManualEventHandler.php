@@ -27,6 +27,6 @@ class ManualEventHandler implements EventSubscriber
      */
     public function getListenersForEvent($event)
     {
-        return $this->callbacks[\get_class($event)] ?? [];
+        return $this->callbacks[$event::class] ?? [];
     }
 }

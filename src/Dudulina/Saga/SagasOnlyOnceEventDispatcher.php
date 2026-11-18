@@ -47,7 +47,7 @@ class SagasOnlyOnceEventDispatcher implements EventDispatcher
             if (is_array($listener)) {
                 $saga = $listener[0];
 
-                $sagaId = get_class($saga);
+                $sagaId = $saga::class;
 
                 if (!$this->trackerRepository->isEventProcessingAlreadyStarted($sagaId, $metaData->getEventId())) {
                     try {
@@ -59,9 +59,9 @@ class SagasOnlyOnceEventDispatcher implements EventDispatcher
                     } catch (\Throwable $exception) {
                         if ($this->logger) {
                             $this->logger->error($exception->getMessage(), [
-                                'saga'  => get_class($saga),
+                                'saga'  => $saga::class,
                                 'event' => [
-                                    'class' => get_class($eventWithMetadata->getEvent()),
+                                    'class' => $eventWithMetadata->getEvent()::class,
                                     'id'    => (string)$metaData->getEventId(),
                                 ],
                                 'file'  => $exception->getFile(),

@@ -40,7 +40,7 @@ class DumpEventsByClass
 
         foreach ($allEvents as $eventWithMetaData) {
             $this->logger->info("\n");
-            $this->logger->info("Event: " . get_class($eventWithMetaData->getEvent()) . "\n");
+            $this->logger->info("Event: " . $eventWithMetaData->getEvent()::class . "\n");
             $this->logger->info("Aggregate: " . $eventWithMetaData->getMetaData()->getAggregateClass() . '#' . $eventWithMetaData->getMetaData()->getAggregateId() . "\n");
             $this->logger->info("Created: " . $eventWithMetaData->getMetaData()->getDateCreated()->format('c') . "\n");
         }

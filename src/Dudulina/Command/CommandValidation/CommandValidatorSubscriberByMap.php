@@ -29,12 +29,12 @@ class CommandValidatorSubscriberByMap implements CommandValidatorSubscriber
     public function getHandlersForCommand(Command $command)
     {
         $definitions = $this->map;
-        if (!isset($definitions[\get_class($command)])) {
+        if (!isset($definitions[$command::class])) {
             return [];
         }
-        $handlersForCommand = $definitions[\get_class($command)];
+        $handlersForCommand = $definitions[$command::class];
         $result = [];
-        foreach ($handlersForCommand as list($aggregateClass, $methodName)) {
+        foreach ($handlersForCommand as [$aggregateClass, $methodName]) {
             $result[] = new CommandHandlerDescriptor($aggregateClass, $methodName);
         }
         return $result;

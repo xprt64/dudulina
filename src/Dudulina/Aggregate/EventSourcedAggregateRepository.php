@@ -66,11 +66,9 @@ class EventSourcedAggregateRepository implements AggregateRepository
         $priorEvents = $this->aggregateToEventStreamMap[$aggregate];
 
         $this->eventStore->appendEventsForAggregate(
-            new AggregateDescriptor($aggregateId, \get_class($aggregate)), $newEventsWithMeta, $priorEvents
+            new AggregateDescriptor($aggregateId, $aggregate::class), $newEventsWithMeta, $priorEvents
         );
 
-        return array_map(function (EventWithMetaData $event) use ($priorEvents) {
-            return $event->withVersion($priorEvents->getVersion() + 1);
-        }, $newEventsWithMeta);
+        return array_map(fn(EventWithMetaData $event) => $event->withVersion($priorEvents->getVersion() + 1), $newEventsWithMeta);
     }
 }

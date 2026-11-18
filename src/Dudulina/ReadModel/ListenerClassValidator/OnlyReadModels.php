@@ -14,6 +14,6 @@ class OnlyReadModels implements ListenerClassValidator
 {
     public function isClassAccepted(\ReflectionClass $typeHintedClass):bool
     {
-        return (new SubclassComparator())->isASubClassButNoSameClass($typeHintedClass->name, ReadModelInterface::class);
+        return new SubclassComparator()->isASubClassButNoSameClass($typeHintedClass->name, ReadModelInterface::class);
     }
 }

@@ -78,9 +78,7 @@ class BddAggregateTestHelper
      */
     private function decorateEventsWithMetadata(array $priorEvents)
     {
-        return array_map(function ($event) {
-            return $this->decorateEventWithMetaData($event);
-        }, $priorEvents);
+        return array_map($this->decorateEventWithMetaData(...), $priorEvents);
     }
 
     public function when(Command $command)
@@ -159,7 +157,7 @@ class BddAggregateTestHelper
                     sprintf(
                         "Exception '%s' was expected, but '%s(%s)' was thrown",
                         $exceptionClass,
-                        get_class($thrownException),
+                        $thrownException::class,
                         $thrownException->getMessage()));
             }
 
@@ -187,14 +185,14 @@ class BddAggregateTestHelper
         foreach ($expectedEvents as $k => $expectedEvent) {
             if (!isset($actualEvents[$k])) {
                 throw new ExpectedEventNotYielded(
-                    "Expected event no. $k not fired (should have class: " . get_class($expectedEvent) . ")");
+                    "Expected event no. $k not fired (should have class: " . $expectedEvent::class . ")");
             }
 
             $actualEvent = $actualEvents[$k];
 
             if ($this->hashEvent($expectedEvent) != $this->hashEvent($actualEvent)) {
                 throw new WrongEventClassYielded(
-                    "Wrong event no. {$k} of class " . get_class($expectedEvent) . " emitted");
+                    "Wrong event no. {$k} of class " . $expectedEvent::class . " emitted");
             }
         }
     }
@@ -209,19 +207,19 @@ class BddAggregateTestHelper
 
     public function hashEvent($event)
     {
-        return array_merge(['___class' => get_class($event)], (array)($event));
+        return array_merge(['___class' => $event::class], (array)($event));
     }
 
     private function factoryMetaData(): MetaData
     {
         return new MetaData(
-            $this->aggregateId, get_class($this->aggregate), new \DateTimeImmutable(), mt_rand()
+            $this->aggregateId, $this->aggregate::class, new \DateTimeImmutable(), mt_rand()
         );
     }
 
     private function isClassOrSubClass(string $parentClass, $childClass): bool
     {
-        return (new SubclassComparator())->isASubClassOrSameClass($childClass, $parentClass);
+        return new SubclassComparator()->isASubClassOrSameClass($childClass, $parentClass);
     }
 
     private function checkCommand($command)

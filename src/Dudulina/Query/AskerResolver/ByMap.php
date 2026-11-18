@@ -25,18 +25,16 @@ class ByMap implements \Dudulina\Query\AskerResolver
      */
     public function findAskers($question): array
     {
-        $questionClass = \get_class($question);
+        $questionClass = $question::class;
         if (!isset($this->map[$questionClass])) {
             return [];
         }
-        return array_map(function ($row) {
-            return new MethodDescriptor($row[0], $row[1]);
-        }, $this->map[$questionClass]);
+        return array_map(fn($row) => new MethodDescriptor($row[0], $row[1]), $this->map[$questionClass]);
     }
 
     public function findAskerNotifyMethod($asker, $question): MethodDescriptor
     {
-        $needleClass = \get_class($asker);
+        $needleClass = $asker::class;
         $askers = $this->findAskers($question);
         foreach ($askers as $askerFound) {
             if ($askerFound->getHandlerClass() === $needleClass) {

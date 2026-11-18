@@ -58,9 +58,7 @@ class DefaultCommandDispatcher implements CommandDispatcher
 
     private function dispatchCommandAndSaveAggregate(CommandWithMetadata $command): SideEffects
     {
-        return $this->concurrentProofFunctionCaller->executeFunction(function () use ($command) {
-            return $this->tryDispatchCommandAndSaveAggregate($command);
-        });
+        return $this->concurrentProofFunctionCaller->executeFunction(fn() => $this->tryDispatchCommandAndSaveAggregate($command));
     }
 
     private function loadCommandHandlerAndAggregate(CommandWithMetadata $command): CommandHandlerAndAggregate

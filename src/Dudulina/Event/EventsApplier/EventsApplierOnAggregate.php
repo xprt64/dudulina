@@ -50,12 +50,12 @@ class EventsApplierOnAggregate
      */
     public function applyEventsOnAggregate($aggregate, $priorEvents)
     {
-        $aggregateClass = \get_class($aggregate);
+        $aggregateClass = $aggregate::class;
         $appliers = $this->appliers[$aggregateClass] ??= $this->appliersMap[$aggregateClass] ?? [];
 
         foreach ($priorEvents as $eventWithMetaData) {
             $event = $eventWithMetaData->getEvent();
-            $eventClass = \get_class($event);
+            $eventClass = $event::class;
 
             $methodName = $appliers[$eventClass] ?? null;
 
@@ -71,7 +71,7 @@ class EventsApplierOnAggregate
 
     public static function getMethodName($event)
     {
-        $parts = explode('\\', \get_class($event));
+        $parts = explode('\\', $event::class);
         return 'apply' . end($parts);
     }
 
@@ -79,7 +79,7 @@ class EventsApplierOnAggregate
     private function findApplier($aggregate, string $aggregateClass, $event, string $eventClass)
     {
         if (null === $this->appliersMap) {
-            $marked = ($this->markedAppliersFoundByReflection[$aggregateClass] ??= (new MarkedAppliersFinder())->findIn($aggregateClass))[$eventClass] ?? null;
+            $marked = ($this->markedAppliersFoundByReflection[$aggregateClass] ??= new MarkedAppliersFinder()->findIn($aggregateClass))[$eventClass] ?? null;
 
             if (null !== $marked) {
                 return $marked;

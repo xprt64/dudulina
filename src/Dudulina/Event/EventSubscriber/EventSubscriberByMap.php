@@ -55,7 +55,7 @@ class EventSubscriberByMap implements EventSubscriber
      */
     public function getListenersForEvent($event)
     {
-        $eventClass = \get_class($event);
+        $eventClass = $event::class;
         if (isset($this->map[$eventClass])) {
             return $this->createListenersByMethod($this->map[$eventClass]);
         }

@@ -45,7 +45,7 @@ class CommandHandlersMapCodeGenerator implements \Dudulina\CodeGeneration\CodeGe
 
     private function groupMap(array $map)
     {
-        return (new GrouperByEvent())->groupMap($map);
+        return new GrouperByEvent()->groupMap($map);
     }
 
     private function getCodeGenerator(): MapCodeGenerator

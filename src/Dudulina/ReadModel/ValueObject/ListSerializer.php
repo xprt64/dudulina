@@ -37,13 +37,8 @@ class ListSerializer
             return [];
         }
 
-        $serializedObjectList = array_filter($serializedObjectList, function ($objectArray) use ($serializedObjectList) {
-            return $objectArray;
-        });
+        $serializedObjectList = array_filter($serializedObjectList, fn($objectArray) => $objectArray);
 
-        return array_map(function ($objectArray) use ($objectClass) {
-
-            return call_user_func([$objectClass, 'deserialize'], $objectArray);
-        }, $serializedObjectList);
+        return array_map(fn($objectArray) => call_user_func([$objectClass, 'deserialize'], $objectArray), $serializedObjectList);
     }
 }

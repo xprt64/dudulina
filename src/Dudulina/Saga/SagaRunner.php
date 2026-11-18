@@ -64,7 +64,7 @@ class SagaRunner
             new AnyPhpClassIsAccepted()
         );
 
-        $allMethods = $discoverer->findListenerMethodsInClass(\get_class($saga));
+        $allMethods = $discoverer->findListenerMethodsInClass($saga::class);
 
         $eventClasses = $this->getEventClassesFromMethods($allMethods);
 
@@ -125,10 +125,10 @@ class SagaRunner
     private function processEvent($saga, EventWithMetaData $eventWithMetadata, $allMethods): void
     {
         /** @var EventWithMetaData $eventWithMetadata */
-        $methods = $this->findMethodsByEventClass(\get_class($eventWithMetadata->getEvent()), $allMethods);
+        $methods = $this->findMethodsByEventClass($eventWithMetadata->getEvent()::class, $allMethods);
         $metaData = $eventWithMetadata->getMetaData();
 
-        $sagaId = \get_class($saga);
+        $sagaId = $saga::class;
 
         foreach ($methods as $method) {
 

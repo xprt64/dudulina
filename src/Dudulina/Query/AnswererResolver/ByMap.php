@@ -21,7 +21,7 @@ class ByMap implements \Dudulina\Query\AnswererResolver
 
     public function findAnswerer($question): MethodDescriptor
     {
-        $questionClass = \get_class($question);
+        $questionClass = $question::class;
         if (!isset($this->map[$questionClass])) {
             throw new \InvalidArgumentException("There is no answerer for question {$questionClass}");
         }

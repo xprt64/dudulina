@@ -60,9 +60,7 @@ class InMemoryEventsCommit
     public function filterEventsByClass(array $eventClasses)
     {
         $other = clone $this;
-        $other->eventsWithMetadata = array_filter($this->eventsWithMetadata, function (EventWithMetaData $eventWithMetaData) use ($eventClasses) {
-            return $this->eventHasAnyOfThisClasses($eventWithMetaData->getEvent(), $eventClasses);
-        });
+        $other->eventsWithMetadata = array_filter($this->eventsWithMetadata, fn(EventWithMetaData $eventWithMetaData) => $this->eventHasAnyOfThisClasses($eventWithMetaData->getEvent(), $eventClasses));
         return $other;
     }
 
@@ -70,7 +68,7 @@ class InMemoryEventsCommit
     {
         foreach ($eventClasses as $eventClass) {
 
-            if ((new SubclassComparator())->isASubClassOrSameClass($event, $eventClass)) {
+            if (new SubclassComparator()->isASubClassOrSameClass($event, $eventClass)) {
                 return true;
             }
         }

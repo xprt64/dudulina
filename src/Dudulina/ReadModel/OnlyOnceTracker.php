@@ -12,11 +12,11 @@ class OnlyOnceTracker
 
     public function isEventAlreadyApplied(ReadModelInterface $readModel, $eventId): bool
     {
-        return isset($this->alreadyAppliedEventsByReadModel[\get_class($readModel)][(string)$eventId]);
+        return isset($this->alreadyAppliedEventsByReadModel[$readModel::class][(string)$eventId]);
     }
 
     public function markEventAsApplied(ReadModelInterface $readModel, $eventId): void
     {
-        $this->alreadyAppliedEventsByReadModel[\get_class($readModel)][(string)$eventId] = true;
+        $this->alreadyAppliedEventsByReadModel[$readModel::class][(string)$eventId] = true;
     }
 }
