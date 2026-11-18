@@ -14,25 +14,14 @@ use Psr\Log\LoggerInterface;
 
 class ReadModelEventApplier
 {
-    /** @var OnlyOnceTracker */
-    private $onlyOnceTracker;
-    /**
-     * @var ReadModelReflector
-     */
-    private $readModelReflector;
-    /**
-     * @var ErrorReporter
-     */
-    private $errorReporter;
+    private \Dudulina\ReadModel\OnlyOnceTracker $onlyOnceTracker;
 
     public function __construct(
-        ErrorReporter $errorReporter,
-        ReadModelReflector $readModelReflector
+        private ErrorReporter $errorReporter,
+        private ReadModelReflector $readModelReflector
     )
     {
         $this->onlyOnceTracker = new OnlyOnceTracker();
-        $this->readModelReflector = $readModelReflector;
-        $this->errorReporter = $errorReporter;
     }
 
     public function applyEventOnlyOnce($readModel, EventWithMetaData $eventWithMetadata): void

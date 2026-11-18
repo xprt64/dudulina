@@ -13,22 +13,8 @@ use Dudulina\Scheduling\CommandScheduler;
 
 class DefaultSideEffectsDispatcher implements SideEffectsDispatcher
 {
-    /**
-     * @var EventDispatcher
-     */
-    private $eventDispatcher;
-    /**
-     * @var CommandScheduler|null
-     */
-    private $commandScheduler;
-
-    public function __construct(
-        EventDispatcher $eventDispatcher,
-        ?CommandScheduler $commandScheduler = null
-    )
+    public function __construct(private EventDispatcher $eventDispatcher, private ?CommandScheduler $commandScheduler = null)
     {
-        $this->eventDispatcher = $eventDispatcher;
-        $this->commandScheduler = $commandScheduler;
     }
 
     public function dispatchSideEffects(SideEffects $sideEffects):void

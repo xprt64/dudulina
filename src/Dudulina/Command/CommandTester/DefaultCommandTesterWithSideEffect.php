@@ -23,46 +23,8 @@ use Gica\Types\Guid;
 
 class DefaultCommandTesterWithSideEffect implements CommandTesterWithSideEffect
 {
-    /**
-     * @var CommandSubscriber
-     */
-    private $commandSubscriber;
-    /**
-     * @var CommandApplier
-     */
-    private $commandApplier;
-    /**
-     * @var EventSourcedAggregateRepository
-     */
-    private $aggregateRepository;
-    /**
-     * @var EventsApplierOnAggregate
-     */
-    private $eventsApplierOnAggregate;
-    /**
-     * @var EventMetadataFactory
-     */
-    private $eventMetadataFactory;
-    /**
-     * @var CommandMetadataFactory
-     */
-    private $commandMetadataFactory;
-
-    public function __construct(
-        CommandSubscriber $commandSubscriber,
-        CommandApplier $commandApplier,
-        EventSourcedAggregateRepository $aggregateRepository,
-        EventsApplierOnAggregate $eventsApplier,
-        EventMetadataFactory $eventMetadataFactory,
-        CommandMetadataFactory $commandMetadataFactory
-    )
+    public function __construct(private CommandSubscriber $commandSubscriber, private CommandApplier $commandApplier, private EventSourcedAggregateRepository $aggregateRepository, private EventsApplierOnAggregate $eventsApplierOnAggregate, private EventMetadataFactory $eventMetadataFactory, private CommandMetadataFactory $commandMetadataFactory)
     {
-        $this->commandSubscriber = $commandSubscriber;
-        $this->commandApplier = $commandApplier;
-        $this->aggregateRepository = $aggregateRepository;
-        $this->eventsApplierOnAggregate = $eventsApplier;
-        $this->eventMetadataFactory = $eventMetadataFactory;
-        $this->commandMetadataFactory = $commandMetadataFactory;
     }
 
     public function shouldExecuteCommand(Command $command): bool

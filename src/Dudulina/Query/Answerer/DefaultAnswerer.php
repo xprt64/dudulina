@@ -14,22 +14,8 @@ use Psr\Container\ContainerInterface;
 class DefaultAnswerer implements Answerer
 {
 
-    /**
-     * @var AskerResolver
-     */
-    private $resolver;
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    public function __construct(
-        ContainerInterface $container,
-        AskerResolver $resolver
-    )
+    public function __construct(private ContainerInterface $container, private AskerResolver $resolver)
     {
-        $this->resolver = $resolver;
-        $this->container = $container;
     }
 
     public function answer($answeredQuestion):void

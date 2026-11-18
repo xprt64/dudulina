@@ -29,26 +29,19 @@ class BddAggregateTestHelper
     /** @var EventDispatcher */
     private $eventDispatcher;
 
-    private $priorEvents = [];
+    private array $priorEvents;
 
     /** @var Command */
     private $command;
     private $aggregate;
 
-    /** @var EventsApplierOnAggregate */
-    private $eventsApplierOnAggregate;
+    private \Dudulina\Event\EventsApplier\EventsApplierOnAggregate $eventsApplierOnAggregate;
 
-    /** @var CommandApplier */
-    private $commandApplier;
-    /**
-     * @var CommandSubscriber
-     */
-    private $commandSubscriber;
+    private \Dudulina\Command\CommandApplier $commandApplier;
 
     public function __construct(
-        CommandSubscriber $commandSubscriber
+        private CommandSubscriber $commandSubscriber
     ) {
-        $this->commandSubscriber = $commandSubscriber;
         $this->eventsApplierOnAggregate = new EventsApplierOnAggregate();
         $this->commandApplier = new CommandApplier();
 

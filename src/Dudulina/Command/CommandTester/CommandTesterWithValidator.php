@@ -13,23 +13,8 @@ use Dudulina\Command\CommandValidator;
 class CommandTesterWithValidator implements CommandTester
 {
 
-    /**
-     * @var CommandTester
-     */
-    private $commandTester;
-    /**
-     * @var CommandValidator
-     */
-    private $commandValidator;
-
-    public function __construct(
-        CommandTester $commandTester,
-        CommandValidator $commandValidator
-
-    )
+    public function __construct(private CommandTester $commandTester, private CommandValidator $commandValidator)
     {
-        $this->commandTester = $commandTester;
-        $this->commandValidator = $commandValidator;
     }
 
     public function canExecuteCommand(Command $command): bool

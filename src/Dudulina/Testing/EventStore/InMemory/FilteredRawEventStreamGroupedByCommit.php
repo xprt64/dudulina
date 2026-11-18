@@ -13,18 +13,8 @@ use Gica\Iterator\IteratorTransformer\IteratorFilter;
 
 class FilteredRawEventStreamGroupedByCommit implements SeekableEventStream
 {
-    /**
-     * @var InMemoryEventsCommit[]
-     */
-    private $eventCommits = [];
-
     /** @var int|null */
     private $limit;
-
-    /**
-     * @var array
-     */
-    private $eventClasses;
 
     /** @var InMemoryEventSequence|null */
     private $afterSequence;
@@ -36,10 +26,8 @@ class FilteredRawEventStreamGroupedByCommit implements SeekableEventStream
      * @param  InMemoryEventsCommit[] $eventCommits
      * @param array $eventClasses
      */
-    public function __construct($eventCommits, array $eventClasses = [])
+    public function __construct(private $eventCommits, private array $eventClasses = [])
     {
-        $this->eventCommits = $eventCommits;
-        $this->eventClasses = $eventClasses;
         $this->sort(true);
     }
 

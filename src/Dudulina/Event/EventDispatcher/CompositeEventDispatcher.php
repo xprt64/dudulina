@@ -14,7 +14,7 @@ class CompositeEventDispatcher implements EventDispatcher
     /**
      * @var EventDispatcher[]
      */
-    private $eventDispatchers;
+    private array $eventDispatchers;
 
     public function __construct(
         EventDispatcher ...$eventDispatchers

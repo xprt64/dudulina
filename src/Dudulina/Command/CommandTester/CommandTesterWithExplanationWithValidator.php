@@ -12,23 +12,8 @@ use Dudulina\Command\CommandValidator;
 class CommandTesterWithExplanationWithValidator implements CommandTesterWithExplanation
 {
 
-    /**
-     * @var CommandTesterWithExplanation
-     */
-    private $commandTester;
-    /**
-     * @var CommandValidator
-     */
-    private $commandValidator;
-
-    public function __construct(
-        CommandTesterWithExplanation $commandTester,
-        CommandValidator $commandValidator
-
-    )
+    public function __construct(private CommandTesterWithExplanation $commandTester, private CommandValidator $commandValidator)
     {
-        $this->commandTester = $commandTester;
-        $this->commandValidator = $commandValidator;
     }
 
     public function whyCantExecuteCommand(Command $command)

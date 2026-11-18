@@ -12,24 +12,12 @@ use Psr\Log\LoggerInterface;
 class ScheduledCommandsDispatcher
 {
     /**
-     * @var ScheduledCommandStore
-     */
-    private $store;
-    /**
-     * @var CommandDispatcher
-     */
-    private $dispatcher;
-    /**
      * @var LoggerInterface|null
      */
     private $logger;
 
-    public function __construct(
-        ScheduledCommandStore $store,
-        CommandDispatcher $dispatcher
-    ) {
-        $this->store = $store;
-        $this->dispatcher = $dispatcher;
+    public function __construct(private ScheduledCommandStore $store, private CommandDispatcher $dispatcher)
+    {
     }
 
     public function setLogger(?LoggerInterface $logger)

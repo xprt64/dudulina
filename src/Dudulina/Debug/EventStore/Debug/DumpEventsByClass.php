@@ -12,22 +12,8 @@ use Psr\Log\LoggerInterface;
 class DumpEventsByClass
 {
 
-    /**
-     * @var EventStore
-     */
-    private $eventStore;
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(
-        EventStore $eventStore,
-        LoggerInterface $logger
-    )
+    public function __construct(private EventStore $eventStore, private LoggerInterface $logger)
     {
-        $this->eventStore = $eventStore;
-        $this->logger = $logger;
     }
 
     public function dumpEvents(array $eventClasses)

@@ -12,28 +12,15 @@ use Gica\CodeAnalysis\Shared\ClassComparison\SubclassComparator;
 class InMemoryEventsCommit
 {
 
-    /**
-     * @var int
-     */
-    private $commitSequence;
-    /**
-     * @var int
-     */
-    private $version;
-    /**
-     * @var EventWithMetaData[]
-     */
-    private $eventsWithMetadata;
-
     public function __construct(
-        int $commitSequence,
-        int $version,
-        array $eventsWithMetadata
+        private int $commitSequence,
+        private int $version,
+        /**
+         * @var EventWithMetaData[]
+         */
+        private array $eventsWithMetadata
     )
     {
-        $this->commitSequence = $commitSequence;
-        $this->version = $version;
-        $this->eventsWithMetadata = $eventsWithMetadata;
     }
 
     public function getCommitSequence(): int

@@ -13,23 +13,8 @@ use Dudulina\Command\Exception\CommandValidationFailed;
 class CommandDispatcherWithValidator implements CommandDispatcher
 {
 
-    /**
-     * @var CommandDispatcher
-     */
-    private $commandDispatcher;
-    /**
-     * @var CommandValidator
-     */
-    private $commandValidator;
-
-    public function __construct(
-        CommandDispatcher $commandDispatcher,
-        CommandValidator $commandValidator
-
-    )
+    public function __construct(private CommandDispatcher $commandDispatcher, private CommandValidator $commandValidator)
     {
-        $this->commandDispatcher = $commandDispatcher;
-        $this->commandValidator = $commandValidator;
     }
 
     public function dispatchCommand(Command $command, ?array $metadata = null): SideEffects

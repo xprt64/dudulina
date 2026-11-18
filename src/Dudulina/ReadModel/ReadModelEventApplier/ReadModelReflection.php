@@ -9,15 +9,11 @@ use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerMethod;
 
 class ReadModelReflection
 {
-    /** @var ListenerMethod[] */
-    private $listenerMethods = [];
-
     /**
      * @param ListenerMethod[] $listenerMethods
      */
-    public function __construct(array $listenerMethods)
+    public function __construct(private array $listenerMethods)
     {
-        $this->listenerMethods = $listenerMethods;
     }
 
     /**

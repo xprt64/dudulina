@@ -12,19 +12,8 @@ use Dudulina\Event\EventWithMetaData;
 
 class EventDispatcherBySubscriber implements EventDispatcher
 {
-    /** @var EventSubscriber */
-    private $eventSubscriber;
-    /**
-     * @var ErrorReporter
-     */
-    private $errorReporter;
-
-    public function __construct(
-        EventSubscriber $eventSubscriber,
-        ErrorReporter $errorReporter
-    ) {
-        $this->eventSubscriber = $eventSubscriber;
-        $this->errorReporter = $errorReporter;
+    public function __construct(private EventSubscriber $eventSubscriber, private ErrorReporter $errorReporter)
+    {
     }
 
     public function dispatchEvent(EventWithMetaData $eventWithMetadata)

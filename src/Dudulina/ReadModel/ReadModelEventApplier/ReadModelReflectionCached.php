@@ -9,15 +9,11 @@ use Gica\CodeAnalysis\MethodListenerDiscovery\ListenerMethod;
 
 class ReadModelReflectionCached extends ReadModelReflection
 {
-    /** @var ReadModelReflection */
-    private $readObject;
-
     private $methodsByEventClassCache;
     private $eventClassesCache;
 
-    public function __construct(ReadModelReflection $readObject)
+    public function __construct(private ReadModelReflection $readObject)
     {
-        $this->readObject = $readObject;
     }
 
     /**

@@ -13,16 +13,8 @@ use Dudulina\Command\ValueObject\CommandHandlerDescriptor;
 
 class CommandSubscriberByMap implements CommandSubscriber
 {
-    /**
-     * @var array
-     */
-    private $map;
-
-    public function __construct(
-        array $map
-    )
+    public function __construct(private array $map)
     {
-        $this->map = $map;
     }
 
     /**

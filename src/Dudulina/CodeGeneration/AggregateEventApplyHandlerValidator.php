@@ -11,16 +11,8 @@ use Psr\Log\LoggerInterface;
 
 class AggregateEventApplyHandlerValidator
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(
-        ?LoggerInterface $logger = null
-    )
+    public function __construct(private ?LoggerInterface $logger = null)
     {
-        $this->logger = $logger;
     }
 
     public function validate(

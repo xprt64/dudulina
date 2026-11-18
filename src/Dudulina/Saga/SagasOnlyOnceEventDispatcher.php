@@ -15,26 +15,8 @@ use Psr\Log\LoggerInterface;
 class SagasOnlyOnceEventDispatcher implements EventDispatcher
 {
 
-    /** @var EventSubscriber */
-    private $eventSubscriber;
-    /**
-     * @var SagaEventTrackerRepository
-     */
-    private $trackerRepository;
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger;
-
-    public function __construct(
-        SagaEventTrackerRepository $trackerRepository,
-        EventSubscriber $eventSubscriber,
-        ?LoggerInterface $logger
-    )
+    public function __construct(private SagaEventTrackerRepository $trackerRepository, private EventSubscriber $eventSubscriber, private ?LoggerInterface $logger)
     {
-        $this->eventSubscriber = $eventSubscriber;
-        $this->trackerRepository = $trackerRepository;
-        $this->logger = $logger;
     }
 
     public function dispatchEvent(EventWithMetaData $eventWithMetadata)

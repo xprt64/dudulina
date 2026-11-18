@@ -12,20 +12,8 @@ use Psr\Container\ContainerInterface;
 class EventSubscriberByMap implements EventSubscriber
 {
 
-    /** @var ContainerInterface */
-    private $container;
-    /**
-     * @var array
-     */
-    private $map;
-
-    public function __construct(
-        ContainerInterface $container,
-        array $map
-    )
+    public function __construct(private ContainerInterface $container, private array $map)
     {
-        $this->container = $container;
-        $this->map = $map;
     }
 
     /**

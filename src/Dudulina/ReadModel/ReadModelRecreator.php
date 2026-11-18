@@ -17,37 +17,12 @@ class ReadModelRecreator
 {
 
     /**
-     * @var EventStore
-     */
-    private $eventStore;
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
      * @var TaskProgressReporter|null
      */
     private $taskProgressReporter;
-    /**
-     * @var ReadModelEventApplier
-     */
-    private $readModelEventApplier;
-    /**
-     * @var ReadModelReflector
-     */
-    private $readModelReflector;
 
-    public function __construct(
-        EventStore $eventStore,
-        LoggerInterface $logger,
-        ReadModelEventApplier $readModelEventApplier,
-        ReadModelReflector $readModelReflector
-    )
+    public function __construct(private EventStore $eventStore, private LoggerInterface $logger, private ReadModelEventApplier $readModelEventApplier, private ReadModelReflector $readModelReflector)
     {
-        $this->eventStore = $eventStore;
-        $this->logger = $logger;
-        $this->readModelEventApplier = $readModelEventApplier;
-        $this->readModelReflector = $readModelReflector;
     }
 
     public function setTaskProgressReporter(?TaskProgressReporter $taskProgressReporter)

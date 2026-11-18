@@ -8,21 +8,8 @@ namespace Dudulina\Query\Answerer;
 
 class MethodDescriptor
 {
-    /**
-     * @var string
-     */
-    private $handlerClass;
-    /**
-     * @var string
-     */
-    private $methodName;
-
-    public function __construct(
-        string $handlerClass, string $methodName
-    )
+    public function __construct(private string $handlerClass, private string $methodName)
     {
-        $this->handlerClass = $handlerClass;
-        $this->methodName = $methodName;
     }
 
     public function getHandlerClass(): string

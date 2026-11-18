@@ -12,28 +12,8 @@ use Dudulina\CodeGeneration\Lib\DirectoriesToIterator;
 class CodeWriter
 {
 
-    /**
-     * @var CodeGenerator
-     */
-    private $codeGenerator;
-    /**
-     * @var string
-     */
-    private $templateClass;
-    /**
-     * @var string
-     */
-    private $outputShortClassName;
-
-    public function __construct(
-        CodeGenerator $codeGenerator,
-        string $templateClass,
-        string $outputShortClassName
-    )
+    public function __construct(private CodeGenerator $codeGenerator, private string $templateClass, private string $outputShortClassName)
     {
-        $this->codeGenerator = $codeGenerator;
-        $this->templateClass = $templateClass;
-        $this->outputShortClassName = $outputShortClassName;
     }
 
     public function writeCode(

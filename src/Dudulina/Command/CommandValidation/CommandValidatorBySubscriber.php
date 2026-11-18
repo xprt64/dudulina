@@ -14,22 +14,8 @@ use Psr\Container\ContainerInterface;
 class CommandValidatorBySubscriber implements CommandValidator
 {
 
-    /**
-     * @var CommandValidatorSubscriber
-     */
-    private $commandValidatorSubscriber;
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    public function __construct(
-        CommandValidatorSubscriber $subscriber,
-        ContainerInterface $container
-    )
+    public function __construct(private CommandValidatorSubscriber $commandValidatorSubscriber, private ContainerInterface $container)
     {
-        $this->commandValidatorSubscriber = $subscriber;
-        $this->container = $container;
     }
 
     public function validateCommand(Command $command)

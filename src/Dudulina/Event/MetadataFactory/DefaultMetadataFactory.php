@@ -14,16 +14,8 @@ use Dudulina\Event\MetadataFactory;
 class DefaultMetadataFactory implements MetadataFactory
 {
 
-    /**
-     * @var AuthenticatedIdentityReaderService
-     */
-    private $identityReaderService;
-
-    public function __construct(
-        ?AuthenticatedIdentityReaderService $identityReaderService = null
-    )
+    public function __construct(private ?AuthenticatedIdentityReaderService $identityReaderService = null)
     {
-        $this->identityReaderService = $identityReaderService;
     }
 
     public function factoryEventMetadata(CommandWithMetadata $command, $aggregate): MetaData

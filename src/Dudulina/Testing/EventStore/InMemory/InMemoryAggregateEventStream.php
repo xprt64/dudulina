@@ -11,28 +11,19 @@ use Dudulina\EventStore\AggregateEventStream;
 class InMemoryAggregateEventStream implements AggregateEventStream
 {
 
-    /**
-     * @var array
-     */
-    private $eventsArray;
-    private $version;
-    private $sequence;
-    /**
-     * @var
-     */
-    private $aggregateClass;
-    /**
-     * @var
-     */
-    private $aggregateId;
+    private array $eventsArray;
+    private int $version;
 
-    public function __construct(array $eventsArray, $aggregateClass, $aggregateId, int $sequence)
+    public function __construct(array $eventsArray, /**
+     * @var
+     */
+    private $aggregateClass, /**
+     * @var
+     */
+    private $aggregateId, private int $sequence)
     {
         $this->version = count($eventsArray);
-        $this->aggregateClass = $aggregateClass;
-        $this->aggregateId = $aggregateId;
         $this->eventsArray = $eventsArray;
-        $this->sequence = $sequence;
     }
 
     public function getIterator():\Traversable

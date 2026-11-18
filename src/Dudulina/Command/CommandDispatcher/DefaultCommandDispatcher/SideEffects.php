@@ -12,15 +12,6 @@ use Dudulina\Scheduling\ScheduledCommand;
 
 class SideEffects
 {
-    /** @var EventWithMetaData[] */
-    private $eventsForNow;
-
-    /** @var ScheduledCommand[] */
-    private $scheduledCommands;
-
-    /** @var AggregateDescriptor */
-    private $aggregateDescriptor;
-
     private $commandMetadata;
 
     /**
@@ -28,11 +19,8 @@ class SideEffects
      * @param ScheduledCommand[] $scheduledCommands
      * @param AggregateDescriptor $aggregateDescriptor
      */
-    public function __construct(AggregateDescriptor $aggregateDescriptor, array $eventsForNow, array $scheduledCommands)
+    public function __construct(private AggregateDescriptor $aggregateDescriptor, private array $eventsForNow, private array $scheduledCommands)
     {
-        $this->eventsForNow = $eventsForNow;
-        $this->scheduledCommands = $scheduledCommands;
-        $this->aggregateDescriptor = $aggregateDescriptor;
     }
 
     /**

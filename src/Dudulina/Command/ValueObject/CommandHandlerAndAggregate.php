@@ -9,19 +9,8 @@ namespace Dudulina\Command\ValueObject;
 class CommandHandlerAndAggregate
 {
 
-    /**
-     * @var CommandHandlerDescriptor
-     */
-    private $commandHandler;
-    private $aggregate;
-
-    public function __construct(
-        CommandHandlerDescriptor $commandHandler,
-        $aggregate
-    )
+    public function __construct(private CommandHandlerDescriptor $commandHandler, private $aggregate)
     {
-        $this->commandHandler = $commandHandler;
-        $this->aggregate = $aggregate;
     }
 
     public function getCommandHandler(): CommandHandlerDescriptor

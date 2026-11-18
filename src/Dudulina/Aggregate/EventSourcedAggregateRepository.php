@@ -13,28 +13,13 @@ use Dudulina\EventStore\AggregateEventStream;
 
 class EventSourcedAggregateRepository implements AggregateRepository
 {
-    /**
-     * @var EventStore
-     */
-    private $eventStore;
-
-    /**
-     * @var EventsApplierOnAggregate
-     */
-    private $eventsApplier;
-
-    /**
-     * @var \SplObjectStorage
-     */
-    private $aggregateToEventStreamMap;
+    private \SplObjectStorage $aggregateToEventStreamMap;
 
     public function __construct(
-        EventStore $eventStore,
-        EventsApplierOnAggregate $eventsApplier
+        private EventStore $eventStore,
+        private EventsApplierOnAggregate $eventsApplier
     )
     {
-        $this->eventStore = $eventStore;
-        $this->eventsApplier = $eventsApplier;
         $this->aggregateToEventStreamMap = new \SplObjectStorage();
     }
 

@@ -11,16 +11,8 @@ use Dudulina\Command\ValueObject\CommandHandlerDescriptor;
 
 class CommandValidatorSubscriberByMap implements CommandValidatorSubscriber
 {
-    /**
-     * @var array
-     */
-    private $map;
-
-    public function __construct(
-        array $map
-    )
+    public function __construct(private array $map)
     {
-        $this->map = $map;
     }
 
     /**

@@ -25,31 +25,12 @@ class SagaRunner
 {
 
     /**
-     * @var EventStore
-     */
-    private $eventStore;
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
-     * @var SagaEventTrackerRepository
-     */
-    private $sagaRepository;
-    /**
      * @var TaskProgressReporter|null
      */
     private $taskProgressReporter;
 
-    public function __construct(
-        EventStore $eventStore,
-        LoggerInterface $logger,
-        SagaEventTrackerRepository $sagaRepository
-    )
+    public function __construct(private EventStore $eventStore, private LoggerInterface $logger, private SagaEventTrackerRepository $sagaRepository)
     {
-        $this->eventStore = $eventStore;
-        $this->logger = $logger;
-        $this->sagaRepository = $sagaRepository;
     }
 
     public function setTaskProgressReporter(?TaskProgressReporter $taskProgressReporter)

@@ -11,10 +11,7 @@ use Dudulina\Event\EventWithMetaData;
 class EventProcessingHasStalled extends \Exception
 {
 
-    /**
-     * @var EventWithMetaData
-     */
-    private $eventWithMetadata;
+    private \Dudulina\Event\EventWithMetaData $eventWithMetadata;
 
     public function __construct(EventWithMetaData $eventWithMetadata)
     {

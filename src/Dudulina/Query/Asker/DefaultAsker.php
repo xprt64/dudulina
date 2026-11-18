@@ -15,28 +15,8 @@ use Psr\Container\ContainerInterface;
 class DefaultAsker implements Asker
 {
 
-    /**
-     * @var AnswererResolver
-     */
-    private $answererResolver;
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-    /**
-     * @var \Dudulina\Query\AskerResolver
-     */
-    private $askerResolver;
-
-    public function __construct(
-        ContainerInterface $container,
-        AnswererResolver $answererResolver,
-        AskerResolver $askerResolver
-    )
+    public function __construct(private ContainerInterface $container, private AnswererResolver $answererResolver, private AskerResolver $askerResolver)
     {
-        $this->answererResolver = $answererResolver;
-        $this->container = $container;
-        $this->askerResolver = $askerResolver;
     }
 
     public function askAndReturn($question)

@@ -15,39 +15,8 @@ use Psr\Log\LoggerInterface;
 
 class ReadModelTail
 {
-    /**
-     * @var EventStore
-     */
-    private $eventStore;
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
-     * @var TailableEventStream
-     */
-    private $tailableEventStream;
-    /**
-     * @var ReadModelEventApplier
-     */
-    private $readModelEventApplier;
-    /**
-     * @var ReadModelReflector
-     */
-    private $readModelReflector;
-
-    public function __construct(
-        EventStore $eventStore,
-        LoggerInterface $logger,
-        TailableEventStream $tailableEventStream,
-        ReadModelEventApplier $readModelEventApplier,
-        ReadModelReflector $readModelReflector
-    ) {
-        $this->eventStore = $eventStore;
-        $this->logger = $logger;
-        $this->tailableEventStream = $tailableEventStream;
-        $this->readModelEventApplier = $readModelEventApplier;
-        $this->readModelReflector = $readModelReflector;
+    public function __construct(private EventStore $eventStore, private LoggerInterface $logger, private TailableEventStream $tailableEventStream, private ReadModelEventApplier $readModelEventApplier, private ReadModelReflector $readModelReflector)
+    {
     }
 
     public function tailRead(ReadModelInterface $readModel, ?EventSequence $after = null, ?EventProcessedNotifier $eventProcessedNotifier = null)

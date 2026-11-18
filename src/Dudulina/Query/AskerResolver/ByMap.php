@@ -11,12 +11,14 @@ use Dudulina\Query\Answerer\MethodDescriptor;
 
 class ByMap implements \Dudulina\Query\AskerResolver
 {
-    /** @var MethodDescriptor[][] */
-    private $map;
-
-    public function __construct($map)
+    /**
+     * @param \Dudulina\Query\Answerer\MethodDescriptor[][] $map
+     */
+    public function __construct(
+        /** @var MethodDescriptor[][] */
+        private $map
+    )
     {
-        $this->map = $map;
     }
 
     /**

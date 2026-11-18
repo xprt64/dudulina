@@ -8,22 +8,15 @@ namespace Dudulina\ProgressReporting;
 
 class TaskProgressCalculator
 {
-    /**
-     * @var int
-     */
-    private $totalSteps;
-
     /** @var float */
     private $startTime;
 
     private $step = 0;
 
     public function __construct(
-        int $totalSteps
+        private int $totalSteps
     )
     {
-        $this->totalSteps = $totalSteps;
-
         $this->setStartTime(microtime(true));
     }
 
